@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/services_dialog_fragment_linearlayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@android:color/white">
+
+    <ListView
+        android:id="@+id/formList"
+        android:layout_width="match_parent"
+        android:layout_height="0dip"
+        android:layout_weight="1"
+        android:choiceMode="singleChoice"
+        android:paddingTop="10dp">
+    </ListView>
+
+    <LinearLayout
+        android:id="@+id/linearLayout2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:background="@color/colorPrimary"
+        android:baselineAligned="false">
+
+        <ImageView
+            android:id="@+id/imgAddForm"
+            android:layout_width="wrap_content"
+            android:layout_height="60dp"
+            android:contentDescription="@string/btn_add_form"
+            android:src="@android:drawable/ic_menu_save"
+            android:layout_marginRight="25dp"/>
+    </LinearLayout>
+
+</LinearLayout>

@@ -1,0 +1,26 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:padding="5dp"
+    android:background="@drawable/bg_key">
+
+    <!-- Title of the news entry -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="New Text"
+        android:id="@+id/itemText1"
+        android:layout_alignParentTop="true"
+        android:textSize="22sp"
+        android:textColor="@android:color/black"
+        android:textStyle="bold" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="New Text"
+        android:id="@+id/itemText2"
+        android:layout_below="@+id/itemText1"
+        android:textColor="@android:color/black"
+        android:layout_alignParentBottom="true" />
+
+</RelativeLayout>

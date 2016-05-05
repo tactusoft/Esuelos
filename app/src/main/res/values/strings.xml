@@ -1,0 +1,106 @@
+<resources>
+    <string name="app_name">ESuelos</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <!-- basemap menu items -->
+    <string name="StreetMapMenu">Calles</string>
+    <string name="TopoMenu">Topográfico</string>
+    <string name="GrayMenu">Grises</string>
+    <string name="OceanMenu">Oceános</string>
+    <string name="SatelliteMenu">Satélite</string>
+
+    <string name="local_tpk">Base_Cartografica500k_v2.tpk</string>
+    <string name="offline_dir">carto</string>
+
+    <string name="btn_add_form">Agregar formulario</string>
+    <string name="btn_clear_map">Limpiar Mapa</string>
+    <string name="btn_ok">Aceptar</string>
+    <string name="btn_save">Guardar</string>
+    <string name="btn_cancel">Cancelar</string>
+    <string name="btn_add">Adicionar</string>
+    <string name="btn_prev">Anterior</string>
+    <string name="btn_next">Siguiente</string>
+    <string name="btn_delete">Eliminar</string>
+    <string name="btn_edit">Editar</string>
+    <string name="btn_yes">Sí</string>
+    <string name="btn_no">No</string>
+    <string name="take_photo">Capturar Foto</string>
+    <string name="select_photo">Seleccionar Foto</string>
+    <string name="btn_optional">Opcionales</string>
+    <string name="btn_flecked">Moteados</string>
+
+    <string name="msg_confirm">Está seguro de realizar esta operación?</string>
+
+    <string name="ndi_home">Inicio</string>
+    <string name="ndi_map">Mapa</string>
+    <string name="ndi_forms">Formularios</string>
+    <string name="ndi_summary">Resúmen</string>
+    <string name="ndi_database">Copiar Base de Datos</string>
+    <string name="ndi_tpk">Cargar TPK</string>
+
+    <string name="tst_title">Formulario de Comprobación</string>
+    <string name="fdn_title">Formulario de Nota de Campo</string>
+
+    <string name="tst_general">General</string>
+    <string name="tst_externa">Externa</string>
+    <string name="tst_profile">Perfil</string>
+    <string name="tst_no_observacion">Nro. Observación</string>
+    <string name="tst_reconocedor">Reconocedor *</string>
+    <string name="tst_fecha">Fecha y Hora</string>
+    <string name="tst_epoca">Época climática *</string>
+    <string name="tst_epoca_dias">Hace cuánto tiempo llovió (Días)</string>
+    <string name="tst_gm">Geomorfología</string>
+    <string name="tst_longitud">Pendiente Longitud *</string>
+    <string name="tst_erosion">Grado de Erosión *</string>
+    <string name="tst_movimiento">Tipos de Movimientos en Masa *</string>
+    <string name="tst_anegamiento">Anegamiento *</string>
+    <string name="tst_frecuencia">Frecuencia *</string>
+    <string name="tst_duracion">Duración *</string>
+    <string name="tst_pedegrosidad">Pedegrosidad Superficial *</string>
+    <string name="tst_afloramiento">Afloramiento Rocoso*</string>
+    <string name="tst_horizontes">Horizontes</string>
+    <string name="tst_integral">Integral</string>
+    <string name="tst_profundidad">Profundidad *</string>
+    <string name="tst_color">Color *</string>
+    <string name="tst_color_hue">Hue</string>
+    <string name="tst_color_value">Value</string>
+    <string name="tst_color_chroma">Chroma</string>
+    <string name="tst_color_percent">Porcentaje de Color *</string>
+    <string name="tst_material_type">Tipo de Material *</string>
+    <string name="tst_texture">Textura *</string>
+    <string name="tst_texture_modifiers">Modificadores de Textura *</string>
+    <string name="tst_texture_percent">Porcentaje de Textura *</string>
+    <string name="tst_texture_other">¿Por qué? *</string>
+    <string name="tst_structure">Estructura *</string>
+    <string name="tst_horizonte_nro">Horizonte Nro. %d</string>
+    <string name="tst_skyline_optional">Horizonte Opcional Nro. %d</string>
+    <string name="tst_skyline_flecked">Horizonte Moteado Nro. %d</string>
+    <string name="tst_skyline_type">Horizonte Maestros *</string>
+    <string name="tst_organic_type">Textura *</string>
+    <string name="tst_structure_form">Formas en que Rompe *</string>
+    <string name="tst_structure_reasons">Motivo de la no estructura *</string>
+    <string name="tst_soil_fragment">Fragmentos en suelo *</string>
+    <string name="tst_input_natural_drainage">Drenaje natural *</string>
+    <string name="tst_input_effective_depth">Profundidad efectiva *</string>
+    <string name="tst_epidedones">Epidedones *</string>
+    <string name="tst_endopedones">Endopedones *</string>
+
+    <string name="enterFileName">Digite el nombre del archivo:</string>
+    <string name="saveButtonText">Guardar</string>
+    <string name="cancelButtonText">Cancelar</string>
+    <string name="cannotSaveFileMessage">Error al guardar el archivo</string>
+    <string name="fileNameFirstMessage">Digite primero el nombre del archivo</string>
+    <string name="okButtonText">Aceptar</string>
+    <string name="loadButtonText">Cargar</string>
+    <string name="accessDenied">Acceso Denegado</string>
+    <string name="missingFile">No existe el archivo</string>
+    <string name="newFolderButtonText">Directorio</string>
+    <string name="newFolderDialogMessage">Crear Nuevo Directorio</string>
+    <string name="createButtonText">Crear</string>
+    <string name="fileCreationOk">Archivo creado exitosamente</string>
+    <string name="folderCreationOk">Directorio creado exitosamente</string>
+    <string name="folderCreationError">Error al crear el directorio</string>
+    <string name="information">Información</string>
+</resources>
