@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -37,8 +38,11 @@ import co.emes.esuelos.R;
 import co.emes.esuelos.forms.SkylineAdapter;
 import co.emes.esuelos.model.Domain;
 import co.emes.esuelos.model.FormComprobacion;
+import co.emes.esuelos.model.FormComprobacionFoto;
 import co.emes.esuelos.model.Skyline;
+import co.emes.esuelos.util.DBBitmapUtility;
 import co.emes.esuelos.util.DataBaseHelper;
+import co.emes.esuelos.util.Singleton;
 import co.emes.esuelos.util.Utils;
 
 /**
@@ -64,6 +68,11 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
     Spinner inputDuracion;
     Spinner inputPedegrosidad;
     Spinner inputAfloramiento;
+    Spinner inputFragmentoSuelo;
+    Spinner inputDrenajeNatural;
+    Spinner inputProfundidadEfectiva;
+    Spinner inputEpidedones;
+    Spinner inputEndopedones;
 
     ImageView imgViewPic;
     TextView labelHorizonteNro;
@@ -94,11 +103,6 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
     Spinner inputStructureReasons;
     Spinner inputSkylineType;
     LinearLayout linearLayoutOpt;
-    Spinner inputFragmentoSuelo;
-    Spinner inputDrenajeNatural;
-    Spinner inputProfundidadEfectiva;
-    Spinner inputEpidedones;
-    Spinner inputEndopedones;
 
     Button btnPreview;
 
@@ -134,6 +138,10 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
     public static final int RESULT_LOAD_IMAGE = 1000;
     public static final int REQUEST_IMAGE_CAPTURE = 1001;
 
+    DataBaseHelper dataBaseHelper;
+    FormComprobacion formComprobacion;
+    FormComprobacionFoto formComprobacionFoto;
+
     enum Modes {
         NEW, EDIT
     }
@@ -149,6 +157,7 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
         indexFlecked = 0;
         viewListOptional = new LinkedList<>();
         viewListFlecked = new LinkedList<>();
+        dataBaseHelper =  new DataBaseHelper(getActivity());
     }
 
     @Override
@@ -345,8 +354,8 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
             }
         });
 
-        inputNroObservacion.setText("C000001");
-        inputFecha.setText(Utils.dateToString(new Date()));
+        inputNroObservacion.setText(dataBaseHelper.getNroObservacion());
+        inputFecha.setText(Utils.dateToString(new Date(), "yyyy-MM-dd HH:mm:ss"));
         labelHorizonteNro.setText(String.format(getResources().getString(R.string.tst_horizonte_nro),(index + 1)));
 
         labelFrecuencia.setVisibility(View.GONE);
@@ -412,6 +421,9 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
             @Override
             public void onItemSelected(AdapterView<?> arg0, View arg1,
                                        int arg2, long arg3) {
+                clearStructureFields();
+                clearOrganicFields();
+
                 Domain domain = (Domain) inputMaterialType.getSelectedItem();
                 if(domain!=null && domain.getId()!=null) {
                     if (domain.getCodigo().equals("2")) {
@@ -425,6 +437,10 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
                         inputStructure.setVisibility(View.GONE);
                         inputStructureType.setVisibility(View.GONE);
                         inputStructureType2.setVisibility(View.GONE);
+                        labelTextureOther.setVisibility(View.GONE);
+                        inputTextureOther.setVisibility(View.GONE);
+                        labelStructureTypeOther.setVisibility(View.GONE);
+                        inputStructureTypeOther.setVisibility(View.GONE);
                     } else {
                         labelTexture.setVisibility(View.VISIBLE);
                         inputTexture.setVisibility(View.VISIBLE);
@@ -436,6 +452,10 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
                         inputStructure.setVisibility(View.VISIBLE);
                         inputStructureType.setVisibility(View.VISIBLE);
                         inputStructureType2.setVisibility(View.VISIBLE);
+                        labelTextureOther.setVisibility(View.GONE);
+                        inputTextureOther.setVisibility(View.GONE);
+                        labelStructureTypeOther.setVisibility(View.GONE);
+                        inputStructureTypeOther.setVisibility(View.GONE);
                     }
                 } else {
                     labelTexture.setVisibility(View.GONE);
@@ -448,6 +468,10 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
                     inputStructure.setVisibility(View.GONE);
                     inputStructureType.setVisibility(View.GONE);
                     inputStructureType2.setVisibility(View.GONE);
+                    labelTextureOther.setVisibility(View.GONE);
+                    inputTextureOther.setVisibility(View.GONE);
+                    labelStructureTypeOther.setVisibility(View.GONE);
+                    inputStructureTypeOther.setVisibility(View.GONE);
                 }
             }
 
@@ -578,7 +602,6 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
     }
 
     void populateDomains() {
-        DataBaseHelper dataBaseHelper =  new DataBaseHelper(getActivity());
         List<Domain> listReconocedor = dataBaseHelper.getListDomain("Y1 - RECONOCEDOR");
         List<Domain> listEpoca = dataBaseHelper.getListDomain("EPOCA");
         List<Domain> listLongitud = dataBaseHelper.getListDomain("X2 - LONGITUD");
@@ -821,31 +844,49 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
         Integer epidedones = ((Domain)inputEpidedones.getSelectedItem()).getId();
         Integer endopedones = ((Domain)inputEndopedones.getSelectedItem()).getId();
 
-        FormComprobacion formComprobacion = new FormComprobacion();
-        formComprobacion.setNroObservacion(nroObservacion);
-        formComprobacion.setReconocedor(reconocedor);
-        formComprobacion.setFechaHora(fechaHora);
-        formComprobacion.setLongitud(null);
-        formComprobacion.setLatitud(null);
-        formComprobacion.setAltitud(null);
-        formComprobacion.setEpocaClimatica(epocaClimatica);
-        formComprobacion.setDiasLluvia(epocaDias);
-        formComprobacion.setPendienteLongitud(pendienteLongitud);
-        formComprobacion.setGradoErosion(gradoErosion);
-        formComprobacion.setTipoMovimiento(tipoMovimiento);
-        formComprobacion.setAnegamiento(anegamiento);
-        formComprobacion.setFrecuencia(frecuencia);
-        formComprobacion.setDuracion(duracion);
-        formComprobacion.setPedregosidad(pedregosidad);
-        formComprobacion.setAfloramiento(afloramiento);
-        formComprobacion.setFragmentoSuelo(fragmentoSuelo);
-        formComprobacion.setDrenajeNatural(drenajeNatural);
-        formComprobacion.setProfundidadEfectiva(profundidadEfectiva);
-        formComprobacion.setEpidedones(epidedones);
-        formComprobacion.setEndopedones(endopedones);
+        if(reconocedor == null || epocaClimatica == null || pendienteLongitud == null ||
+                gradoErosion == null || tipoMovimiento == null || anegamiento == null ||
+                pedregosidad == null  || afloramiento == null || fragmentoSuelo == null ||
+                drenajeNatural == null || profundidadEfectiva == null || epidedones == null ||
+                endopedones == null) {
+            Toast.makeText(getActivity(), "Los campos marcados con * son obligatorios!", Toast.LENGTH_SHORT).show();
+        } else {
+            formComprobacion = new FormComprobacion();
+            formComprobacion.setNroObservacion(nroObservacion);
+            formComprobacion.setReconocedor(reconocedor);
+            formComprobacion.setFechaHora(fechaHora);
+            formComprobacion.setLongitud(Double.valueOf(Singleton.getInstance().getX()));
+            formComprobacion.setLatitud(Double.valueOf(Singleton.getInstance().getY()));
+            formComprobacion.setAltitud(null);
+            formComprobacion.setEpocaClimatica(epocaClimatica);
+            formComprobacion.setDiasLluvia(epocaDias);
+            formComprobacion.setPendienteLongitud(pendienteLongitud);
+            formComprobacion.setGradoErosion(gradoErosion);
+            formComprobacion.setTipoMovimiento(tipoMovimiento);
+            formComprobacion.setAnegamiento(anegamiento);
+            formComprobacion.setFrecuencia(frecuencia);
+            formComprobacion.setDuracion(duracion);
+            formComprobacion.setPedregosidad(pedregosidad);
+            formComprobacion.setAfloramiento(afloramiento);
+            formComprobacion.setFragmentoSuelo(fragmentoSuelo);
+            formComprobacion.setDrenajeNatural(drenajeNatural);
+            formComprobacion.setProfundidadEfectiva(profundidadEfectiva);
+            formComprobacion.setEpidedones(epidedones);
+            formComprobacion.setEndopedones(endopedones);
 
-        DataBaseHelper dataBaseHelper = new DataBaseHelper(getActivity());
-        dataBaseHelper.insertFormComprobacion(formComprobacion);
+            DataBaseHelper dataBaseHelper = new DataBaseHelper(getActivity());
+            Long result = dataBaseHelper.insertFormComprobacion(formComprobacion);
+            if(result > 0) {
+                Bitmap bitmap = ((BitmapDrawable)imgViewPic.getDrawable()).getBitmap();
+                formComprobacionFoto = new FormComprobacionFoto();
+                formComprobacionFoto.setIdFormComprobacion(result.intValue());
+                formComprobacionFoto.setFoto(DBBitmapUtility.getBytes(bitmap));
+                dataBaseHelper.insertFormComprobacionFoto(formComprobacionFoto);
+            }
+
+            Toast.makeText(getActivity(), "Formulario " + formComprobacion.getNroObservacion()
+                    + " actualizado correctamente!", Toast.LENGTH_SHORT).show();
+        }
     }
 
     void clearFields() {
@@ -855,11 +896,28 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
         inputColorChroma.setSelection(0);
         inputColorPercent.setText(null);
         inputMaterialType.setSelection(0);
-        inputTexture.setSelection(0);
         inputTexturePercent.setText(null);
+        inputSkylineType.setSelection(0);
+
+        clearStructureFields();
+        clearOrganicFields();
+    }
+
+    void clearStructureFields() {
+        inputTexture.setSelection(0);
         inputTextureModifiers.setSelection(0);
         inputStructure.setSelection(0);
-        inputSkylineType.setSelection(0);
+        inputStructureType.setSelection(0);
+        inputStructureType2.setSelection(0);
+        inputStructureTypeOther.setText(null);
+        inputStructureForm.setSelection(0);
+        inputStructureReasons.setSelection(0);
+    }
+
+    void clearOrganicFields() {
+        inputOrganicType.setSelection(0);
+        inputOrganicType2.setSelection(0);
+        inputTextureOther.setText(null);
     }
 
     @SuppressLint("SetTextI18n")

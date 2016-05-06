@@ -341,7 +341,7 @@ public class FragmentFieldNote extends DialogFragment implements View.OnClickLis
         });
 
         inputNroObservacion.setText("C000001");
-        inputLayoutFecha.setText(Utils.dateToString(new Date()));
+        inputLayoutFecha.setText(Utils.dateToString(new Date(), "yyyy-MM-dd HH:mm:ss"));
         labelHorizonteNro.setText(String.format(getResources().getString(R.string.tst_horizonte_nro),(index + 1)));
 
         labelFrecuencia.setVisibility(View.GONE);

@@ -29,6 +29,7 @@ public class FormComprobacion implements Serializable {
     Integer profundidadEfectiva;
     Integer epidedones;
     Integer endopedones;
+    Integer estado;
 
     public FormComprobacion() {
     }
@@ -37,7 +38,8 @@ public class FormComprobacion implements Serializable {
                             Double latitud, Double altitud, Integer epocaClimatica, String diasLluvia, Integer pendienteLongitud,
                             Integer gradoErosion, Integer tipoMovimiento, Integer anegamiento, Integer frecuencia,
                             Integer duracion, Integer pedregosidad, Integer afloramiento, Integer fragmentoSuelo,
-                            Integer drenajeNatural, Integer profundidadEfectiva, Integer epidedones, Integer endopedones) {
+                            Integer drenajeNatural, Integer profundidadEfectiva, Integer epidedones, Integer endopedones,
+                            Integer estado) {
         this.id = id;
         this.nroObservacion = nroObservacion;
         this.reconocedor = reconocedor;
@@ -60,6 +62,7 @@ public class FormComprobacion implements Serializable {
         this.profundidadEfectiva = profundidadEfectiva;
         this.epidedones = epidedones;
         this.endopedones = endopedones;
+        this.estado = estado;
     }
 
     public Integer getId() {
@@ -236,5 +239,13 @@ public class FormComprobacion implements Serializable {
 
     public void setEndopedones(Integer endopedones) {
         this.endopedones = endopedones;
+    }
+
+    public Integer getEstado() {
+        return estado;
+    }
+
+    public void setEstado(Integer estado) {
+        this.estado = estado;
     }
 }

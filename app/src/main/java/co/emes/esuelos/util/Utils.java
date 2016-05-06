@@ -65,9 +65,8 @@ public class Utils {
         return dateFormat.format(date);
     }
 
-    public static String dateToString(Date date) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat(
-                "yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+    public static String dateToString(Date date, String format) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat(format, Locale.getDefault());
         return dateFormat.format(date);
     }
 
@@ -89,5 +88,21 @@ public class Utils {
         }catch(Exception ex){
             return null;
         }
+    }
+
+    public static String getEstado(Integer id) {
+        String result = null;
+        switch (id) {
+            case 1:
+                result = "ABIERTO";
+                break;
+            case 2:
+                result = "TERMINADO";
+                break;
+            case 3:
+                result = "ANULADO";
+                break;
+        }
+        return result;
     }
 }

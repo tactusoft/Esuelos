@@ -215,8 +215,8 @@ public class MainActivity extends AppCompatActivity {
                             tpkHelper.createTPK();
                             Singleton.getInstance().setTpkFile(tpkHelper.getFilePath());
                             Research research = new Research();
-                            research.setStartDate(Utils.dateToString(new Date()));
-                            research.setEndDate(Utils.dateToString(new Date()));
+                            research.setStartDate(Utils.dateToString(new Date(), "yyyy-MM-dd HH:mm:ss"));
+                            research.setEndDate(Utils.dateToString(new Date(), "yyyy-MM-dd HH:mm:ss"));
                             research.setStatus(1);
                             research.setUser("carlossarmientor@gmail.com");
                             research.setFilePath(tpkHelper.getFilePath());
@@ -252,8 +252,8 @@ public class MainActivity extends AppCompatActivity {
                     tpkHelper.createTPK();
                     Singleton.getInstance().setTpkFile(tpkHelper.getFilePath());
                     Research research = new Research();
-                    research.setStartDate(Utils.dateToString(new Date()));
-                    research.setEndDate(Utils.dateToString(new Date()));
+                    research.setStartDate(Utils.dateToString(new Date(), "yyyy-MM-dd HH:mm:ss"));
+                    research.setEndDate(Utils.dateToString(new Date(), "yyyy-MM-dd HH:mm:ss"));
                     research.setStatus(1);
                     research.setUser("carlossarmientor@gmail.com");
                     research.setFilePath(tpkHelper.getFilePath());

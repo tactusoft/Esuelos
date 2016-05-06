@@ -12,12 +12,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
 import co.emes.esuelos.model.Domain;
 import co.emes.esuelos.model.FormComprobacion;
 import co.emes.esuelos.model.FormComprobacionFoto;
+import co.emes.esuelos.model.FormComprobacionHorizonte;
 import co.emes.esuelos.model.Research;
 
 /**
@@ -26,7 +28,7 @@ import co.emes.esuelos.model.Research;
 public class DataBaseHelper extends SQLiteOpenHelper {
 
     //The Android"s default system path of your application database.
-    private static String DB_PATH = "/data/data/co.emes.esuelos/databases/";
+    private static String DB_PATH =  "/data/data/co.emes.esuelos/databases/";
     private static String DB_NAME = "esuelosdb.sqlite";
 
     private SQLiteDatabase myDataBase;
@@ -46,9 +48,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
      * */
     public void createDataBase() throws IOException {
         boolean dbExist = checkDataBase();
-        if(dbExist){
-            //do nothing - database already exist
-        }else{
+        if(!dbExist){
             //By calling this method and empty database will be created into the default system path
             //of your application so we are gonna be able to overwrite that database with our database.
             this.getReadableDatabase();
@@ -75,7 +75,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         if(checkDB != null){
             checkDB.close();
         }
-        return checkDB != null ? true : false;
+        return checkDB != null;
     }
 
     /**
@@ -145,7 +145,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         try {
             openDataBase();
             Cursor cur = myDataBase.rawQuery("select id, start_date, end_date, status, user, file_path from research where status = ?", new String[] { String.valueOf(id) });
-            if (cur.moveToNext()) {
+            if (cur.moveToLast()) {
                 row.setId(cur.getInt(0));
                 row.setStartDate(cur.getString(1));
                 row.setEndDate(cur.getString(2));
@@ -163,7 +163,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     }
 
     public List<Domain> getListDomain(String grupo, boolean selected) {
-        List<Domain> list = new LinkedList<Domain>();
+        List<Domain> list = new LinkedList<>();
         if(selected) {
             Domain row = new Domain();
             row.setId(null);
@@ -257,7 +257,12 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             row.put("profundidad_efectiva", entity.getProfundidadEfectiva());
             row.put("epidedones", entity.getEpidedones());
             row.put("endopedones", entity.getEndopedones());
+            row.put("estado", 1);
             id = myDataBase.insert("form_comprobacion", null, row);
+            if(id == -1) {
+                myDataBase.update("form_comprobacion", row,
+                        "where nro_observacion = ?", new String[] { entity.getNroObservacion() });
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
@@ -275,6 +280,10 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             row.put("id_form_comprobacion", entity.getIdFormComprobacion());
             row.put("foto", entity.getFoto());
             id = myDataBase.insert("form_comprobacion_foto", null, row);
+            if(id == -1) {
+                myDataBase.update("form_comprobacion_foto", row,
+                        "where id_form_comprobacion = " + entity.getIdFormComprobacion(), null);
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
@@ -282,4 +291,110 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         }
         return id;
     }
+
+    public Long insertFormComprobacionHorizonte(FormComprobacionHorizonte entity) {
+        Long id = null;
+        try {
+            openDataBase();
+            ContentValues row = new ContentValues();
+            row.put("id", entity.getId());
+            row.put("id_form_comprobacion", entity.getIdFormComprobacion());
+            row.put("numero_horizonte", entity.getNumeroHorizonte());
+            row.put("profundidad", entity.getProfundidad());
+            row.put("color_hue", entity.getColorHue());
+            row.put("color_value", entity.getColorValue());
+            row.put("color_chroma", entity.getColorChroma());
+            row.put("color_porcentaje", entity.getColorPorcentaje());
+            row.put("tipo_material", entity.getTipoMaterial());
+            row.put("clase_textural", entity.getClaseTextural());
+            row.put("modificador_textura", entity.getModificadorTextura());
+            row.put("clase_organico", entity.getClaseOrganico());
+            row.put("clase_composicion", entity.getClaseComposicion());
+            row.put("textura_porcentaje", entity.getTexturaPorcentaje());
+            row.put("estructura_tipo", entity.getEstructuraTipo());
+            row.put("estructura_clase", entity.getEstructuraClase());
+            row.put("estructura_grado", entity.getEstructuraGrado());
+            row.put("forma_rompe", entity.getFormaRompe());
+            row.put("motivo_no_estructura", entity.getMotivoNoEstructura());
+            row.put("horizonte_clase", entity.getHorizonteClase());
+            row.put("horizonte_caracterisitica", entity.getHorizonteCaracterisitica());
+            row.put("textura_otro", entity.getTexturaOtro());
+            row.put("estructura_otra", 1);
+            id = myDataBase.insert("form_comprobacion_horizonte", null, row);
+            if(id == -1) {
+                myDataBase.update("form_comprobacion_horizonte", row, "where id = " + entity.getId(), null);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            close();
+        }
+        return id;
+    }
+
+    public List<FormComprobacion> getListFormComprobacion() {
+        List<FormComprobacion> list = new LinkedList<>();
+        try {
+            openDataBase();
+            Cursor cur = myDataBase.rawQuery("SELECT id, nro_observacion, reconocedor, fecha_hora, longitud, latitud, altitud,\n" +
+                    "epoca_climatica, dias_lluvia, pendiente_longitud, grado_erosion, tipo_movimiento, anegamiento,\n" +
+                    "frecuencia, duracion, pedregosidad, afloramiento, fragmento_suelo, drenaje_natural, profundidad_efectiva,\n" +
+                    "epidedones, endopedones, estado\n" +
+                    "FROM form_comprobacion\n" +
+                    "ORDER BY id", new String[] {});
+            while (cur.moveToNext()) {
+                FormComprobacion row = new FormComprobacion();
+                row.setId(cur.getInt(0));
+                row.setNroObservacion(cur.getString(1));
+                row.setReconocedor(cur.getString(2));
+                row.setFechaHora(cur.getString(3));
+                row.setLongitud(cur.getDouble(4));
+                row.setLatitud(cur.getDouble(5));
+                row.setAltitud(cur.getDouble(6));
+                row.setEpocaClimatica(cur.getInt(7));
+                row.setDiasLluvia(cur.getString(8));
+                row.setPendienteLongitud(cur.getInt(9));
+                row.setGradoErosion(cur.getInt(10));
+                row.setTipoMovimiento(cur.getInt(11));
+                row.setAnegamiento(cur.getInt(12));
+                row.setFrecuencia(cur.getInt(13));
+                row.setDuracion(cur.getInt(14));
+                row.setPedregosidad(cur.getInt(15));
+                row.setAfloramiento(cur.getInt(16));
+                row.setFragmentoSuelo(cur.getInt(17));
+                row.setDrenajeNatural(cur.getInt(18));
+                row.setProfundidadEfectiva(cur.getInt(19));
+                row.setEpidedones(cur.getInt(20));
+                row.setEndopedones(cur.getInt(21));
+                row.setEstado(cur.getInt(22));
+                list.add(row);
+            }
+            cur.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            close();
+        }
+        return list;
+    }
+
+    public String getNroObservacion() {
+        String result = null;
+        try {
+            openDataBase();
+            Cursor cur = myDataBase.rawQuery("SELECT MAX(id)+1 FROM form_comprobacion", new String[] {});
+            if (cur.moveToNext()) {
+                int maxId = (cur.getInt(0) == 0)?1:cur.getInt(0);
+                String date = Utils.dateToString(new Date(), "yyyyMMdd");
+                result =  "C" + date + maxId;
+            }
+            cur.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            close();
+        }
+        return result;
+    }
+
 }
