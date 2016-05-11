@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Region;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -35,11 +36,13 @@ import java.util.LinkedList;
 import java.util.List;
 
 import co.emes.esuelos.R;
-import co.emes.esuelos.forms.SkylineAdapter;
+import co.emes.esuelos.forms.FormComprobacionHorizonteAdapter;
 import co.emes.esuelos.model.Domain;
 import co.emes.esuelos.model.FormComprobacion;
 import co.emes.esuelos.model.FormComprobacionFoto;
-import co.emes.esuelos.model.Skyline;
+import co.emes.esuelos.model.FormComprobacionHorizonte;
+import co.emes.esuelos.model.FormComprobacionHorizonteOpt;
+import co.emes.esuelos.model.OptionalEntity;
 import co.emes.esuelos.util.DBBitmapUtility;
 import co.emes.esuelos.util.DataBaseHelper;
 import co.emes.esuelos.util.Singleton;
@@ -52,6 +55,7 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
 
     public static final String TAG = FragmentTesting.class.getSimpleName();
 
+    LayoutInflater inflater;
     TabHost host;
     EditText inputNroObservacion;
     EditText inputFecha;
@@ -73,8 +77,8 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
     Spinner inputProfundidadEfectiva;
     Spinner inputEpidedones;
     Spinner inputEndopedones;
-
     ImageView imgViewPic;
+
     TextView labelHorizonteNro;
     EditText inputDepth;
     Spinner inputColorHue;
@@ -102,12 +106,52 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
     TextView labelStructureReasons;
     Spinner inputStructureReasons;
     Spinner inputSkylineType;
+    Spinner inputHorizonteCaracterisitica;
     LinearLayout linearLayoutOpt;
 
     Button btnPreview;
 
+    List<Domain> listReconocedor;
+    List<Domain> listEpoca;
+    List<Domain> listLongitud;
+    List<Domain> listErosion;
+    List<Domain> listMovimiento;
+    List<Domain> listAnegamiento;
+    List<Domain> listFrecuencia;
+    List<Domain> listDuracion;
+    List<Domain> listPedegrosidad;
+    List<Domain> listAfloramiento;
+    List<Domain> listColorHue;
+    List<Domain> listColorValue;
+    List<Domain> listColorChroma;
+    List<Domain> listMaterialType;
+    List<Domain> listTexture;
+    List<Domain> listTextureModifiers;
+    List<Domain> listOrganicType;
+    List<Domain> listOrganicType2;
+    List<Domain> listStructure;
     List<Domain> listStructureType;
+    List<Domain> listStructureType2;
+    List<Domain> listStructureForms;
+    List<Domain> listStructureReasons;
+    List<Domain> listHorizonteClase;
+    List<Domain> listHorizonteCaracterisitica;
+    List<Domain> listSoilFragment;
+    List<Domain> listNaturalDrainage;
+    List<Domain> listEffectiveDepth;
+    List<Domain> listEpidedones;
+    List<Domain> listEndopedones;
 
+    ArrayAdapter<Domain> reconocedorAdapter;
+    ArrayAdapter<Domain> epocaAdapter;
+    ArrayAdapter<Domain> longitudAdapter;
+    ArrayAdapter<Domain> erosionAdapter;
+    ArrayAdapter<Domain> movimientoAdapter;
+    ArrayAdapter<Domain> anegamientoAdapter;
+    ArrayAdapter<Domain> frecuenciaAdapter;
+    ArrayAdapter<Domain> duracionAdapter;
+    ArrayAdapter<Domain> pedegrosidadAdapter;
+    ArrayAdapter<Domain> afloramientoAdapter;
     ArrayAdapter<Domain> colorHueAdapter;
     ArrayAdapter<Domain> colorValueAdapter;
     ArrayAdapter<Domain> colorChromaAdapter;
@@ -122,17 +166,23 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
     ArrayAdapter<Domain> structureFormsAdapter;
     ArrayAdapter<Domain> structureReasonsAdapter;
     ArrayAdapter<Domain> skylineTypeAdapter;
+    ArrayAdapter<Domain> horizonteCaracterisiticaAdapter;
+    ArrayAdapter<Domain> soilFragmentAdapter;
+    ArrayAdapter<Domain> naturalDrainageAdapter;
+    ArrayAdapter<Domain> effectiveDepthAdapter;
+    ArrayAdapter<Domain> epidedonesAdapter;
+    ArrayAdapter<Domain> endopedonesAdapter;
 
     NestedScrollView scrollviewProfile;
-    Skyline skylineObject;
-    List<Skyline> skylineList;
-    ListView listSkyline;
-    Modes mode;
+    FormComprobacionHorizonte formComprobacionHorizonte;
+    List<FormComprobacionHorizonte> formComprobacionHorizonteList;
+    ListView listViewSkyline;
     int index;
     int indexOptional;
     int indexFlecked;
     List<View> viewListOptional;
     List<View> viewListFlecked;
+    List<OptionalEntity> listOptionalEntity;
 
     private static final int RESULT_OK = -1;
     public static final int RESULT_LOAD_IMAGE = 1000;
@@ -141,6 +191,11 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
     DataBaseHelper dataBaseHelper;
     FormComprobacion formComprobacion;
     FormComprobacionFoto formComprobacionFoto;
+
+    boolean nextFlag = true;
+    boolean nextFlagMaterialType = true;
+    boolean nextFlagEstructuraTipo = true;
+    static Modes mode;
 
     enum Modes {
         NEW, EDIT
@@ -157,7 +212,15 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
         indexFlecked = 0;
         viewListOptional = new LinkedList<>();
         viewListFlecked = new LinkedList<>();
+        listOptionalEntity = new LinkedList<>();
         dataBaseHelper =  new DataBaseHelper(getActivity());
+    }
+
+    public static FragmentTesting newInstance(FormComprobacion formComprobacion) {
+        FragmentTesting f = new FragmentTesting();
+        f.setFormComprobacion(formComprobacion);
+        mode = Modes.EDIT;
+        return f;
     }
 
     @Override
@@ -178,6 +241,7 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
 
     @Override
     public View onCreateView(final LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        this.inflater = inflater;
         View rootView = inflater.inflate(R.layout.fragment_testing, container, false);
         getDialog().setCancelable(false);
 
@@ -255,6 +319,7 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
         labelStructureTypeOther = (TextView) rootView.findViewById(R.id.label_structure_type_other);
         inputStructureTypeOther = (EditText) rootView.findViewById(R.id.input_structure_type_other);
         inputSkylineType = (Spinner) rootView.findViewById(R.id.input_horizontes);
+        inputHorizonteCaracterisitica  = (Spinner) rootView.findViewById(R.id.input_horizonte_caracterisitica);
         labelStructureForm = (TextView) rootView.findViewById(R.id.label_structure_form);
         inputStructureForm = (Spinner) rootView.findViewById(R.id.input_structure_form);
         labelStructureReasons = (TextView) rootView.findViewById(R.id.label_structure_reasons);
@@ -267,7 +332,7 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
         inputEndopedones = (Spinner) rootView.findViewById(R.id.input_endopedones   );
 
         scrollviewProfile = (NestedScrollView) rootView.findViewById(R.id.scrollview_profile);
-        listSkyline = (ListView) rootView.findViewById(R.id.list_skyline);
+        listViewSkyline = (ListView) rootView.findViewById(R.id.list_skyline);
 
         Button btnSave = (Button) rootView.findViewById(R.id.btn_save);
         Button btnTakePhoto = (Button) rootView.findViewById(R.id.btn_take_photo);
@@ -286,6 +351,15 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
         btnNext.setTransformationMethod(null);
         btnPreview.setTransformationMethod(null);
         btnPreview.setEnabled(false);
+
+        host.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
+            @Override
+            public void onTabChanged(String tabId) {
+                nextFlag = false;
+                nextFlagMaterialType = false;
+                nextFlagEstructuraTipo = false;
+            }
+        });
 
         btnTakePhoto.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -341,7 +415,7 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
         btnOptional.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                addOptionalView(inflater, SkylineType.OPTIONAL);
+                addOptionalView(SkylineType.OPTIONAL);
                 bottomScrollView();
             }
         });
@@ -349,14 +423,10 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
         btnFlecked.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                addOptionalView(inflater, SkylineType.FLECKED);
+                addOptionalView(SkylineType.FLECKED);
                 bottomScrollView();
             }
         });
-
-        inputNroObservacion.setText(dataBaseHelper.getNroObservacion());
-        inputFecha.setText(Utils.dateToString(new Date(), "yyyy-MM-dd HH:mm:ss"));
-        labelHorizonteNro.setText(String.format(getResources().getString(R.string.tst_horizonte_nro),(index + 1)));
 
         labelFrecuencia.setVisibility(View.GONE);
         labelDuracion.setVisibility(View.GONE);
@@ -382,14 +452,21 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
         labelStructureReasons.setVisibility(View.GONE);
         inputStructureReasons.setVisibility(View.GONE);
 
-        skylineList = new LinkedList<>();
-        skylineObject =  new Skyline();
-        mode = Modes.NEW;
+        formComprobacionHorizonteList = new LinkedList<>();
+        formComprobacionHorizonte =  new FormComprobacionHorizonte();
 
         inputAnegamiento.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> arg0, View arg1,
                                        int arg2, long arg3) {
+
+                int positionDrenajeNatural = 0;
+                if(nextFlag) {
+                    clearAnegamiento();
+                } else {
+                    positionDrenajeNatural = inputDrenajeNatural.getSelectedItemPosition();
+                }
+
                 Domain domain = (Domain) inputAnegamiento.getSelectedItem();
                 if(domain!=null && domain.getId()!=null) {
                     if (domain.getCodigo().equals("3")) {
@@ -397,18 +474,38 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
                         labelDuracion.setVisibility(View.GONE);
                         inputFrecuencia.setVisibility(View.GONE);
                         inputDuracion.setVisibility(View.GONE);
+
+                        List<Domain> listNaturalDrainageTemp = new LinkedList<>();
+                        for(Domain row:listNaturalDrainage){
+                            if(row.getValor()==null) {
+                                listNaturalDrainageTemp.add(row);
+                            } else if(Integer.valueOf(row.getValor()) >= 1 && Integer.valueOf(row.getValor()) <= 5) {
+                                listNaturalDrainageTemp.add(row);
+                            }
+                        }
+                        naturalDrainageAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, listNaturalDrainageTemp);
+                        inputDrenajeNatural.setAdapter(naturalDrainageAdapter);
+                        inputDrenajeNatural.setSelection(positionDrenajeNatural);
                     } else {
                         labelFrecuencia.setVisibility(View.VISIBLE);
                         labelDuracion.setVisibility(View.VISIBLE);
                         inputFrecuencia.setVisibility(View.VISIBLE);
                         inputDuracion.setVisibility(View.VISIBLE);
+                        naturalDrainageAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, listNaturalDrainage);
+                        inputDrenajeNatural.setAdapter(naturalDrainageAdapter);
+                        inputDrenajeNatural.setSelection(positionDrenajeNatural);
                     }
                 } else {
                     labelFrecuencia.setVisibility(View.GONE);
                     labelDuracion.setVisibility(View.GONE);
                     inputFrecuencia.setVisibility(View.GONE);
                     inputDuracion.setVisibility(View.GONE);
+                    naturalDrainageAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, listNaturalDrainage);
+                    inputDrenajeNatural.setAdapter(naturalDrainageAdapter);
+                    inputDrenajeNatural.setSelection(positionDrenajeNatural);
                 }
+
+                nextFlag = true;
             }
 
             @Override
@@ -421,8 +518,12 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
             @Override
             public void onItemSelected(AdapterView<?> arg0, View arg1,
                                        int arg2, long arg3) {
-                clearStructureFields();
-                clearOrganicFields();
+                if(nextFlagMaterialType) {
+                    clearStructureFields();
+                    clearOrganicFields();
+                }
+
+                nextFlagMaterialType = true;
 
                 Domain domain = (Domain) inputMaterialType.getSelectedItem();
                 if(domain!=null && domain.getId()!=null) {
@@ -510,11 +611,18 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
             @Override
             public void onItemSelected(AdapterView<?> arg0, View arg1,
                                        int arg2, long arg3) {
+
+                int positionStructureType = 0;
+                if(!nextFlagEstructuraTipo) {
+                    positionStructureType = inputStructureType.getSelectedItemPosition();
+                }
+
                 Domain domain = (Domain) inputStructure.getSelectedItem();
                 if(domain!=null && domain.getId()!=null) {
 
                     structureTypeAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, listStructureType);
                     inputStructureType.setAdapter(structureTypeAdapter);
+                    inputStructureType.setSelection(positionStructureType);
 
                     switch(domain.getCodigo()){
                         case "PR":
@@ -541,6 +649,7 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
                             }
                             structureTypeAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, listStructureTypeTemp);
                             inputStructureType.setAdapter(structureTypeAdapter);
+                            inputStructureType.setSelection(positionStructureType);
 
                             labelStructureForm.setVisibility(View.GONE);
                             inputStructureForm.setVisibility(View.GONE);
@@ -558,6 +667,8 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
                     labelStructureTypeOther.setVisibility(View.GONE);
                     inputStructureTypeOther.setVisibility(View.GONE);
                 }
+
+                nextFlagEstructuraTipo = true;
             }
 
             @Override
@@ -592,7 +703,15 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
         });
 
         populateDomains();
-        //EventBus.getDefault().register(this);
+
+        if(mode == null || mode == Modes.NEW) {
+            inputNroObservacion.setText(dataBaseHelper.getNroObservacion());
+            inputFecha.setText(Utils.dateToString(new Date(), "yyyy-MM-dd HH:mm:ss"));
+            labelHorizonteNro.setText(String.format(getResources().getString(R.string.tst_horizonte_nro), (index + 1)));
+            mode = Modes.NEW;
+        } else {
+            editForm();
+        }
 
         return rootView;
     }
@@ -601,75 +720,74 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
 
     }
 
-    void populateDomains() {
-        List<Domain> listReconocedor = dataBaseHelper.getListDomain("Y1 - RECONOCEDOR");
-        List<Domain> listEpoca = dataBaseHelper.getListDomain("EPOCA");
-        List<Domain> listLongitud = dataBaseHelper.getListDomain("X2 - LONGITUD");
-        List<Domain> listErosion = dataBaseHelper.getListDomain("G1 - GRADO DE EROSION");
-        List<Domain> listMovimiento = dataBaseHelper.getListDomain("G5 - TIPOS  DE MOVIMIENTOS EN MASA");
-        List<Domain> listAnegamiento = dataBaseHelper.getListDomain("U2 - ANEGAMIENTO");
-        List<Domain> listFrecuencia = dataBaseHelper.getListDomain("U3 - FRECUENCIA");
-        List<Domain> listDuracion = dataBaseHelper.getListDomain("U4 - DURACION");
-        List<Domain> listPedegrosidad = dataBaseHelper.getListDomain("S4 - PEDREGOSIDAD SUPERFICIAL");
-        List<Domain> listAfloramiento = dataBaseHelper.getListDomain("S5 - AFLORAMIENTO ROCOSO");
-        List<Domain> listColorHue = dataBaseHelper.getListDomain("Z1 - MATRIZ HUE");
-        List<Domain> listColorValue = dataBaseHelper.getListDomain("Z2 - MATRIZ VALUE");
-        List<Domain> listColorChroma = dataBaseHelper.getListDomain("Z3 - MATRIZ CHROMA");
-        List<Domain> listMaterialType = dataBaseHelper.getListDomain("H4 - TIPO DE MATERIAL");
-        List<Domain> listTexture = dataBaseHelper.getListDomain("T1 - CLASES TEXTURALES DEL SUELO");
-        List<Domain> listTextureModifiers = dataBaseHelper.getListDomain("T2 - MODIFICADORES DE LA TEXTURA");
-        List<Domain> listOrganicType = dataBaseHelper.getListDomain("O1 - CLASES DE MATERIALES ORGÁNICOS");
-        List<Domain> listOrganicType2 = dataBaseHelper.getListDomain("O2 - CLASES POR COMPOSICIÓN DE LOS MATERIALES ORGÁNICOS");
-        List<Domain> listStructure = dataBaseHelper.getListDomain("E1 - TIPOS DE ESTRUCTURA DE SUELO");
-        listStructureType = dataBaseHelper.getListDomain("E2 - CLASES DE ESTRUCTURA DE SUELO POR TAMAÑO");
-        List<Domain> listStructureType2 = dataBaseHelper.getListDomain("E3 - CLASES POR GRADO DE LA ESTRUCTURA");
-        List<Domain> listStructureForms = dataBaseHelper.getListDomain("E4 - FORMAS EN QUE ROMPE");
-        List<Domain> listStructureReasons = dataBaseHelper.getListDomain("E5 - MOTIVO DE LA NO-ESTRUCTURA");
-        List<Domain> listHorizontes = dataBaseHelper.getListDomain("H1 - HORIZONTES MAESTROS");
-        List<Domain> listSoilFragment = dataBaseHelper.getListDomain("S3 - FRAGMENTOS EN SUELO");
-        List<Domain> listNaturalDrainage = dataBaseHelper.getListDomain("U1 - DRENAJE NATURAL");
-        List<Domain> listEffectiveDepth = dataBaseHelper.getListDomain("S1 - PROFUNDIDAD EFECTIVA");
-        List<Domain> listEpidedones = dataBaseHelper.getListDomain("B1 - EPIPEDONES");
-        List<Domain> listEndopedones = dataBaseHelper.getListDomain("B2 - ENDOPEDONES");
+    public FormComprobacion getFormComprobacion() {
+        return formComprobacion;
+    }
 
-        ArrayAdapter<Domain> reconocedorAdapter =
-                new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, listReconocedor);
+    public void setFormComprobacion(FormComprobacion formComprobacion) {
+        this.formComprobacion = formComprobacion;
+    }
+
+    void populateDomains() {
+        listReconocedor = dataBaseHelper.getListDomain("Y1 - RECONOCEDOR");
+        listEpoca = dataBaseHelper.getListDomain("EPOCA");
+        listLongitud = dataBaseHelper.getListDomain("X2 - LONGITUD");
+        listErosion = dataBaseHelper.getListDomain("G1 - GRADO DE EROSION");
+        listMovimiento = dataBaseHelper.getListDomain("G5 - TIPOS  DE MOVIMIENTOS EN MASA");
+        listAnegamiento = dataBaseHelper.getListDomain("U2 - ANEGAMIENTO");
+        listFrecuencia = dataBaseHelper.getListDomain("U3 - FRECUENCIA");
+        listDuracion = dataBaseHelper.getListDomain("U4 - DURACION");
+        listPedegrosidad = dataBaseHelper.getListDomain("S4 - PEDREGOSIDAD SUPERFICIAL");
+        listAfloramiento = dataBaseHelper.getListDomain("S5 - AFLORAMIENTO ROCOSO");
+        listColorHue = dataBaseHelper.getListDomain("Z1 - MATRIZ HUE");
+        listColorValue = dataBaseHelper.getListDomain("Z2 - MATRIZ VALUE");
+        listColorChroma = dataBaseHelper.getListDomain("Z3 - MATRIZ CHROMA");
+        listMaterialType = dataBaseHelper.getListDomain("H4 - TIPO DE MATERIAL");
+        listTexture = dataBaseHelper.getListDomain("T1 - CLASES TEXTURALES DEL SUELO");
+        listTextureModifiers = dataBaseHelper.getListDomain("T2 - MODIFICADORES DE LA TEXTURA");
+        listOrganicType = dataBaseHelper.getListDomain("O1 - CLASES DE MATERIALES ORGÁNICOS");
+        listOrganicType2 = dataBaseHelper.getListDomain("O2 - CLASES POR COMPOSICIÓN DE LOS MATERIALES ORGÁNICOS");
+        listStructure = dataBaseHelper.getListDomain("E1 - TIPOS DE ESTRUCTURA DE SUELO");
+        listStructureType = dataBaseHelper.getListDomain("E2 - CLASES DE ESTRUCTURA DE SUELO POR TAMAÑO");
+        listStructureType2 = dataBaseHelper.getListDomain("E3 - CLASES POR GRADO DE LA ESTRUCTURA");
+        listStructureForms = dataBaseHelper.getListDomain("E4 - FORMAS EN QUE ROMPE");
+        listStructureReasons = dataBaseHelper.getListDomain("E5 - MOTIVO DE LA NO-ESTRUCTURA");
+        listHorizonteClase = dataBaseHelper.getListDomain("H1 - HORIZONTES MAESTROS");
+        listHorizonteCaracterisitica = dataBaseHelper.getListDomain("H2 - CLASES POR CARACTERÍSTICAS SUBORDINADAS A LOS HORIZONTES");
+        listSoilFragment = dataBaseHelper.getListDomain("S3 - FRAGMENTOS EN SUELO");
+        listNaturalDrainage = dataBaseHelper.getListDomain("U1 - DRENAJE NATURAL");
+        listEffectiveDepth = dataBaseHelper.getListDomain("S1 - PROFUNDIDAD EFECTIVA");
+        listEpidedones = dataBaseHelper.getListDomain("B1 - EPIPEDONES");
+        listEndopedones = dataBaseHelper.getListDomain("B2 - ENDOPEDONES");
+
+        reconocedorAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, listReconocedor);
         inputReconocedor.setAdapter(reconocedorAdapter);
 
-        ArrayAdapter<Domain> epocaAdapter =
-                new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, listEpoca);
+        epocaAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, listEpoca);
         inputEpoca.setAdapter(epocaAdapter);
 
-        ArrayAdapter<Domain> longitudAdapter =
-                new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, listLongitud);
+        longitudAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, listLongitud);
         inputLongitud.setAdapter(longitudAdapter);
 
-        ArrayAdapter<Domain> erosionAdapter =
-                new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, listErosion);
+        erosionAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, listErosion);
         inputErosion.setAdapter(erosionAdapter);
 
-        ArrayAdapter<Domain> movimientoAdapter =
-                new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, listMovimiento);
+        movimientoAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, listMovimiento);
         inputMovimiento.setAdapter(movimientoAdapter);
 
-        ArrayAdapter<Domain> anegamientoAdapter =
-                new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, listAnegamiento);
+        anegamientoAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, listAnegamiento);
         inputAnegamiento.setAdapter(anegamientoAdapter);
 
-        ArrayAdapter<Domain> frecuenciaAdapter =
-                new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, listFrecuencia);
+        frecuenciaAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, listFrecuencia);
         inputFrecuencia.setAdapter(frecuenciaAdapter);
 
-        ArrayAdapter<Domain> duracionAdapter =
-                new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, listDuracion);
+        duracionAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, listDuracion);
         inputDuracion.setAdapter(duracionAdapter);
 
-        ArrayAdapter<Domain> pedegrosidadAdapter =
-                new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, listPedegrosidad);
+        pedegrosidadAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, listPedegrosidad);
         inputPedegrosidad.setAdapter(pedegrosidadAdapter);
 
-        ArrayAdapter<Domain> afloramientoAdapter =
-                new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, listAfloramiento);
+        afloramientoAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, listAfloramiento);
         inputAfloramiento.setAdapter(afloramientoAdapter);
 
         colorHueAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, listColorHue);
@@ -711,27 +829,25 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
         structureReasonsAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, listStructureReasons);
         inputStructureReasons.setAdapter(structureReasonsAdapter);
 
-        skylineTypeAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, listHorizontes);
+        skylineTypeAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, listHorizonteClase);
         inputSkylineType.setAdapter(skylineTypeAdapter);
 
-        ArrayAdapter<Domain> soilFragmentAdapter =
-                new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, listSoilFragment);
+        horizonteCaracterisiticaAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, listHorizonteCaracterisitica);
+        inputHorizonteCaracterisitica.setAdapter(horizonteCaracterisiticaAdapter);
+
+        soilFragmentAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, listSoilFragment);
         inputFragmentoSuelo.setAdapter(soilFragmentAdapter);
 
-        ArrayAdapter<Domain> naturalDrainageAdapter =
-                new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, listNaturalDrainage);
+        naturalDrainageAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, listNaturalDrainage);
         inputDrenajeNatural.setAdapter(naturalDrainageAdapter);
 
-        ArrayAdapter<Domain> effectiveDepthAdapter =
-                new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, listEffectiveDepth);
+        effectiveDepthAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, listEffectiveDepth);
         inputProfundidadEfectiva.setAdapter(effectiveDepthAdapter);
 
-        ArrayAdapter<Domain> epidedonesAdapter =
-                new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, listEpidedones);
+        epidedonesAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, listEpidedones);
         inputEpidedones.setAdapter(epidedonesAdapter);
 
-        ArrayAdapter<Domain> endopedonesAdapter =
-                new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, listEndopedones);
+        endopedonesAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, listEndopedones);
         inputEndopedones.setAdapter(endopedonesAdapter);
     }
 
@@ -741,19 +857,39 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
             Domain colorHue = ((Domain)inputColorHue.getSelectedItem());
             Domain colorValue = ((Domain)inputColorValue.getSelectedItem());
             Domain colorChroma = ((Domain)inputColorChroma.getSelectedItem());
-            String colorPercent = inputTexturePercent.getText().toString();
+            String colorPercent = inputColorPercent.getText().toString();
             Domain materialType = ((Domain) inputMaterialType.getSelectedItem());
-            Domain texture = ((Domain) inputTexture.getSelectedItem());
+            Domain texture = new Domain();
+            if(materialType.getCodigo()!=null) {
+                if (materialType.getCodigo().equals("1")) {
+                    texture = ((Domain) inputTexture.getSelectedItem());
+                } else {
+                    texture = ((Domain) inputOrganicType.getSelectedItem());
+                }
+            }
+
+            Domain texturaClase = ((Domain) inputTexture.getSelectedItem());
             Domain textureModifiers = ((Domain) inputTextureModifiers.getSelectedItem());
+            Domain organicoClase = ((Domain) inputOrganicType.getSelectedItem());
+            Domain organicoComposicion = ((Domain) inputOrganicType2.getSelectedItem());
             String texturePercent = inputTexturePercent.getText().toString();
-            Domain structure = ((Domain) inputStructure.getSelectedItem());
+            Domain estructuraTipo = ((Domain) inputStructure.getSelectedItem());
+            Domain estructuraClase = ((Domain) inputStructureType.getSelectedItem());
+            Domain estructuraGrado = ((Domain) inputStructureType2.getSelectedItem());
+            Domain formaRompe = ((Domain) inputStructureForm.getSelectedItem());
+            Domain motivoNoEstructura = ((Domain) inputStructureReasons.getSelectedItem());
+            String estructuraOtra = inputStructureTypeOther.getText().toString();
             Domain skylineType = ((Domain) inputSkylineType.getSelectedItem());
+            Domain horizonteCaracterisitica = ((Domain) inputHorizonteCaracterisitica.getSelectedItem());
+
             if(!depth.isEmpty() && colorHue.getId()!=null && colorValue.getId()!=null
                     && colorChroma.getId()!=null
                     && texture.getId()!=null) {
                 setValues(depth, colorHue, colorValue, colorChroma, colorPercent,
-                        materialType, texture, textureModifiers,
-                        texturePercent, structure, skylineType);
+                        materialType, texturaClase, textureModifiers, texturePercent,
+                        organicoClase, organicoComposicion,
+                        estructuraTipo, estructuraClase, estructuraGrado, formaRompe, motivoNoEstructura,
+                        estructuraOtra, skylineType, horizonteCaracterisitica);
                 index--;
                 if(index >= 0) {
                     getValues();
@@ -778,44 +914,180 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
         }
     }
 
-    public void nextAction(){
+    public List<FormComprobacionHorizonteOpt> validateOptional(Integer idFormComprobacion){
+        List<FormComprobacionHorizonteOpt> listFormComprobacionHorizonteOpt = new LinkedList<>();
+        for(View row:viewListOptional){
+            FormComprobacionHorizonteOpt entity = new FormComprobacionHorizonteOpt();
+            entity.setIdFormComprobacionHorz(idFormComprobacion);
+            LinearLayout child = (LinearLayout)row;
+            for(int index = 0; index < child.getChildCount(); index++) {
+                View object = child.getChildAt(index);
+                if (object instanceof LinearLayout && object.getId() == R.id.lyr_colors) {
+                    LinearLayout lyr = (LinearLayout)object;
+                    for(int index2 = 0; index2 < lyr.getChildCount(); index2++) {
+                        View object2 = lyr.getChildAt(index2);
+                        if (object2 instanceof Spinner) {
+                            Spinner spinner = (Spinner) object2;
+                            switch (spinner.getId()) {
+                                case R.id.input_color_hue:
+                                    entity.setColorHue(((Domain) spinner.getSelectedItem()).getId());
+                                    break;
+                                case R.id.input_color_value:
+                                    entity.setColorValue(((Domain) spinner.getSelectedItem()).getId());
+                                    break;
+                                case R.id.input_color_chroma:
+                                    entity.setColorChroma(((Domain) spinner.getSelectedItem()).getId());
+                                    break;
+                            }
+                        }
+                    }
+                } else if (object instanceof EditText) {
+                    EditText editText = (EditText) object;
+                    if (editText.getId() == R.id.input_color_percent) {
+                        try {
+                            entity.setColorPorcentaje(Integer.valueOf(editText.getText().toString()));
+                        } catch (Exception ex) {
+                            entity.setColorPorcentaje(null);
+                        }
+                    }
+                }
+            }
+            listFormComprobacionHorizonteOpt.add(entity);
+        }
+        return listFormComprobacionHorizonteOpt;
+    }
+
+    public List<FormComprobacionHorizonteOpt> validateFlecked(Integer idFormComprobacion){
+        List<FormComprobacionHorizonteOpt> listFormComprobacionHorizonteOpt = new LinkedList<>();
+        for(View row:viewListFlecked){
+            FormComprobacionHorizonteOpt entity = new FormComprobacionHorizonteOpt();
+            entity.setIdFormComprobacionHorz(idFormComprobacion);
+            LinearLayout child = (LinearLayout)row;
+            for(int index = 0; index < child.getChildCount(); index++) {
+                View object = child.getChildAt(index);
+                if (object instanceof LinearLayout && object.getId() == R.id.lyr_colors) {
+                    LinearLayout lyr = (LinearLayout)object;
+                    for(int index2 = 0; index2 < lyr.getChildCount(); index2++) {
+                        View object2 = lyr.getChildAt(index2);
+                        if (object2 instanceof Spinner) {
+                            Spinner spinner = (Spinner) object2;
+                            switch (spinner.getId()) {
+                                case R.id.input_color_hue:
+                                    entity.setColorHue(((Domain) spinner.getSelectedItem()).getId());
+                                    break;
+                                case R.id.input_color_value:
+                                    entity.setColorValue(((Domain) spinner.getSelectedItem()).getId());
+                                    break;
+                                case R.id.input_color_chroma:
+                                    entity.setColorChroma(((Domain) spinner.getSelectedItem()).getId());
+                                    break;
+                            }
+                        }
+                    }
+                } else if (object instanceof EditText) {
+                    EditText editText = (EditText) object;
+                    if (editText.getId() == R.id.input_color_percent) {
+                        try {
+                            entity.setColorPorcentaje(Integer.valueOf(editText.getText().toString()));
+                        } catch (Exception ex) {
+                            entity.setColorPorcentaje(null);
+                        }
+                    }
+                }
+            }
+            listFormComprobacionHorizonteOpt.add(entity);
+        }
+        return listFormComprobacionHorizonteOpt;
+    }
+
+    public void nextAction() {
         String depth = inputDepth.getText().toString();
         Domain colorHue = ((Domain)inputColorHue.getSelectedItem());
         Domain colorValue = ((Domain)inputColorValue.getSelectedItem());
         Domain colorChroma = ((Domain)inputColorChroma.getSelectedItem());
-        String colorPercent = inputTexturePercent.getText().toString();
+        String colorPercent = inputColorPercent.getText().toString();
         Domain materialType = ((Domain) inputMaterialType.getSelectedItem());
-        Domain texture;
-        if(materialType.getCodigo().equals("1")) {
-            texture = ((Domain) inputTexture.getSelectedItem());
-        } else {
-            texture = ((Domain) inputOrganicType.getSelectedItem());
+        Domain texture = new Domain();
+        if(materialType.getCodigo()!=null) {
+            if (materialType.getCodigo().equals("1")) {
+                texture = ((Domain) inputTexture.getSelectedItem());
+            } else {
+                texture = ((Domain) inputOrganicType.getSelectedItem());
+            }
         }
+
+        Domain texturaClase = ((Domain) inputTexture.getSelectedItem());
         Domain textureModifiers = ((Domain) inputTextureModifiers.getSelectedItem());
         String texturePercent = inputTexturePercent.getText().toString();
-        Domain structure = ((Domain) inputStructure.getSelectedItem());
+        Domain estructuraTipo = ((Domain) inputStructure.getSelectedItem());
+        Domain estructuraClase = ((Domain) inputStructureType.getSelectedItem());
+        Domain estructuraGrado = ((Domain) inputStructureType2.getSelectedItem());
+        Domain formaRompe = ((Domain) inputStructureForm.getSelectedItem());
+        Domain motivoNoEstructura = ((Domain) inputStructureReasons.getSelectedItem());
+        String estructuraOtra = inputStructureTypeOther.getText().toString();
+        Domain organicoClase = ((Domain) inputOrganicType.getSelectedItem());
+        Domain organicoComposicion = ((Domain) inputOrganicType2.getSelectedItem());
         Domain skylineType = ((Domain) inputSkylineType.getSelectedItem());
+        Domain horizonteCaracterisitica = ((Domain) inputHorizonteCaracterisitica.getSelectedItem());
 
         if(!depth.isEmpty() && colorHue.getId()!=null && colorValue.getId()!=null
                 && colorChroma.getId()!=null
                 && texture.getId()!=null) {
-            btnPreview.setEnabled(true);
-            index++;
-            if (mode == Modes.NEW) {
-                skylineObject = new Skyline();
-                setValues(depth, colorHue, colorValue, colorChroma, colorPercent, materialType,
-                        texture, textureModifiers, texturePercent, structure, skylineType);
-                skylineList.add(skylineObject);
-            } else {
-                setValues(depth, colorHue, colorValue, colorChroma, colorPercent, materialType,
-                        texture, textureModifiers, texturePercent, structure, skylineType);
-            }
-            getValues();
 
-            SkylineAdapter skylineAdapter = new SkylineAdapter(getActivity(), getFragmentManager(),
-                    R.layout.list_skyline_item, skylineList);
-            listSkyline.setItemsCanFocus(false);
-            listSkyline.setAdapter(skylineAdapter);
+            List<FormComprobacionHorizonteOpt> listFormComprobacionHorizonteOpt = validateOptional(null);
+            boolean optionalFlag = true;
+            if(listFormComprobacionHorizonteOpt.size() > 0){
+                for(FormComprobacionHorizonteOpt row:listFormComprobacionHorizonteOpt){
+                    if(row.getColorHue() == null || row.getColorChroma() == null
+                            || row.getColorValue() == null || row.getColorPorcentaje() ==null) {
+                        optionalFlag = false;
+                        break;
+                    }
+                }
+            }
+
+            List<FormComprobacionHorizonteOpt> listFormComprobacionHorizonteFlecked = validateFlecked(null);
+            boolean fleckedFlag = true;
+            if(listFormComprobacionHorizonteFlecked.size() > 0){
+                for(FormComprobacionHorizonteOpt row:listFormComprobacionHorizonteFlecked){
+                    if(row.getColorHue() == null || row.getColorChroma() == null
+                            || row.getColorValue() == null || row.getColorPorcentaje() ==null) {
+                        fleckedFlag = false;
+                        break;
+                    }
+                }
+            }
+
+            if(optionalFlag && fleckedFlag) {
+                btnPreview.setEnabled(true);
+                index++;
+                if (mode == Modes.NEW) {
+                    formComprobacionHorizonte = new FormComprobacionHorizonte();
+                    setValues(depth, colorHue, colorValue, colorChroma, colorPercent,
+                            materialType, texturaClase, textureModifiers, texturePercent,
+                            organicoClase, organicoComposicion,
+                            estructuraTipo, estructuraClase, estructuraGrado, formaRompe, motivoNoEstructura,
+                            estructuraOtra, skylineType, horizonteCaracterisitica);
+                    formComprobacionHorizonteList.add(formComprobacionHorizonte);
+                    listOptionalEntity.add(new OptionalEntity(index-1, viewListOptional, viewListFlecked));
+                } else {
+                    setValues(depth, colorHue, colorValue, colorChroma, colorPercent,
+                            materialType, texturaClase, textureModifiers, texturePercent,
+                            organicoClase, organicoComposicion,
+                            estructuraTipo, estructuraClase, estructuraGrado, formaRompe, motivoNoEstructura,
+                            estructuraOtra, skylineType, horizonteCaracterisitica);
+                }
+                getValues();
+
+                FormComprobacionHorizonteAdapter skylineAdapter = new FormComprobacionHorizonteAdapter(getActivity(),
+                        getFragmentManager(), R.layout.list_skyline_item, formComprobacionHorizonteList);
+                listViewSkyline.setItemsCanFocus(false);
+                listViewSkyline.setAdapter(skylineAdapter);
+            } else {
+                Toast.makeText(getActivity(),
+                        "Los campos marcados con * son obligatorios en horizontes opcionales y moteados", Toast.LENGTH_LONG)
+                        .show();
+            }
         } else {
             Toast.makeText(getActivity(),
                     "Los campos marcados con * son obligatorios. Sin embargo por ahora es obligatorio Profundidad, Color" +
@@ -826,7 +1098,7 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
 
     public void saveAction(){
         String nroObservacion = inputNroObservacion.getText().toString();
-        String reconocedor = ((Domain)inputReconocedor.getSelectedItem()).getCodigo();
+        Integer reconocedor = ((Domain)inputReconocedor.getSelectedItem()).getId();
         String fechaHora = inputFecha.getText().toString();
         Integer epocaClimatica = ((Domain)inputEpoca.getSelectedItem()).getId();
         String epocaDias = inputEpocaDias.getText().toString();
@@ -848,16 +1120,18 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
                 gradoErosion == null || tipoMovimiento == null || anegamiento == null ||
                 pedregosidad == null  || afloramiento == null || fragmentoSuelo == null ||
                 drenajeNatural == null || profundidadEfectiva == null || epidedones == null ||
-                endopedones == null) {
+                endopedones == null || formComprobacionHorizonteList.isEmpty() || imgViewPic.getDrawable()==null) {
             Toast.makeText(getActivity(), "Los campos marcados con * son obligatorios!", Toast.LENGTH_SHORT).show();
         } else {
-            formComprobacion = new FormComprobacion();
-            formComprobacion.setNroObservacion(nroObservacion);
+            if(formComprobacion == null || mode == Modes.NEW) {
+                formComprobacion = new FormComprobacion();
+                formComprobacion.setLongitud(Double.valueOf(Singleton.getInstance().getX()));
+                formComprobacion.setLatitud(Double.valueOf(Singleton.getInstance().getY()));
+                formComprobacion.setFechaHora(fechaHora);
+                formComprobacion.setAltitud(null);
+                formComprobacion.setNroObservacion(nroObservacion);
+            }
             formComprobacion.setReconocedor(reconocedor);
-            formComprobacion.setFechaHora(fechaHora);
-            formComprobacion.setLongitud(Double.valueOf(Singleton.getInstance().getX()));
-            formComprobacion.setLatitud(Double.valueOf(Singleton.getInstance().getY()));
-            formComprobacion.setAltitud(null);
             formComprobacion.setEpocaClimatica(epocaClimatica);
             formComprobacion.setDiasLluvia(epocaDias);
             formComprobacion.setPendienteLongitud(pendienteLongitud);
@@ -873,6 +1147,7 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
             formComprobacion.setProfundidadEfectiva(profundidadEfectiva);
             formComprobacion.setEpidedones(epidedones);
             formComprobacion.setEndopedones(endopedones);
+            formComprobacion.setEstado(1);
 
             DataBaseHelper dataBaseHelper = new DataBaseHelper(getActivity());
             Long result = dataBaseHelper.insertFormComprobacion(formComprobacion);
@@ -882,6 +1157,35 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
                 formComprobacionFoto.setIdFormComprobacion(result.intValue());
                 formComprobacionFoto.setFoto(DBBitmapUtility.getBytes(bitmap));
                 dataBaseHelper.insertFormComprobacionFoto(formComprobacionFoto);
+
+                int i = 0;
+                for(FormComprobacionHorizonte row:formComprobacionHorizonteList){
+                    row.setIdFormComprobacion(result.intValue());
+                    Long id = dataBaseHelper.insertFormComprobacionHorizonte(row);
+                    row.setId(id.intValue());
+
+                    for(OptionalEntity optionalEntity : listOptionalEntity) {
+                        if(optionalEntity.getIndex() == i) {
+                            viewListOptional = optionalEntity.getViewListOptional();
+                            List<FormComprobacionHorizonteOpt> listFormComprobacionHorizonteOptional = validateOptional(id.intValue());
+                            for(FormComprobacionHorizonteOpt row2:listFormComprobacionHorizonteOptional){
+                                Long id2 = dataBaseHelper.insertFormComprobacionHorizonteOptional(row2);
+                                row2.setId(id2.intValue());
+                            }
+
+                            viewListFlecked = optionalEntity.getViewListFlecked();
+                            List<FormComprobacionHorizonteOpt> listFormComprobacionHorizonteFlecked = validateFlecked(id.intValue());
+                            for(FormComprobacionHorizonteOpt row2:listFormComprobacionHorizonteFlecked){
+                                Long id2 = dataBaseHelper.insertFormComprobacionHorizonteFlecked(row2);
+                                row2.setId(id2.intValue());
+                            }
+                            break;
+                        }
+                    }
+
+                    i++;
+                }
+                mode = Modes.EDIT;
             }
 
             Toast.makeText(getActivity(), "Formulario " + formComprobacion.getNroObservacion()
@@ -889,7 +1193,18 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
         }
     }
 
+    void clearAnegamiento() {
+        inputFrecuencia.setSelection(0);
+        inputDuracion.setSelection(0);
+    }
+
     void clearFields() {
+        linearLayoutOpt.removeAllViews();
+        indexOptional = 0;
+        indexFlecked = 0;
+        viewListOptional = new LinkedList<>();
+        viewListFlecked = new LinkedList<>();
+
         inputDepth.setText(null);
         inputColorHue.setSelection(0);
         inputColorValue.setSelection(0);
@@ -898,6 +1213,7 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
         inputMaterialType.setSelection(0);
         inputTexturePercent.setText(null);
         inputSkylineType.setSelection(0);
+        inputHorizonteCaracterisitica.setSelection(0);
 
         clearStructureFields();
         clearOrganicFields();
@@ -924,29 +1240,64 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
     void getValues() {
         labelHorizonteNro.setText(String.format(getResources().getString(R.string.tst_horizonte_nro),(index + 1)));
         try{
-            skylineObject = skylineList.get(index);
-            if (skylineObject != null) {
+            formComprobacionHorizonte = formComprobacionHorizonteList.get(index);
+            if (formComprobacionHorizonte != null) {
                 labelHorizonteNro.setText(String.format(getResources().getString(R.string.tst_horizonte_nro),(index + 1)));
-                inputDepth.setText(skylineObject.getDepth().toString());
-                inputColorPercent.setText(skylineObject.getColorPercent().toString());
-                inputTexturePercent.setText(skylineObject.getTexturePercent().toString());
-                int spinnerPosition = colorHueAdapter.getPosition(skylineObject.getHueColor());
+                inputDepth.setText(formComprobacionHorizonte.getProfundidad().toString());
+                inputColorPercent.setText(formComprobacionHorizonte.getColorPorcentaje()==null?null:formComprobacionHorizonte.getColorPorcentaje().toString());
+                inputTexturePercent.setText(formComprobacionHorizonte.getTexturaPorcentaje()==null?null:formComprobacionHorizonte.getTexturaPorcentaje().toString());
+                int spinnerPosition = colorHueAdapter.getPosition(Utils.getDomain(listColorHue, formComprobacionHorizonte.getColorHue()));
                 inputColorHue.setSelection(spinnerPosition);
-                spinnerPosition = colorValueAdapter.getPosition(skylineObject.getValueColor());
+                spinnerPosition = colorValueAdapter.getPosition(Utils.getDomain(listColorValue, formComprobacionHorizonte.getColorValue()));
                 inputColorValue.setSelection(spinnerPosition);
-                spinnerPosition = colorChromaAdapter.getPosition(skylineObject.getChromaColor());
+                spinnerPosition = colorChromaAdapter.getPosition(Utils.getDomain(listColorChroma, formComprobacionHorizonte.getColorChroma()));
                 inputColorChroma.setSelection(spinnerPosition);
-                spinnerPosition = materialTypeAdapter.getPosition(skylineObject.getMaterialType());
+                spinnerPosition = materialTypeAdapter.getPosition(Utils.getDomain(listMaterialType, formComprobacionHorizonte.getTipoMaterial()));
                 inputMaterialType.setSelection(spinnerPosition);
-                spinnerPosition = textureAdapter.getPosition(skylineObject.getTexture());
+                spinnerPosition = textureAdapter.getPosition(Utils.getDomain(listTexture, formComprobacionHorizonte.getClaseTextural()));
                 inputTexture.setSelection(spinnerPosition);
-                spinnerPosition = textureAdapter.getPosition(skylineObject.getTextureModifiers());
+                spinnerPosition = textureModifiersAdapter.getPosition(Utils.getDomain(listTextureModifiers, formComprobacionHorizonte.getModificadorTextura()));
                 inputTextureModifiers.setSelection(spinnerPosition);
-                spinnerPosition = structureAdapter.getPosition(skylineObject.getStructure());
+                spinnerPosition = organicTypeAdapter.getPosition(Utils.getDomain(listOrganicType, formComprobacionHorizonte.getClaseOrganico()));
+                inputOrganicType.setSelection(spinnerPosition);
+                spinnerPosition = organicTypeAdapter2.getPosition(Utils.getDomain(listOrganicType2, formComprobacionHorizonte.getClaseComposicion()));
+                inputOrganicType2.setSelection(spinnerPosition);
+                spinnerPosition = structureAdapter.getPosition(Utils.getDomain(listStructure, formComprobacionHorizonte.getEstructuraTipo()));
                 inputStructure.setSelection(spinnerPosition);
-                spinnerPosition = skylineTypeAdapter.getPosition(skylineObject.getSkylineType());
+                spinnerPosition = structureTypeAdapter.getPosition(Utils.getDomain(listStructureType, formComprobacionHorizonte.getEstructuraClase()));
+                inputStructureType.setSelection(spinnerPosition);
+                spinnerPosition = structureTypeAdapter2.getPosition(Utils.getDomain(listStructureType2, formComprobacionHorizonte.getEstructuraGrado()));
+                inputStructureType2.setSelection(spinnerPosition);
+                spinnerPosition = structureFormsAdapter.getPosition(Utils.getDomain(listStructureForms, formComprobacionHorizonte.getFormaRompe()));
+                inputStructureForm.setSelection(spinnerPosition);
+                spinnerPosition = structureReasonsAdapter.getPosition(Utils.getDomain(listStructureReasons, formComprobacionHorizonte.getMotivoNoEstructura()));
+                inputStructureReasons.setSelection(spinnerPosition);
+                spinnerPosition = skylineTypeAdapter.getPosition(Utils.getDomain(listHorizonteClase, formComprobacionHorizonte.getHorizonteClase()));
+                inputStructureTypeOther.setText(formComprobacionHorizonte.getEstructuraOtra()==null?null:formComprobacionHorizonte.getEstructuraOtra().toString());
                 inputSkylineType.setSelection(spinnerPosition);
+                spinnerPosition = horizonteCaracterisiticaAdapter.getPosition(Utils.getDomain(listHorizonteCaracterisitica, formComprobacionHorizonte.getHorizonteCaracterisitica()));
+                inputHorizonteCaracterisitica.setSelection(spinnerPosition);
                 mode = Modes.EDIT;
+                nextFlag = false;
+                nextFlagMaterialType = false;
+                nextFlagEstructuraTipo = false;
+
+                linearLayoutOpt.removeAllViews();
+                for(OptionalEntity optionalEntity : listOptionalEntity) {
+                    if(optionalEntity.getIndex() == index) {
+                        viewListOptional = optionalEntity.getViewListOptional();
+                        indexOptional = viewListOptional.size();
+                        viewListFlecked = optionalEntity.getViewListFlecked();
+                        indexFlecked = viewListFlecked.size();
+                        for (View view : viewListOptional) {
+                            linearLayoutOpt.addView(view);
+                        }
+                        for (View view : viewListFlecked) {
+                            linearLayoutOpt.addView(view);
+                        }
+                        break;
+                    }
+                }
             } else {
                 mode = Modes.NEW;
                 clearFields();
@@ -958,24 +1309,39 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
     }
 
     void setValues(String depth, Domain colorHue , Domain colorValue, Domain colorChroma, String colorPercent,
-                           Domain materialType, Domain texture, Domain textureModifiers,
-                           String texturePercent, Domain structure, Domain skylineType) {
-        skylineObject.setSkylineNumber(index);
-        skylineObject.setDepth(Integer.valueOf(depth));
-        skylineObject.setHueColor(colorHue);
-        skylineObject.setValueColor(colorValue);
-        skylineObject.setChromaColor(colorChroma);
-        skylineObject.setColorPercent(Integer.valueOf(colorPercent));
-        skylineObject.setMaterialType(materialType);
-        skylineObject.setTexture(texture);
-        skylineObject.setTextureModifiers(textureModifiers);
-        skylineObject.setTexturePercent(Integer.valueOf(texturePercent));
-        skylineObject.setStructure(structure);
-        skylineObject.setSkylineType(skylineType);
+                   Domain materialType, Domain texturaClase, Domain texturaModificador, String texturaPorcentaje,
+                   Domain organicoClase, Domain organicoComposicion,
+                   Domain estructuraTipo, Domain estructuraClase, Domain estructuraGrado, Domain formaRompe,
+                   Domain motivoNoEstructura, String estructuraOtra,
+                   Domain skylineType, Domain horizonteCaracterisitica) {
+        formComprobacionHorizonte.setNumeroHorizonte(index);
+        formComprobacionHorizonte.setProfundidad(Integer.valueOf(depth));
+        formComprobacionHorizonte.setColorHue(colorHue.getId());
+        formComprobacionHorizonte.setDescColorHue(colorHue.getDescripcion());
+        formComprobacionHorizonte.setColorValue(colorValue.getId());
+        formComprobacionHorizonte.setDescColorValue(colorValue.getDescripcion());
+        formComprobacionHorizonte.setColorChroma(colorChroma.getId());
+        formComprobacionHorizonte.setDescColorChroma(colorChroma.getDescripcion());
+        formComprobacionHorizonte.setColorPorcentaje(colorPercent.isEmpty()?null:Integer.valueOf(colorPercent));
+        formComprobacionHorizonte.setTipoMaterial(materialType.getId());
+        formComprobacionHorizonte.setDescTipoMaterial(materialType.getDescripcion());
+        formComprobacionHorizonte.setClaseTextural(texturaClase!=null?texturaClase.getId():null);
+        formComprobacionHorizonte.setModificadorTextura(texturaModificador!=null?texturaClase.getId():null);
+        formComprobacionHorizonte.setTexturaPorcentaje(texturaPorcentaje.isEmpty()?null:Integer.valueOf(texturaPorcentaje));
+        formComprobacionHorizonte.setClaseOrganico(organicoClase!=null?organicoClase.getId():null);
+        formComprobacionHorizonte.setClaseComposicion(organicoComposicion!=null?organicoComposicion.getId():null);
+        formComprobacionHorizonte.setEstructuraTipo(estructuraTipo!=null?estructuraTipo.getId():null);
+        formComprobacionHorizonte.setEstructuraClase(estructuraClase!=null?estructuraClase.getId():null);
+        formComprobacionHorizonte.setEstructuraGrado(estructuraGrado!=null?estructuraGrado.getId():null);
+        formComprobacionHorizonte.setFormaRompe(formaRompe!=null?formaRompe.getId():null);
+        formComprobacionHorizonte.setMotivoNoEstructura(motivoNoEstructura!=null?motivoNoEstructura.getId():null);
+        formComprobacionHorizonte.setEstructuraOtra(estructuraOtra);
+        formComprobacionHorizonte.setHorizonteClase(skylineType.getId());
+        formComprobacionHorizonte.setHorizonteCaracterisitica(horizonteCaracterisitica.getId());
     }
 
-    public void removeItemSkyline() {
-        if(skylineList.isEmpty()) {
+    public void removeFormComprobacionHorizonte() {
+        if(formComprobacionHorizonteList.isEmpty()) {
             clearFields();
             btnPreview.setEnabled(false);
             index = 0;
@@ -983,98 +1349,71 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
             labelHorizonteNro.setText(String.format(getResources().getString(R.string.tst_horizonte_nro),(index + 1)));
         } else {
             int i = 0;
-            for(Skyline row:skylineList) {
-                row.setSkylineNumber(i++);
+            for(FormComprobacionHorizonte row: formComprobacionHorizonteList) {
+                row.setNumeroHorizonte(i++);
             }
-            index = skylineList.size() - 1;
+            index = formComprobacionHorizonteList.size() - 1;
             getValues();
         }
     }
 
-    public void editItemSkyline(int position) {
+    public void editFormComprobacionHorizonte(int position) {
         index = position;
         getValues();
         host.setCurrentTab(2);
     }
 
     @SuppressLint("InflateParams")
-    public void addOptionalView(LayoutInflater inflater, SkylineType skylineType){
-        View rootView = inflater.inflate(R.layout.tab_testing_skyline, null);
+    public void addOptionalView(SkylineType skylineType){
+        View rootView = this.inflater.inflate(R.layout.tab_testing_skyline, null);
+        linearLayoutOpt.addView(rootView);
         TextView labelHorizonteNroOpt = (TextView) rootView.findViewById(R.id.label_horizonte_nro);
         if(skylineType.equals(SkylineType.OPTIONAL)) {
             rootView.setId(indexOptional++);
             labelHorizonteNroOpt.setText(String.format(getResources().getString(R.string.tst_skyline_optional), indexOptional));
-            linearLayoutOpt.addView(rootView);
             viewListOptional.add(rootView);
         } else {
             rootView.setId(indexFlecked++);
             labelHorizonteNroOpt.setText(String.format(getResources().getString(R.string.tst_skyline_flecked), indexFlecked));
-            linearLayoutOpt.addView(rootView);
             viewListFlecked.add(rootView);
         }
 
-        final TextView labelHorizonteNro = (TextView) rootView.findViewById(R.id.label_horizonte_nro);
-        final EditText inputDepth = (EditText) rootView.findViewById(R.id.input_profundidad);
+        //final TextView labelHorizonteNro = (TextView) rootView.findViewById(R.id.label_horizonte_nro);
+        final Spinner inputColorHue = (Spinner) rootView.findViewById(R.id.input_color_hue);
+        final Spinner inputColorValue = (Spinner) rootView.findViewById(R.id.input_color_value);
+        final Spinner inputColorChroma = (Spinner) rootView.findViewById(R.id.input_color_chroma);
+        //final EditText inputColorPercent = (EditText) rootView.findViewById(R.id.input_color_percent);
+
+        colorHueAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, listColorHue);
+        inputColorHue.setAdapter(colorHueAdapter);
+
+        colorValueAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, listColorValue);
+        inputColorValue.setAdapter(colorValueAdapter);
+
+        colorChromaAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, listColorChroma);
+        inputColorChroma.setAdapter(colorChromaAdapter);
+    }
+
+    public View addOptionalView(SkylineType skylineType, Integer index,
+                                Integer colorHue, Integer colorValue, Integer colorChroma,
+                                String colorPercent){
+        View rootView = this.inflater.inflate(R.layout.tab_testing_skyline, null);
+        linearLayoutOpt.addView(rootView);
+        TextView labelHorizonteNroOpt = (TextView) rootView.findViewById(R.id.label_horizonte_nro);
+        if(skylineType.equals(SkylineType.OPTIONAL)) {
+            rootView.setId(indexOptional++);
+            labelHorizonteNroOpt.setText(String.format(getResources().getString(R.string.tst_skyline_optional), index + 1));
+            viewListOptional.add(rootView);
+        } else {
+            rootView.setId(indexFlecked++);
+            labelHorizonteNroOpt.setText(String.format(getResources().getString(R.string.tst_skyline_flecked), index + 1));
+            viewListFlecked.add(rootView);
+        }
+
         final Spinner inputColorHue = (Spinner) rootView.findViewById(R.id.input_color_hue);
         final Spinner inputColorValue = (Spinner) rootView.findViewById(R.id.input_color_value);
         final Spinner inputColorChroma = (Spinner) rootView.findViewById(R.id.input_color_chroma);
         final EditText inputColorPercent = (EditText) rootView.findViewById(R.id.input_color_percent);
-        final Spinner inputMaterialType = (Spinner) rootView.findViewById(R.id.input_material_type);
-        final TextView labelTexture = (TextView) rootView.findViewById(R.id.label_texture);
-        final Spinner inputTexture = (Spinner) rootView.findViewById(R.id.input_texture);
-        final TextView labelTextureOther = (TextView) rootView.findViewById(R.id.label_texture_other);
-        final EditText inputTextureOther = (EditText) rootView.findViewById(R.id.input_texture_other);
-        final Spinner inputTextureModifiers  = (Spinner) rootView.findViewById(R.id.input_texture_modifiers);
-        final EditText inputTexturePercent = (EditText) rootView.findViewById(R.id.input_texture_percent);
-        final TextView labelOrganicType = (TextView) rootView.findViewById(R.id.label_organic_type);
-        final Spinner inputOrganicType  = (Spinner) rootView.findViewById(R.id.input_organic_type);
-        final Spinner inputOrganicType2  = (Spinner) rootView.findViewById(R.id.input_organic_type2);
-        final TextView labelStructure = (TextView) rootView.findViewById(R.id.label_structure);
-        final Spinner inputStructure = (Spinner) rootView.findViewById(R.id.input_structure);
-        final Spinner inputStructureType = (Spinner) rootView.findViewById(R.id.input_structure_type);
-        final Spinner inputStructureType2 = (Spinner) rootView.findViewById(R.id.input_structure_type2);
-        final TextView labelStructureTypeOther = (TextView) rootView.findViewById(R.id.label_structure_type_other);
-        final EditText inputStructureTypeOther = (EditText) rootView.findViewById(R.id.input_structure_type_other);
-        final Spinner inputSkylineType = (Spinner) rootView.findViewById(R.id.input_horizontes);
-        final TextView labelStructureForm = (TextView) rootView.findViewById(R.id.label_structure_form);
-        final Spinner inputStructureForm = (Spinner) rootView.findViewById(R.id.input_structure_form);
-        final TextView labelStructureReasons = (TextView) rootView.findViewById(R.id.label_structure_reasons);
-        final Spinner inputStructureReasons = (Spinner) rootView.findViewById(R.id.input_structure_reasons);
-
-        labelTexture.setVisibility(View.GONE);
-        inputTexture.setVisibility(View.GONE);
-        inputTextureModifiers.setVisibility(View.GONE);
-        labelOrganicType.setVisibility(View.GONE);
-        inputOrganicType.setVisibility(View.GONE);
-        inputOrganicType2.setVisibility(View.GONE);
-        labelTextureOther.setVisibility(View.GONE);
-        inputTextureOther.setVisibility(View.GONE);
-        labelStructure.setVisibility(View.GONE);
-        inputStructure.setVisibility(View.GONE);
-        inputStructureType.setVisibility(View.GONE);
-        inputStructureType2.setVisibility(View.GONE);
-        labelStructureTypeOther.setVisibility(View.GONE);
-        inputStructureTypeOther.setVisibility(View.GONE);
-        labelStructureForm.setVisibility(View.GONE);
-        inputStructureForm.setVisibility(View.GONE);
-        labelStructureReasons.setVisibility(View.GONE);
-        inputStructureReasons.setVisibility(View.GONE);
-
-        DataBaseHelper dataBaseHelper =  new DataBaseHelper(getActivity());
-        List<Domain> listColorHue = dataBaseHelper.getListDomain("Z1 - MATRIZ HUE");
-        List<Domain> listColorValue = dataBaseHelper.getListDomain("Z2 - MATRIZ VALUE");
-        List<Domain> listColorChroma = dataBaseHelper.getListDomain("Z3 - MATRIZ CHROMA");
-        List<Domain> listMaterialType = dataBaseHelper.getListDomain("H4 - TIPO DE MATERIAL");
-        List<Domain> listTexture = dataBaseHelper.getListDomain("T1 - CLASES TEXTURALES DEL SUELO");
-        List<Domain> listTextureModifiers = dataBaseHelper.getListDomain("T2 - MODIFICADORES DE LA TEXTURA");
-        List<Domain> listOrganicType = dataBaseHelper.getListDomain("O1 - CLASES DE MATERIALES ORGÁNICOS");
-        List<Domain> listOrganicType2 = dataBaseHelper.getListDomain("O2 - CLASES POR COMPOSICIÓN DE LOS MATERIALES ORGÁNICOS");
-        List<Domain> listStructure = dataBaseHelper.getListDomain("E1 - TIPOS DE ESTRUCTURA DE SUELO");
-        listStructureType = dataBaseHelper.getListDomain("E2 - CLASES DE ESTRUCTURA DE SUELO POR TAMAÑO");
-        List<Domain> listStructureType2 = dataBaseHelper.getListDomain("E3 - CLASES POR GRADO DE LA ESTRUCTURA");
-        List<Domain> listStructureForms = dataBaseHelper.getListDomain("E4 - FORMAS EN QUE ROMPE");
-        List<Domain> listStructureReasons = dataBaseHelper.getListDomain("E5 - MOTIVO DE LA NO-ESTRUCTURA");
-        List<Domain> listHorizontes = dataBaseHelper.getListDomain("H1 - HORIZONTES MAESTROS");
 
         colorHueAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, listColorHue);
         inputColorHue.setAdapter(colorHueAdapter);
@@ -1085,197 +1424,15 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
         colorChromaAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, listColorChroma);
         inputColorChroma.setAdapter(colorChromaAdapter);
 
-        materialTypeAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, listMaterialType);
-        inputMaterialType.setAdapter(materialTypeAdapter);
+        int spinnerPosition = colorHueAdapter.getPosition(Utils.getDomain(listColorHue, colorHue));
+        inputColorHue.setSelection(spinnerPosition);
+        spinnerPosition = colorValueAdapter.getPosition(Utils.getDomain(listColorValue, colorValue));
+        inputColorValue.setSelection(spinnerPosition);
+        spinnerPosition = colorChromaAdapter.getPosition(Utils.getDomain(listColorChroma, colorChroma));
+        inputColorChroma.setSelection(spinnerPosition);
+        inputColorPercent.setText(colorPercent);
 
-        textureAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, listTexture);
-        inputTexture.setAdapter(textureAdapter);
-
-        textureModifiersAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, listTextureModifiers);
-        inputTextureModifiers.setAdapter(textureModifiersAdapter);
-
-        organicTypeAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, listOrganicType);
-        inputOrganicType.setAdapter(organicTypeAdapter);
-
-        organicTypeAdapter2 = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, listOrganicType2);
-        inputOrganicType2.setAdapter(organicTypeAdapter2);
-
-        structureAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, listStructure);
-        inputStructure.setAdapter(structureAdapter);
-
-        structureTypeAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, listStructureType);
-        inputStructureType.setAdapter(structureTypeAdapter);
-
-        structureTypeAdapter2 = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, listStructureType2);
-        inputStructureType2.setAdapter(structureTypeAdapter2);
-
-        structureFormsAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, listStructureForms);
-        inputStructureForm.setAdapter(structureFormsAdapter);
-
-        structureReasonsAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, listStructureReasons);
-        inputStructureReasons.setAdapter(structureReasonsAdapter);
-
-        skylineTypeAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, listHorizontes);
-        inputSkylineType.setAdapter(skylineTypeAdapter);
-
-        inputMaterialType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> arg0, View arg1,
-                                       int arg2, long arg3) {
-                Domain domain = (Domain) inputMaterialType.getSelectedItem();
-                if(domain!=null && domain.getId()!=null) {
-                    if (domain.getCodigo().equals("2")) {
-                        labelTexture.setVisibility(View.GONE);
-                        inputTexture.setVisibility(View.GONE);
-                        inputTextureModifiers.setVisibility(View.GONE);
-                        labelOrganicType.setVisibility(View.VISIBLE);
-                        inputOrganicType.setVisibility(View.VISIBLE);
-                        inputOrganicType2.setVisibility(View.VISIBLE);
-                        labelStructure.setVisibility(View.GONE);
-                        inputStructure.setVisibility(View.GONE);
-                        inputStructureType.setVisibility(View.GONE);
-                        inputStructureType2.setVisibility(View.GONE);
-                    } else {
-                        labelTexture.setVisibility(View.VISIBLE);
-                        inputTexture.setVisibility(View.VISIBLE);
-                        inputTextureModifiers.setVisibility(View.VISIBLE);
-                        labelOrganicType.setVisibility(View.GONE);
-                        inputOrganicType.setVisibility(View.GONE);
-                        inputOrganicType2.setVisibility(View.GONE);
-                        labelStructure.setVisibility(View.VISIBLE);
-                        inputStructure.setVisibility(View.VISIBLE);
-                        inputStructureType.setVisibility(View.VISIBLE);
-                        inputStructureType2.setVisibility(View.VISIBLE);
-                    }
-                } else {
-                    labelTexture.setVisibility(View.GONE);
-                    inputTexture.setVisibility(View.GONE);
-                    inputTextureModifiers.setVisibility(View.GONE);
-                    labelOrganicType.setVisibility(View.GONE);
-                    inputOrganicType.setVisibility(View.GONE);
-                    inputOrganicType2.setVisibility(View.GONE);
-                    labelStructure.setVisibility(View.GONE);
-                    inputStructure.setVisibility(View.GONE);
-                    inputStructureType.setVisibility(View.GONE);
-                    inputStructureType2.setVisibility(View.GONE);
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> arg0) {
-                // TODO Auto-generated method stub
-            }
-        });
-
-        inputOrganicType2.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> arg0, View arg1,
-                                       int arg2, long arg3) {
-                Domain domain = (Domain) inputOrganicType2.getSelectedItem();
-                if(domain!=null && domain.getId()!=null) {
-                    if (!domain.getCodigo().equals("0")) {
-                        labelTextureOther.setVisibility(View.GONE);
-                        inputTextureOther.setVisibility(View.GONE);
-                    } else {
-                        labelTextureOther.setVisibility(View.VISIBLE);
-                        inputTextureOther.setVisibility(View.VISIBLE);
-                    }
-                } else {
-                    labelTextureOther.setVisibility(View.GONE);
-                    inputTextureOther.setVisibility(View.GONE);
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> arg0) {
-                // TODO Auto-generated method stub
-            }
-        });
-
-        inputStructure.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> arg0, View arg1,
-                                       int arg2, long arg3) {
-                Domain domain = (Domain) inputStructure.getSelectedItem();
-                if(domain!=null && domain.getId()!=null) {
-
-                    structureTypeAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, listStructureType);
-                    inputStructureType.setAdapter(structureTypeAdapter);
-
-                    switch(domain.getCodigo()){
-                        case "PR":
-                        case "BO":
-                            labelStructureForm.setVisibility(View.VISIBLE);
-                            inputStructureForm.setVisibility(View.VISIBLE);
-                            labelStructureReasons.setVisibility(View.GONE);
-                            inputStructureReasons.setVisibility(View.GONE);
-                            break;
-                        case "SE":
-                            labelStructureForm.setVisibility(View.GONE);
-                            inputStructureForm.setVisibility(View.GONE);
-                            labelStructureReasons.setVisibility(View.VISIBLE);
-                            inputStructureReasons.setVisibility(View.VISIBLE);
-                            break;
-                        case "CU":
-                            List<Domain> listStructureTypeTemp = new LinkedList<>();
-                            for(Domain row:listStructureType){
-                                if(row.getValor()==null) {
-                                    listStructureTypeTemp.add(row);
-                                } else if(Integer.valueOf(row.getValor()) >= 4 && Integer.valueOf(row.getValor()) <= 8) {
-                                    listStructureTypeTemp.add(row);
-                                }
-                            }
-                            structureTypeAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, listStructureTypeTemp);
-                            inputStructureType.setAdapter(structureTypeAdapter);
-
-                            labelStructureForm.setVisibility(View.GONE);
-                            inputStructureForm.setVisibility(View.GONE);
-                            labelStructureReasons.setVisibility(View.GONE);
-                            inputStructureReasons.setVisibility(View.GONE);
-                            // TODO Auto-generated method stub
-                            break;
-                        default :
-                            labelStructureForm.setVisibility(View.GONE);
-                            inputStructureForm.setVisibility(View.GONE);
-                            labelStructureReasons.setVisibility(View.GONE);
-                            inputStructureReasons.setVisibility(View.GONE);
-                    }
-                } else {
-                    labelStructureTypeOther.setVisibility(View.GONE);
-                    inputStructureTypeOther.setVisibility(View.GONE);
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> arg0) {
-                // TODO Auto-generated method stub
-            }
-        });
-
-        inputStructureType2.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> arg0, View arg1,
-                                       int arg2, long arg3) {
-                Domain domain = (Domain) inputStructureType2.getSelectedItem();
-                if(domain!=null && domain.getId()!=null) {
-                    if (!domain.getCodigo().equals("0")) {
-                        labelStructureTypeOther.setVisibility(View.GONE);
-                        inputStructureTypeOther.setVisibility(View.GONE);
-                    } else {
-                        labelStructureTypeOther.setVisibility(View.VISIBLE);
-                        inputStructureTypeOther.setVisibility(View.VISIBLE);
-                    }
-                } else {
-                    labelStructureTypeOther.setVisibility(View.GONE);
-                    inputStructureTypeOther.setVisibility(View.GONE);
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> arg0) {
-                // TODO Auto-generated method stub
-            }
-        });
+        return rootView;
     }
 
     public void takePictureAction(Intent data) {
@@ -1290,7 +1447,9 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
 
         Cursor cursor = getActivity().getContentResolver().query(selectedImage, filePathColumn,
                 null, null, null);
-        cursor.moveToFirst();
+        if (cursor != null) {
+            cursor.moveToFirst();
+        }
 
         int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
         String picturePath = cursor.getString(columnIndex);
@@ -1317,6 +1476,101 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
         int sh = scrollviewProfile.getHeight();
         int delta = bottom + (sy + sh);
         scrollviewProfile.scrollTo(0, delta);
+    }
+
+    public void editForm(){
+        if(formComprobacion == null){
+            formComprobacion = new FormComprobacion();
+            inputNroObservacion.setText(dataBaseHelper.getNroObservacion());
+            inputFecha.setText(Utils.dateToString(new Date(), "yyyy-MM-dd HH:mm:ss"));
+            labelHorizonteNro.setText(String.format(getResources().getString(R.string.tst_horizonte_nro), (index + 1)));
+            mode = Modes.NEW;
+        } else {
+            inputNroObservacion.setText(formComprobacion.getNroObservacion());
+            inputFecha.setText(formComprobacion.getFechaHora());
+            int spinnerPosition = reconocedorAdapter.getPosition(Utils.getDomain(listReconocedor, formComprobacion.getReconocedor()));
+            inputReconocedor.setSelection(spinnerPosition);
+            spinnerPosition = epocaAdapter.getPosition(Utils.getDomain(listEpoca, formComprobacion.getEpocaClimatica()));
+            inputEpoca.setSelection(spinnerPosition);
+            inputEpocaDias.setText(formComprobacion.getDiasLluvia());
+            spinnerPosition = longitudAdapter.getPosition(Utils.getDomain(listLongitud, formComprobacion.getPendienteLongitud()));
+            inputLongitud.setSelection(spinnerPosition);
+            spinnerPosition = erosionAdapter.getPosition(Utils.getDomain(listErosion, formComprobacion.getGradoErosion()));
+            inputErosion.setSelection(spinnerPosition);
+            spinnerPosition = movimientoAdapter.getPosition(Utils.getDomain(listMovimiento, formComprobacion.getTipoMovimiento()));
+            inputMovimiento.setSelection(spinnerPosition);
+            spinnerPosition = anegamientoAdapter.getPosition(Utils.getDomain(listAnegamiento, formComprobacion.getAnegamiento()));
+            inputAnegamiento.setSelection(spinnerPosition);
+            spinnerPosition = frecuenciaAdapter.getPosition(Utils.getDomain(listFrecuencia, formComprobacion.getFrecuencia()));
+            inputFrecuencia.setSelection(spinnerPosition);
+            spinnerPosition = duracionAdapter.getPosition(Utils.getDomain(listDuracion, formComprobacion.getDuracion()));
+            inputDuracion.setSelection(spinnerPosition);
+            spinnerPosition = pedegrosidadAdapter.getPosition(Utils.getDomain(listPedegrosidad, formComprobacion.getPedregosidad()));
+            inputPedegrosidad.setSelection(spinnerPosition);
+            spinnerPosition = afloramientoAdapter.getPosition(Utils.getDomain(listAfloramiento, formComprobacion.getAfloramiento()));
+            inputAfloramiento.setSelection(spinnerPosition);
+            spinnerPosition = soilFragmentAdapter.getPosition(Utils.getDomain(listSoilFragment, formComprobacion.getFragmentoSuelo()));
+            inputFragmentoSuelo.setSelection(spinnerPosition);
+            spinnerPosition = naturalDrainageAdapter.getPosition(Utils.getDomain(listNaturalDrainage, formComprobacion.getDrenajeNatural()));
+            inputDrenajeNatural.setSelection(spinnerPosition);
+            spinnerPosition = effectiveDepthAdapter.getPosition(Utils.getDomain(listEffectiveDepth, formComprobacion.getProfundidadEfectiva()));
+            inputProfundidadEfectiva.setSelection(spinnerPosition);
+            spinnerPosition = epidedonesAdapter.getPosition(Utils.getDomain(listEpidedones, formComprobacion.getEpidedones()));
+            inputEpidedones.setSelection(spinnerPosition);
+            spinnerPosition = endopedonesAdapter.getPosition(Utils.getDomain(listEndopedones, formComprobacion.getEndopedones()));
+            inputEndopedones.setSelection(spinnerPosition);
+
+            //formComprobacionFoto = dataBaseHelper.getFormComprobacionFoto(formComprobacion.getId());
+            //Bitmap bitmap = DBBitmapUtility.getImage(formComprobacionFoto.getFoto());
+            //imgViewPic.setImageBitmap(bitmap);
+
+            formComprobacionHorizonteList = dataBaseHelper.getListFormComprobacionHorizonte(formComprobacion.getId());
+            if (formComprobacionHorizonteList != null && !formComprobacionHorizonteList.isEmpty()) {
+                FormComprobacionHorizonteAdapter skylineAdapter = new FormComprobacionHorizonteAdapter(getActivity(),
+                        getFragmentManager(), R.layout.list_skyline_item, formComprobacionHorizonteList);
+                listViewSkyline.setItemsCanFocus(false);
+                listViewSkyline.setAdapter(skylineAdapter);
+                index = 0;
+                getValues();
+            }
+
+            int i = 0;
+            for (FormComprobacionHorizonte row : formComprobacionHorizonteList) {
+                List<View> viewListOptional = new LinkedList<>();
+                List<View> viewListFlecked = new LinkedList<>();
+
+                List<FormComprobacionHorizonteOpt> listFormComprobacionHorizonteOptional =
+                        dataBaseHelper.getListFormComprobacionHorizonteOptional(row.getId());
+                int j = 0;
+                for(FormComprobacionHorizonteOpt opt:listFormComprobacionHorizonteOptional) {
+                    View view = addOptionalView(SkylineType.OPTIONAL, j, opt.getColorHue(),
+                            opt.getColorValue(), opt.getColorChroma(), String.valueOf(opt.getColorPorcentaje()));
+                    viewListOptional.add(view);
+                    j++;
+                }
+
+                List<FormComprobacionHorizonteOpt> listFormComprobacionHorizonteFlecked =
+                        dataBaseHelper.getListFormComprobacionHorizonteFlecked(row.getId());
+                j = 0;
+                for(FormComprobacionHorizonteOpt opt:listFormComprobacionHorizonteFlecked){
+                    View view = addOptionalView(SkylineType.OPTIONAL, j, opt.getColorHue(),
+                            opt.getColorValue(), opt.getColorChroma(), String.valueOf(opt.getColorPorcentaje()));
+                    viewListFlecked.add(view);
+                    j++;
+                }
+
+                OptionalEntity optionalEntity = new OptionalEntity();
+                optionalEntity.setIndex(i);
+                optionalEntity.setViewListOptional(viewListOptional);
+                optionalEntity.setViewListFlecked(viewListFlecked);
+                listOptionalEntity.add(optionalEntity);
+                i++;
+            }
+
+            nextFlag = false;
+            nextFlagMaterialType = false;
+            nextFlagEstructuraTipo = false;
+        }
     }
 
 }

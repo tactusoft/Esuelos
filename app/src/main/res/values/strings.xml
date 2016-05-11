@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">ESuelos</string>
+    <string name="app_name">ES Collector</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -77,7 +77,7 @@
     <string name="tst_horizonte_nro">Horizonte Nro. %d</string>
     <string name="tst_skyline_optional">Horizonte Opcional Nro. %d</string>
     <string name="tst_skyline_flecked">Horizonte Moteado Nro. %d</string>
-    <string name="tst_skyline_type">Horizonte Maestros *</string>
+    <string name="tst_skyline_type">Horizontes *</string>
     <string name="tst_organic_type">Textura *</string>
     <string name="tst_structure_form">Formas en que Rompe *</string>
     <string name="tst_structure_reasons">Motivo de la no estructura *</string>

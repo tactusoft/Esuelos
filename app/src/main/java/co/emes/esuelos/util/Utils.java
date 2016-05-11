@@ -5,7 +5,10 @@ import com.esri.core.geometry.SpatialReference;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
+
+import co.emes.esuelos.model.Domain;
 
 /**
  * Created by csarmiento on 7/04/16.
@@ -102,6 +105,17 @@ public class Utils {
             case 3:
                 result = "ANULADO";
                 break;
+        }
+        return result;
+    }
+
+    public static Domain getDomain(List<Domain> list, Integer id) {
+        Domain result = new Domain();
+        for(Domain row:list){
+            if(row.getId()!=null && id!=null && row.getId().intValue() == id.intValue()) {
+                result = row;
+                break;
+            }
         }
         return result;
     }

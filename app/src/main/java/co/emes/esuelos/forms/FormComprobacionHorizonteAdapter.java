@@ -18,19 +18,18 @@ import java.util.List;
 
 import co.emes.esuelos.R;
 import co.emes.esuelos.layout.FragmentTesting;
-import co.emes.esuelos.model.FormComprobacion;
-import co.emes.esuelos.util.Utils;
+import co.emes.esuelos.model.FormComprobacionHorizonte;
 
 /**
  * Created by csarmiento on 25/04/16.
  */
-public class FormTestingAdapter extends ArrayAdapter<FormComprobacion> {
+public class FormComprobacionHorizonteAdapter extends ArrayAdapter<FormComprobacionHorizonte> {
     Context context;
     int layoutResourceId;
-    List<FormComprobacion> data = new LinkedList<>();
+    List<FormComprobacionHorizonte> data = new LinkedList<>();
     FragmentManager fragmentManager;
 
-    public FormTestingAdapter(Context context, FragmentManager fragmentManager, int layoutResourceId, List<FormComprobacion> data) {
+    public FormComprobacionHorizonteAdapter(Context context, FragmentManager fragmentManager, int layoutResourceId, List<FormComprobacionHorizonte> data) {
         super(context, layoutResourceId, data);
         this.layoutResourceId = layoutResourceId;
         this.context = context;
@@ -60,15 +59,16 @@ public class FormTestingAdapter extends ArrayAdapter<FormComprobacion> {
             holder = (UserHolder) row.getTag();
         }
 
-        FormComprobacion object = data.get(position);
-        holder.inputDepth1.setText(object.getNroObservacion());
-        holder.inputColor1.setText(object.getFechaHora());
-        holder.inputTexture1.setText(Utils.getEstado(object.getEstado()));
+        FormComprobacionHorizonte object = data.get(position);
+        holder.inputDepth1.setText(String.valueOf(object.getProfundidad()));
+        holder.inputColor1.setText(object.getDescColorHue() + " - " + object.getDescColorValue() + " - " +
+                object.getDescColorChroma());
+        holder.inputTexture1.setText(object.getDescTipoMaterial());
         holder.btnEditFormComprobacion.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //FragmentTesting fragmentTesting = (FragmentTesting)fragmentManager.findFragmentByTag("FragmentTesting");
-                //fragmentTesting.editItemFormComprobacion(position);
+                FragmentTesting fragmentTesting = (FragmentTesting)fragmentManager.findFragmentByTag("FragmentTesting");
+                fragmentTesting.editFormComprobacionHorizonte(position);
             }
         });
 
@@ -93,10 +93,10 @@ public class FormTestingAdapter extends ArrayAdapter<FormComprobacion> {
         alert.setButton(DialogInterface.BUTTON_POSITIVE, context.getResources().getString(R.string.btn_yes),
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        //data.remove(position);
-                        //notifyDataSetChanged();
-                        //FragmentTesting fragmentTesting = (FragmentTesting)fragmentManager.findFragmentByTag("FragmentTesting");
-                        //fragmentTesting.removeItemFormComprobacion();
+                        data.remove(position);
+                        notifyDataSetChanged();
+                        FragmentTesting fragmentTesting = (FragmentTesting)fragmentManager.findFragmentByTag("FragmentTesting");
+                        fragmentTesting.removeFormComprobacionHorizonte();
                     }
                 });
         alert.setButton(DialogInterface.BUTTON_NEGATIVE, context.getResources().getString(R.string.btn_no),

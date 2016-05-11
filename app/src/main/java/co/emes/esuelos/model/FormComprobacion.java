@@ -9,7 +9,7 @@ public class FormComprobacion implements Serializable {
 
     Integer id;
     String nroObservacion;
-    String reconocedor;
+    Integer reconocedor;
     String fechaHora;
     Double longitud;
     Double latitud;
@@ -34,7 +34,7 @@ public class FormComprobacion implements Serializable {
     public FormComprobacion() {
     }
 
-    public FormComprobacion(Integer id, String nroObservacion, String reconocedor, String fechaHora, Double longitud,
+    public FormComprobacion(Integer id, String nroObservacion, Integer reconocedor, String fechaHora, Double longitud,
                             Double latitud, Double altitud, Integer epocaClimatica, String diasLluvia, Integer pendienteLongitud,
                             Integer gradoErosion, Integer tipoMovimiento, Integer anegamiento, Integer frecuencia,
                             Integer duracion, Integer pedregosidad, Integer afloramiento, Integer fragmentoSuelo,
@@ -81,11 +81,11 @@ public class FormComprobacion implements Serializable {
         this.nroObservacion = nroObservacion;
     }
 
-    public String getReconocedor() {
+    public Integer getReconocedor() {
         return reconocedor;
     }
 
-    public void setReconocedor(String reconocedor) {
+    public void setReconocedor(Integer reconocedor) {
         this.reconocedor = reconocedor;
     }
 

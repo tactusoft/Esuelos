@@ -10,7 +10,7 @@ import android.widget.ListView;
 import java.util.List;
 
 import co.emes.esuelos.R;
-import co.emes.esuelos.forms.FormTestingAdapter;
+import co.emes.esuelos.forms.FormComprobacionAdapter;
 import co.emes.esuelos.model.FormComprobacion;
 import co.emes.esuelos.util.DataBaseHelper;
 
@@ -32,7 +32,7 @@ public class TableFragment extends Fragment {
         DataBaseHelper dataBaseHelper = new DataBaseHelper(getActivity());
         List<FormComprobacion> testingList = dataBaseHelper.getListFormComprobacion();
 
-        FormTestingAdapter testingAdapter = new FormTestingAdapter(getActivity(), getFragmentManager(),
+        FormComprobacionAdapter testingAdapter = new FormComprobacionAdapter(getActivity(), getFragmentManager(),
                 R.layout.list_skyline_item, testingList);
         listViewTesting.setItemsCanFocus(false);
         listViewTesting.setAdapter(testingAdapter);

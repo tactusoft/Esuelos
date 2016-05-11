@@ -19,6 +19,10 @@ public class Domain implements Serializable {
     public Domain() {
     }
 
+    public Domain(Integer id) {
+        this.id = id;
+    }
+
     public Domain(Integer id, String codigo, String valor, String codMinisterio, String descripcion,
                   String periodo, Integer orden, String grupo) {
         this.id = id;

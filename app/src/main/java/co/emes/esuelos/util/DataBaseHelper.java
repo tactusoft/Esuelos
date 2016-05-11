@@ -20,6 +20,7 @@ import co.emes.esuelos.model.Domain;
 import co.emes.esuelos.model.FormComprobacion;
 import co.emes.esuelos.model.FormComprobacionFoto;
 import co.emes.esuelos.model.FormComprobacionHorizonte;
+import co.emes.esuelos.model.FormComprobacionHorizonteOpt;
 import co.emes.esuelos.model.Research;
 
 /**
@@ -257,11 +258,14 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             row.put("profundidad_efectiva", entity.getProfundidadEfectiva());
             row.put("epidedones", entity.getEpidedones());
             row.put("endopedones", entity.getEndopedones());
-            row.put("estado", 1);
+            row.put("estado", entity.getEstado());
             id = myDataBase.insert("form_comprobacion", null, row);
             if(id == -1) {
                 myDataBase.update("form_comprobacion", row,
-                        "where nro_observacion = ?", new String[] { entity.getNroObservacion() });
+                        "nro_observacion = ?", new String[] { entity.getNroObservacion() });
+                id = Long.valueOf(entity.getId());
+            } else {
+                entity.setId(id.intValue());
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -282,7 +286,10 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             id = myDataBase.insert("form_comprobacion_foto", null, row);
             if(id == -1) {
                 myDataBase.update("form_comprobacion_foto", row,
-                        "where id_form_comprobacion = " + entity.getIdFormComprobacion(), null);
+                        "id_form_comprobacion = " + entity.getIdFormComprobacion(), null);
+                id = Long.valueOf(entity.getId());
+            } else {
+                entity.setId(id.intValue());
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -319,10 +326,63 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             row.put("horizonte_clase", entity.getHorizonteClase());
             row.put("horizonte_caracterisitica", entity.getHorizonteCaracterisitica());
             row.put("textura_otro", entity.getTexturaOtro());
-            row.put("estructura_otra", 1);
+            row.put("estructura_otra", entity.getEstructuraOtra());
             id = myDataBase.insert("form_comprobacion_horizonte", null, row);
             if(id == -1) {
-                myDataBase.update("form_comprobacion_horizonte", row, "where id = " + entity.getId(), null);
+                myDataBase.update("form_comprobacion_horizonte", row, "id = " + entity.getId(), null);
+                id = Long.valueOf(entity.getId());
+            } else {
+                entity.setId(id.intValue());
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            close();
+        }
+        return id;
+    }
+
+    public Long insertFormComprobacionHorizonteOptional(FormComprobacionHorizonteOpt entity) {
+        return insertFormComprobacionHorizonteOpt("form_comprobacion_opcional", entity);
+    }
+
+    public Long insertFormComprobacionHorizonteFlecked(FormComprobacionHorizonteOpt entity) {
+        return insertFormComprobacionHorizonteOpt("form_comprobacion_moteado", entity);
+    }
+
+    private Long insertFormComprobacionHorizonteOpt(String table, FormComprobacionHorizonteOpt entity) {
+        Long id = null;
+        try {
+            openDataBase();
+            ContentValues row = new ContentValues();
+            row.put("id", entity.getId());
+            row.put("id_form_compr_horiz", entity.getIdFormComprobacionHorz());
+            row.put("numero_horizonte", entity.getNumeroHorizonte());
+            row.put("profundidad", entity.getProfundidad());
+            row.put("color_hue", entity.getColorHue());
+            row.put("color_value", entity.getColorValue());
+            row.put("color_chroma", entity.getColorChroma());
+            row.put("color_porcentaje", entity.getColorPorcentaje());
+            row.put("tipo_material", entity.getTipoMaterial());
+            row.put("clase_textural", entity.getClaseTextural());
+            row.put("modificador_textura", entity.getModificadorTextura());
+            row.put("clase_organico", entity.getClaseOrganico());
+            row.put("clase_composicion", entity.getClaseComposicion());
+            row.put("textura_porcentaje", entity.getTexturaPorcentaje());
+            row.put("estructura_tipo", entity.getEstructuraTipo());
+            row.put("estructura_clase", entity.getEstructuraClase());
+            row.put("estructura_grado", entity.getEstructuraGrado());
+            row.put("forma_rompe", entity.getFormaRompe());
+            row.put("motivo_no_estructura", entity.getMotivoNoEstructura());
+            row.put("horizonte_clase", entity.getHorizonteClase());
+            row.put("horizonte_caracterisitica", entity.getHorizonteCaracterisitica());
+            row.put("textura_otro", entity.getTexturaOtro());
+            row.put("estructura_otra", entity.getEstructuraOtra());
+            id = myDataBase.insert(table, null, row);
+            if(id == -1) {
+                myDataBase.update(table, row, "id = " + entity.getId(), null);
+            } else {
+                entity.setId(id.intValue());
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -346,7 +406,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                 FormComprobacion row = new FormComprobacion();
                 row.setId(cur.getInt(0));
                 row.setNroObservacion(cur.getString(1));
-                row.setReconocedor(cur.getString(2));
+                row.setReconocedor(cur.getInt(2));
                 row.setFechaHora(cur.getString(3));
                 row.setLongitud(cur.getDouble(4));
                 row.setLatitud(cur.getDouble(5));
@@ -367,6 +427,167 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                 row.setEpidedones(cur.getInt(20));
                 row.setEndopedones(cur.getInt(21));
                 row.setEstado(cur.getInt(22));
+                list.add(row);
+            }
+            cur.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            close();
+        }
+        return list;
+    }
+
+    public FormComprobacionFoto getFormComprobacionFoto(Integer idFormComprobacion) {
+        FormComprobacionFoto result = new FormComprobacionFoto();
+        try {
+            openDataBase();
+            Cursor cur = myDataBase.rawQuery("SELECT id, id_form_comprobacion, foto "+
+                    "FROM form_comprobacion_foto WHERE id_form_comprobacion = ?",
+                    new String[]{String.valueOf(idFormComprobacion)});
+            if(cur.moveToNext()){
+                result.setId(cur.getInt(0));
+                result.setIdFormComprobacion(cur.getInt(1));
+                result.setFoto(cur.getBlob(2));
+            }
+        }catch(SQLException e) {
+            e.printStackTrace();;
+        } finally {
+            close();
+        }
+
+        return result;
+    }
+
+    public List<FormComprobacionHorizonte> getListFormComprobacionHorizonte(Integer idFormComprobacion) {
+        List<FormComprobacionHorizonte> list = new LinkedList<>();
+        try {
+            openDataBase();
+            Cursor cur = myDataBase.rawQuery("SELECT id,\n" +
+                    "id_form_comprobacion,\n" +
+                    "numero_horizonte,\n" +
+                    "profundidad,\n" +
+                    "color_hue,\n" +
+                    "color_value,\n" +
+                    "color_chroma,\n" +
+                    "color_porcentaje,\n" +
+                    "tipo_material,\n" +
+                    "clase_textural,\n" +
+                    "modificador_textura,\n" +
+                    "clase_organico,\n" +
+                    "clase_composicion,\n" +
+                    "textura_porcentaje,\n" +
+                    "estructura_tipo,\n" +
+                    "estructura_clase,\n" +
+                    "estructura_grado,\n" +
+                    "forma_rompe,\n" +
+                    "motivo_no_estructura,\n" +
+                    "horizonte_clase,\n" +
+                    "horizonte_caracterisitica,\n" +
+                    "textura_otro,\n" +
+                    "estructura_otra " +
+                    "FROM form_comprobacion_horizonte\n" +
+                    "WHERE id_form_comprobacion = ?\n" +
+                    "ORDER BY numero_horizonte", new String[] {idFormComprobacion.toString()});
+            while (cur.moveToNext()) {
+                FormComprobacionHorizonte row = new FormComprobacionHorizonte();
+                row.setId(cur.getInt(0));
+                row.setIdFormComprobacion(cur.getInt(1));
+                row.setNumeroHorizonte(cur.getInt(2));
+                row.setProfundidad(cur.getInt(3));
+                row.setColorHue(cur.getInt(4));
+                row.setColorValue(cur.getInt(5));
+                row.setColorChroma(cur.getInt(6));
+                row.setColorPorcentaje(cur.getInt(7));
+                row.setTipoMaterial(cur.getInt(8));
+                row.setClaseTextural(cur.getInt(9));
+                row.setModificadorTextura(cur.getInt(10));
+                row.setClaseOrganico(cur.getInt(11));
+                row.setClaseComposicion(cur.getInt(12));
+                row.setTexturaPorcentaje(cur.getInt(13));
+                row.setEstructuraTipo(cur.getInt(14));
+                row.setEstructuraClase(cur.getInt(15));
+                row.setEstructuraGrado(cur.getInt(16));
+                row.setFormaRompe(cur.getInt(17));
+                row.setMotivoNoEstructura(cur.getInt(18));
+                row.setHorizonteClase(cur.getInt(19));
+                row.setHorizonteCaracterisitica(cur.getInt(20));
+                row.setTexturaOtro(cur.getString(21));
+                row.setEstructuraOtra(cur.getString(22));
+                list.add(row);
+            }
+            cur.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            close();
+        }
+        return list;
+    }
+
+    public List<FormComprobacionHorizonteOpt> getListFormComprobacionHorizonteOptional(Integer idFormComprobacionHorz) {
+        return getListFormComprobacionHorizonteOpt("form_comprobacion_opcional", idFormComprobacionHorz);
+    }
+
+    public List<FormComprobacionHorizonteOpt> getListFormComprobacionHorizonteFlecked(Integer idFormComprobacionHorz) {
+        return getListFormComprobacionHorizonteOpt("form_comprobacion_moteado", idFormComprobacionHorz);
+    }
+
+    private List<FormComprobacionHorizonteOpt> getListFormComprobacionHorizonteOpt(String table, Integer idFormComprobacion) {
+        List<FormComprobacionHorizonteOpt> list = new LinkedList<>();
+        try {
+            openDataBase();
+            Cursor cur = myDataBase.rawQuery("SELECT id,\n" +
+                    "id_form_compr_horiz,\n" +
+                    "numero_horizonte,\n" +
+                    "profundidad,\n" +
+                    "color_hue,\n" +
+                    "color_value,\n" +
+                    "color_chroma,\n" +
+                    "color_porcentaje,\n" +
+                    "tipo_material,\n" +
+                    "clase_textural,\n" +
+                    "modificador_textura,\n" +
+                    "clase_organico,\n" +
+                    "clase_composicion,\n" +
+                    "textura_porcentaje,\n" +
+                    "estructura_tipo,\n" +
+                    "estructura_clase,\n" +
+                    "estructura_grado,\n" +
+                    "forma_rompe,\n" +
+                    "motivo_no_estructura,\n" +
+                    "horizonte_clase,\n" +
+                    "horizonte_caracterisitica,\n" +
+                    "textura_otro,\n" +
+                    "estructura_otra " +
+                    "FROM " + table + "\n" +
+                    "WHERE id_form_compr_horiz = ?\n" +
+                    "ORDER BY numero_horizonte", new String[] {idFormComprobacion.toString()});
+            while (cur.moveToNext()) {
+                FormComprobacionHorizonteOpt row = new FormComprobacionHorizonteOpt();
+                row.setId(cur.getInt(0));
+                row.setIdFormComprobacionHorz(cur.getInt(1));
+                row.setNumeroHorizonte(cur.getInt(2));
+                row.setProfundidad(cur.getInt(3));
+                row.setColorHue(cur.getInt(4));
+                row.setColorValue(cur.getInt(5));
+                row.setColorChroma(cur.getInt(6));
+                row.setColorPorcentaje(cur.getInt(7));
+                row.setTipoMaterial(cur.getInt(8));
+                row.setClaseTextural(cur.getInt(9));
+                row.setModificadorTextura(cur.getInt(10));
+                row.setClaseOrganico(cur.getInt(11));
+                row.setClaseComposicion(cur.getInt(12));
+                row.setTexturaPorcentaje(cur.getInt(13));
+                row.setEstructuraTipo(cur.getInt(14));
+                row.setEstructuraClase(cur.getInt(15));
+                row.setEstructuraGrado(cur.getInt(16));
+                row.setFormaRompe(cur.getInt(17));
+                row.setMotivoNoEstructura(cur.getInt(18));
+                row.setHorizonteClase(cur.getInt(19));
+                row.setHorizonteCaracterisitica(cur.getInt(20));
+                row.setTexturaOtro(cur.getString(21));
+                row.setEstructuraOtra(cur.getString(22));
                 list.add(row);
             }
             cur.close();

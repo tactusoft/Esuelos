@@ -2,6 +2,7 @@ package co.emes.esuelos.forms;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.support.v4.app.FragmentManager;
@@ -18,18 +19,20 @@ import java.util.List;
 
 import co.emes.esuelos.R;
 import co.emes.esuelos.layout.FragmentTesting;
-import co.emes.esuelos.model.Skyline;
+import co.emes.esuelos.model.FormComprobacion;
+import co.emes.esuelos.util.Utils;
 
 /**
  * Created by csarmiento on 25/04/16.
  */
-public class SkylineAdapter extends ArrayAdapter<Skyline> {
+public class FormComprobacionAdapter extends ArrayAdapter<FormComprobacion> {
     Context context;
     int layoutResourceId;
-    List<Skyline> data = new LinkedList<>();
+    List<FormComprobacion> data = new LinkedList<>();
     FragmentManager fragmentManager;
 
-    public SkylineAdapter(Context context, FragmentManager fragmentManager, int layoutResourceId, List<Skyline> data) {
+    public FormComprobacionAdapter(Context context, FragmentManager fragmentManager,
+                                   int layoutResourceId, List<FormComprobacion> data) {
         super(context, layoutResourceId, data);
         this.layoutResourceId = layoutResourceId;
         this.context = context;
@@ -48,31 +51,29 @@ public class SkylineAdapter extends ArrayAdapter<Skyline> {
             holder.inputDepth1 = (TextView) row.findViewById(R.id.input_depth_1);
             holder.inputColor1 = (TextView) row.findViewById(R.id.input_color_1);
             holder.inputTexture1 = (TextView) row.findViewById(R.id.input_texture_1);
-            holder.btnEditSkyline = (Button) row.findViewById(R.id.btn_edit_skyline);
-            holder.btnDeleteSkyline = (Button) row.findViewById(R.id.btn_delete_skyline);
+            holder.btnEditFormComprobacion = (Button) row.findViewById(R.id.btn_edit_skyline);
+            holder.btnDeleteFormComprobacion = (Button) row.findViewById(R.id.btn_delete_skyline);
 
-            holder.btnEditSkyline.setTransformationMethod(null);
-            holder.btnDeleteSkyline.setTransformationMethod(null);
+            holder.btnEditFormComprobacion.setTransformationMethod(null);
+            holder.btnDeleteFormComprobacion.setTransformationMethod(null);
 
             row.setTag(holder);
         } else {
             holder = (UserHolder) row.getTag();
         }
 
-        Skyline object = data.get(position);
-        holder.inputDepth1.setText(object.getDepth().toString());
-        holder.inputColor1.setText(object.getHueColor().getDescripcion() + " - " + object.getValueColor() + " - " +
-        object.getChromaColor());
-        holder.inputTexture1.setText(object.getTexture().getDescripcion());
-        holder.btnEditSkyline.setOnClickListener(new View.OnClickListener() {
+        final FormComprobacion object = data.get(position);
+        holder.inputDepth1.setText(object.getNroObservacion());
+        holder.inputColor1.setText(object.getFechaHora());
+        holder.inputTexture1.setText(Utils.getEstado(object.getEstado()));
+        holder.btnEditFormComprobacion.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                FragmentTesting fragmentTesting = (FragmentTesting)fragmentManager.findFragmentByTag("FragmentTesting");
-                fragmentTesting.editItemSkyline(position);
+                edit(object);
             }
         });
 
-        holder.btnDeleteSkyline.setOnClickListener(new View.OnClickListener() {
+        holder.btnDeleteFormComprobacion.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 confirmDelete(position);
@@ -81,11 +82,17 @@ public class SkylineAdapter extends ArrayAdapter<Skyline> {
         return row;
     }
 
+    private void edit(final FormComprobacion object){
+        FragmentTesting fragmentTesting =  FragmentTesting.newInstance(object);
+        fragmentTesting.show(fragmentManager, FragmentTesting.TAG);
+        //fragmentTesting.editForm(object);
+    }
+
     private void confirmDelete(final int position){
         final AlertDialog alert = new AlertDialog.Builder(
                 new ContextThemeWrapper(context,android.R.style.Theme_Dialog))
                 .create();
-        alert.setTitle(context.getResources().getString(R.string.tst_title));
+        alert.setTitle(context.getResources().getString(R.string.ndi_summary));
         alert.setMessage(context.getResources().getString(R.string.msg_confirm));
         alert.setIcon(android.R.drawable.ic_dialog_alert);
         alert.setCancelable(false);
@@ -93,10 +100,10 @@ public class SkylineAdapter extends ArrayAdapter<Skyline> {
         alert.setButton(DialogInterface.BUTTON_POSITIVE, context.getResources().getString(R.string.btn_yes),
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        data.remove(position);
-                        notifyDataSetChanged();
-                        FragmentTesting fragmentTesting = (FragmentTesting)fragmentManager.findFragmentByTag("FragmentTesting");
-                        fragmentTesting.removeItemSkyline();
+                        //data.remove(position);
+                        //notifyDataSetChanged();
+                        //FragmentTesting fragmentTesting = (FragmentTesting)fragmentManager.findFragmentByTag("FragmentTesting");
+                        //fragmentTesting.removeItemFormComprobacion();
                     }
                 });
         alert.setButton(DialogInterface.BUTTON_NEGATIVE, context.getResources().getString(R.string.btn_no),
@@ -112,8 +119,8 @@ public class SkylineAdapter extends ArrayAdapter<Skyline> {
         TextView inputDepth1;
         TextView inputColor1;
         TextView inputTexture1;
-        Button btnEditSkyline;
-        Button btnDeleteSkyline;
+        Button btnEditFormComprobacion;
+        Button btnDeleteFormComprobacion;
     }
 
 }

@@ -334,8 +334,8 @@ public class MapFragment extends Fragment {
                         int selectedPosition = ((AlertDialog)dialog).getListView().getCheckedItemPosition();
                         switch (selectedPosition) {
                             case 0:
-                                new FragmentFieldNote().show(getFragmentManager(),
-                                        FragmentFieldNote.TAG);
+                                /*new FragmentFieldNote().show(getFragmentManager(),
+                                        FragmentFieldNote.TAG);*/
                                 break;
                             case 1:
                                 break;

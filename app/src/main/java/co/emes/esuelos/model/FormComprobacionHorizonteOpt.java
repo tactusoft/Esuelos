@@ -5,10 +5,10 @@ import java.io.Serializable;
 /**
  * Created by csarmiento on 6/05/16.
  */
-public class FormComprobacionHorizonte implements Serializable {
+public class FormComprobacionHorizonteOpt implements Serializable {
 
     Integer id;
-    Integer idFormComprobacion;
+    Integer idFormComprobacionHorz;
     Integer numeroHorizonte;
     Integer profundidad;
     Integer colorHue;
@@ -35,17 +35,17 @@ public class FormComprobacionHorizonte implements Serializable {
     String texturaOtro;
     String estructuraOtra;
 
-    public FormComprobacionHorizonte() {
+    public FormComprobacionHorizonteOpt() {
     }
 
-    public FormComprobacionHorizonte(Integer id, Integer idFormComprobacion, Integer numeroHorizonte, Integer profundidad,
-                                     Integer colorHue, Integer colorValue, Integer colorChroma, Integer colorPorcentaje,
-                                     Integer tipoMaterial, Integer claseTextural, Integer modificadorTextura, Integer claseOrganico,
-                                     Integer claseComposicion, Integer texturaPorcentaje, Integer estructuraTipo, Integer estructuraClase,
-                                     Integer estructuraGrado, Integer formaRompe, Integer motivoNoEstructura, Integer horizonteClase,
-                                     Integer horizonteCaracterisitica, String texturaOtro, String estructuraOtra) {
+    public FormComprobacionHorizonteOpt(Integer id, Integer idFormComprobacionHorz, Integer numeroHorizonte, Integer profundidad,
+                                        Integer colorHue, Integer colorValue, Integer colorChroma, Integer colorPorcentaje,
+                                        Integer tipoMaterial, Integer claseTextural, Integer modificadorTextura, Integer claseOrganico,
+                                        Integer claseComposicion, Integer texturaPorcentaje, Integer estructuraTipo, Integer estructuraClase,
+                                        Integer estructuraGrado, Integer formaRompe, Integer motivoNoEstructura, Integer horizonteClase,
+                                        Integer horizonteCaracterisitica, String texturaOtro, String estructuraOtra) {
         this.id = id;
-        this.idFormComprobacion = idFormComprobacion;
+        this.idFormComprobacionHorz = idFormComprobacionHorz;
         this.numeroHorizonte = numeroHorizonte;
         this.profundidad = profundidad;
         this.colorHue = colorHue;
@@ -77,12 +77,12 @@ public class FormComprobacionHorizonte implements Serializable {
         this.id = id;
     }
 
-    public Integer getIdFormComprobacion() {
-        return idFormComprobacion;
+    public Integer getIdFormComprobacionHorz() {
+        return idFormComprobacionHorz;
     }
 
-    public void setIdFormComprobacion(Integer idFormComprobacion) {
-        this.idFormComprobacion = idFormComprobacion;
+    public void setIdFormComprobacionHorz(Integer idFormComprobacionHorz) {
+        this.idFormComprobacionHorz = idFormComprobacionHorz;
     }
 
     public Integer getNumeroHorizonte() {
