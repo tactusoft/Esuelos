@@ -1,20 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <group android:checkableBehavior="single">
-        <item
-            android:id="@+id/World_Street_Map"
-            android:title="@string/StreetMapMenu" />
-        <item
-            android:id="@+id/World_Topo"
-            android:title="@string/TopoMenu" />
-        <item
-            android:id="@+id/Gray"
-            android:title="@string/GrayMenu" />
-        <item
-            android:id="@+id/Ocean_Basemap"
-            android:title="@string/OceanMenu" />
-        <item
-            android:id="@+id/Satellite_Basemap"
-            android:title="@string/SatelliteMenu" />
-    </group>
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/item_gps"
+        android:icon="@drawable/ic_gps"
+        app:showAsAction="always"
+        android:title="Agregar"/>
+    <item
+        android:id="@+id/item_add_form"
+        android:icon="@drawable/ic_add"
+        app:showAsAction="always"
+        android:title="Descargar"/>
+    <item
+        android:id="@+id/item_identify"
+        android:icon="@drawable/fixtures"
+        android:title="Editar"
+        app:showAsAction="always"
+        android:visible="false"/>
+
 </menu>

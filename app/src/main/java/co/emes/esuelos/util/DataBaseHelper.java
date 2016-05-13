@@ -163,7 +163,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         return row;
     }
 
-    public List<Domain> getListDomain(String grupo, boolean selected) {
+    public List<Domain> getListDomain(String grupo, boolean selected, boolean showCode) {
         List<Domain> list = new LinkedList<>();
         if(selected) {
             Domain row = new Domain();
@@ -174,14 +174,14 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         try {
             openDataBase();
             Cursor cur = myDataBase.rawQuery("select id, codigo, valor, cod_ministerio, descripcion, periodo, orden, grupo " +
-                    "from domain where grupo = ? order by orden", new String[] { grupo.toUpperCase() });
+                    "from dominio where grupo = ? order by orden", new String[] { grupo.toUpperCase() });
             while (cur.moveToNext()) {
                 Domain row = new Domain();
                 row.setId(cur.getInt(0));
                 row.setCodigo(cur.getString(1));
                 row.setValor(cur.getString(2));
                 row.setCodMinisterio(cur.getString(3));
-                row.setDescripcion(cur.getString(4));
+                row.setDescripcion(showCode?row.getCodigo():cur.getString(4));
                 row.setPeriodo(cur.getString(5));
                 row.setOrden(cur.getInt(6));
                 row.setGrupo(cur.getString(7));
@@ -197,7 +197,11 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     }
 
     public List<Domain> getListDomain(String grupo) {
-        return getListDomain(grupo, true);
+        return getListDomain(grupo, true, false);
+    }
+
+    public List<Domain> getListDomainShowCode(String grupo) {
+        return getListDomain(grupo, true, true);
     }
 
     public boolean getOpenResearch() {
@@ -243,6 +247,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             row.put("longitud", entity.getLongitud());
             row.put("latitud", entity.getLatitud());
             row.put("altitud", entity.getAltitud());
+            row.put("nombre_sitio", entity.getNombreSitio());
             row.put("epoca_climatica", entity.getEpocaClimatica());
             row.put("dias_lluvia", entity.getDiasLluvia());
             row.put("pendiente_longitud", entity.getPendienteLongitud());
@@ -286,7 +291,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             id = myDataBase.insert("form_comprobacion_foto", null, row);
             if(id == -1) {
                 myDataBase.update("form_comprobacion_foto", row,
-                        "id_form_comprobacion = " + entity.getIdFormComprobacion(), null);
+                        "id = " + entity.getId(), null);
                 id = Long.valueOf(entity.getId());
             } else {
                 entity.setId(id.intValue());
@@ -397,7 +402,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         try {
             openDataBase();
             Cursor cur = myDataBase.rawQuery("SELECT id, nro_observacion, reconocedor, fecha_hora, longitud, latitud, altitud,\n" +
-                    "epoca_climatica, dias_lluvia, pendiente_longitud, grado_erosion, tipo_movimiento, anegamiento,\n" +
+                    "nombre_sitio, epoca_climatica, dias_lluvia, pendiente_longitud, grado_erosion, tipo_movimiento, anegamiento,\n" +
                     "frecuencia, duracion, pedregosidad, afloramiento, fragmento_suelo, drenaje_natural, profundidad_efectiva,\n" +
                     "epidedones, endopedones, estado\n" +
                     "FROM form_comprobacion\n" +
@@ -411,22 +416,23 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                 row.setLongitud(cur.getDouble(4));
                 row.setLatitud(cur.getDouble(5));
                 row.setAltitud(cur.getDouble(6));
-                row.setEpocaClimatica(cur.getInt(7));
-                row.setDiasLluvia(cur.getString(8));
-                row.setPendienteLongitud(cur.getInt(9));
-                row.setGradoErosion(cur.getInt(10));
-                row.setTipoMovimiento(cur.getInt(11));
-                row.setAnegamiento(cur.getInt(12));
-                row.setFrecuencia(cur.getInt(13));
-                row.setDuracion(cur.getInt(14));
-                row.setPedregosidad(cur.getInt(15));
-                row.setAfloramiento(cur.getInt(16));
-                row.setFragmentoSuelo(cur.getInt(17));
-                row.setDrenajeNatural(cur.getInt(18));
-                row.setProfundidadEfectiva(cur.getInt(19));
-                row.setEpidedones(cur.getInt(20));
+                row.setNombreSitio(cur.getString(7));
+                row.setEpocaClimatica(cur.getInt(8));
+                row.setDiasLluvia(cur.getString(9));
+                row.setPendienteLongitud(cur.getInt(10));
+                row.setGradoErosion(cur.getInt(11));
+                row.setTipoMovimiento(cur.getInt(12));
+                row.setAnegamiento(cur.getInt(13));
+                row.setFrecuencia(cur.getInt(14));
+                row.setDuracion(cur.getInt(15));
+                row.setPedregosidad(cur.getInt(16));
+                row.setAfloramiento(cur.getInt(17));
+                row.setFragmentoSuelo(cur.getInt(18));
+                row.setDrenajeNatural(cur.getInt(19));
+                row.setProfundidadEfectiva(cur.getInt(20));
+                row.setEpidedones(cur.getInt(21));
                 row.setEndopedones(cur.getInt(21));
-                row.setEstado(cur.getInt(22));
+                row.setEstado(cur.getInt(23));
                 list.add(row);
             }
             cur.close();
@@ -448,7 +454,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             if(cur.moveToNext()){
                 result.setId(cur.getInt(0));
                 result.setIdFormComprobacion(cur.getInt(1));
-                result.setFoto(cur.getBlob(2));
+                result.setFoto(cur.getString(2));
             }
         }catch(SQLException e) {
             e.printStackTrace();;
@@ -599,7 +605,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         return list;
     }
 
-    public String getNroObservacion() {
+    public String getNroObservacion(String type) {
         String result = null;
         try {
             openDataBase();
@@ -607,7 +613,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             if (cur.moveToNext()) {
                 int maxId = (cur.getInt(0) == 0)?1:cur.getInt(0);
                 String date = Utils.dateToString(new Date(), "yyyyMMdd");
-                result =  "C" + date + maxId;
+                result =  type + "-" + Singleton.getInstance().getAndroidId().toUpperCase()  + "-" +  date + maxId;
             }
             cur.close();
         } catch (SQLException e) {

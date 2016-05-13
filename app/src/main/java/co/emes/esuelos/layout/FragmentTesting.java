@@ -2,14 +2,16 @@ package co.emes.esuelos.layout;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Region;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.DialogFragment;
@@ -60,6 +62,7 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
     EditText inputNroObservacion;
     EditText inputFecha;
     Spinner inputReconocedor;
+    EditText inputNombreSitio;
     Spinner inputEpoca;
     EditText inputEpocaDias;
     Spinner inputLongitud;
@@ -76,6 +79,7 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
     Spinner inputDrenajeNatural;
     Spinner inputProfundidadEfectiva;
     Spinner inputEpidedones;
+    TextView labelEndopedones;
     Spinner inputEndopedones;
     ImageView imgViewPic;
 
@@ -109,6 +113,7 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
     Spinner inputHorizonteCaracterisitica;
     LinearLayout linearLayoutOpt;
 
+    Button btnPreviewTop;
     Button btnPreview;
 
     List<Domain> listReconocedor;
@@ -165,8 +170,9 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
     ArrayAdapter<Domain> structureTypeAdapter2;
     ArrayAdapter<Domain> structureFormsAdapter;
     ArrayAdapter<Domain> structureReasonsAdapter;
-    ArrayAdapter<Domain> skylineTypeAdapter;
+    ArrayAdapter<Domain> horizontesMaestrosAdapter;
     ArrayAdapter<Domain> horizonteCaracterisiticaAdapter;
+
     ArrayAdapter<Domain> soilFragmentAdapter;
     ArrayAdapter<Domain> naturalDrainageAdapter;
     ArrayAdapter<Domain> effectiveDepthAdapter;
@@ -283,6 +289,7 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
         inputNroObservacion = (EditText) rootView.findViewById(R.id.input_nro_observacion);
         inputFecha = (EditText) rootView.findViewById(R.id.input_fecha);
         inputReconocedor = (Spinner) rootView.findViewById(R.id.input_reconocedor);
+        inputNombreSitio = (EditText) rootView.findViewById(R.id.input_nombre_sitio);
         inputEpoca = (Spinner) rootView.findViewById(R.id.input_epoca);
         inputEpocaDias = (EditText) rootView.findViewById(R.id.input_epoca_dias);
         inputLongitud = (Spinner) rootView.findViewById(R.id.input_longitud);
@@ -329,7 +336,8 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
         inputDrenajeNatural = (Spinner) rootView.findViewById(R.id.input_natural_drainage);
         inputProfundidadEfectiva = (Spinner) rootView.findViewById(R.id.input_effective_depth);
         inputEpidedones = (Spinner) rootView.findViewById(R.id.input_epidedones);
-        inputEndopedones = (Spinner) rootView.findViewById(R.id.input_endopedones   );
+        labelEndopedones = (TextView) rootView.findViewById(R.id.label_endopedones);
+        inputEndopedones = (Spinner) rootView.findViewById(R.id.input_endopedones);
 
         scrollviewProfile = (NestedScrollView) rootView.findViewById(R.id.scrollview_profile);
         listViewSkyline = (ListView) rootView.findViewById(R.id.list_skyline);
@@ -337,20 +345,34 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
         Button btnSave = (Button) rootView.findViewById(R.id.btn_save);
         Button btnTakePhoto = (Button) rootView.findViewById(R.id.btn_take_photo);
         Button btnSelectPhoto = (Button) rootView.findViewById(R.id.btn_select_photo);
+
+        btnSave.setTransformationMethod(null);
+        btnTakePhoto.setTransformationMethod(null);
+        btnSelectPhoto.setTransformationMethod(null);
+
+        Button btnOptionalTop = (Button) rootView.findViewById(R.id.btn_optional_top);
+        Button btnFleckedTop = (Button) rootView.findViewById(R.id.btn_add_flecked_top);
+        Button btnNextTop = (Button) rootView.findViewById(R.id.btn_next_top);
+        btnPreviewTop = (Button) rootView.findViewById(R.id.btn_preview_top);
+
         Button btnOptional = (Button) rootView.findViewById(R.id.btn_optional);
         Button btnFlecked = (Button) rootView.findViewById(R.id.btn_add_flecked);
         Button btnNext = (Button) rootView.findViewById(R.id.btn_next);
         btnPreview = (Button) rootView.findViewById(R.id.btn_preview);
 
-        btnSave.setTransformationMethod(null);
-        btnTakePhoto.setTransformationMethod(null);
-        btnSelectPhoto.setTransformationMethod(null);
+        btnOptionalTop.setTransformationMethod(null);
+        btnFleckedTop.setTransformationMethod(null);
+        btnNextTop.setTransformationMethod(null);
+        btnPreviewTop.setTransformationMethod(null);
+        btnPreviewTop.setEnabled(false);
+
         btnOptional.setTransformationMethod(null);
         btnFlecked.setTransformationMethod(null);
         btnNext.setTransformationMethod(null);
-        btnNext.setTransformationMethod(null);
         btnPreview.setTransformationMethod(null);
         btnPreview.setEnabled(false);
+
+        linearLayoutOpt = (LinearLayout) rootView.findViewById(R.id.lyr_optional);
 
         host.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
             @Override
@@ -397,10 +419,24 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
             }
         });
 
+        btnNextTop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                nextAction();
+            }
+        });
+
         btnNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 nextAction();
+            }
+        });
+
+        btnPreviewTop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                previewAction();
             }
         });
 
@@ -411,11 +447,26 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
             }
         });
 
-        linearLayoutOpt = (LinearLayout) rootView.findViewById(R.id.lyr_optional);
+        btnOptionalTop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addOptionalView(SkylineType.OPTIONAL);
+                bottomScrollView();
+            }
+        });
+
         btnOptional.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 addOptionalView(SkylineType.OPTIONAL);
+                bottomScrollView();
+            }
+        });
+
+        btnFleckedTop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addOptionalView(SkylineType.FLECKED);
                 bottomScrollView();
             }
         });
@@ -705,7 +756,7 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
         populateDomains();
 
         if(mode == null || mode == Modes.NEW) {
-            inputNroObservacion.setText(dataBaseHelper.getNroObservacion());
+            inputNroObservacion.setText(dataBaseHelper.getNroObservacion("C"));
             inputFecha.setText(Utils.dateToString(new Date(), "yyyy-MM-dd HH:mm:ss"));
             labelHorizonteNro.setText(String.format(getResources().getString(R.string.tst_horizonte_nro), (index + 1)));
             mode = Modes.NEW;
@@ -752,8 +803,8 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
         listStructureType2 = dataBaseHelper.getListDomain("E3 - CLASES POR GRADO DE LA ESTRUCTURA");
         listStructureForms = dataBaseHelper.getListDomain("E4 - FORMAS EN QUE ROMPE");
         listStructureReasons = dataBaseHelper.getListDomain("E5 - MOTIVO DE LA NO-ESTRUCTURA");
-        listHorizonteClase = dataBaseHelper.getListDomain("H1 - HORIZONTES MAESTROS");
-        listHorizonteCaracterisitica = dataBaseHelper.getListDomain("H2 - CLASES POR CARACTERÍSTICAS SUBORDINADAS A LOS HORIZONTES");
+        listHorizonteClase = dataBaseHelper.getListDomainShowCode("H1 - HORIZONTES MAESTROS");
+        listHorizonteCaracterisitica = dataBaseHelper.getListDomainShowCode("H2 - CLASES POR CARACTERÍSTICAS SUBORDINADAS A LOS HORIZONTES");
         listSoilFragment = dataBaseHelper.getListDomain("S3 - FRAGMENTOS EN SUELO");
         listNaturalDrainage = dataBaseHelper.getListDomain("U1 - DRENAJE NATURAL");
         listEffectiveDepth = dataBaseHelper.getListDomain("S1 - PROFUNDIDAD EFECTIVA");
@@ -829,8 +880,8 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
         structureReasonsAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, listStructureReasons);
         inputStructureReasons.setAdapter(structureReasonsAdapter);
 
-        skylineTypeAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, listHorizonteClase);
-        inputSkylineType.setAdapter(skylineTypeAdapter);
+        horizontesMaestrosAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, listHorizonteClase);
+        inputSkylineType.setAdapter(horizontesMaestrosAdapter);
 
         horizonteCaracterisiticaAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, listHorizonteCaracterisitica);
         inputHorizonteCaracterisitica.setAdapter(horizonteCaracterisiticaAdapter);
@@ -895,6 +946,7 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
                     getValues();
                     if(index == 0) {
                         btnPreview.setEnabled(false);
+                        btnPreviewTop.setEnabled(false);
                     }
                 }
             } else {
@@ -909,6 +961,7 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
                 getValues();
                 if(index == 0) {
                     btnPreview.setEnabled(false);
+                    btnPreviewTop.setEnabled(false);
                 }
             }
         }
@@ -1060,6 +1113,7 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
 
             if(optionalFlag && fleckedFlag) {
                 btnPreview.setEnabled(true);
+                btnPreviewTop.setEnabled(true);
                 index++;
                 if (mode == Modes.NEW) {
                     formComprobacionHorizonte = new FormComprobacionHorizonte();
@@ -1069,6 +1123,10 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
                             estructuraTipo, estructuraClase, estructuraGrado, formaRompe, motivoNoEstructura,
                             estructuraOtra, skylineType, horizonteCaracterisitica);
                     formComprobacionHorizonteList.add(formComprobacionHorizonte);
+                    if(formComprobacionHorizonteList.size() > 1) {
+                        labelEndopedones.setVisibility(View.VISIBLE);
+                        inputEndopedones.setVisibility(View.VISIBLE);
+                    }
                     listOptionalEntity.add(new OptionalEntity(index-1, viewListOptional, viewListFlecked));
                 } else {
                     setValues(depth, colorHue, colorValue, colorChroma, colorPercent,
@@ -1099,6 +1157,7 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
     public void saveAction(){
         String nroObservacion = inputNroObservacion.getText().toString();
         Integer reconocedor = ((Domain)inputReconocedor.getSelectedItem()).getId();
+        String nombreSitio = inputNombreSitio.getText().toString();
         String fechaHora = inputFecha.getText().toString();
         Integer epocaClimatica = ((Domain)inputEpoca.getSelectedItem()).getId();
         String epocaDias = inputEpocaDias.getText().toString();
@@ -1116,11 +1175,11 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
         Integer epidedones = ((Domain)inputEpidedones.getSelectedItem()).getId();
         Integer endopedones = ((Domain)inputEndopedones.getSelectedItem()).getId();
 
-        if(reconocedor == null || epocaClimatica == null || pendienteLongitud == null ||
-                gradoErosion == null || tipoMovimiento == null || anegamiento == null ||
+        if(reconocedor == null || nombreSitio.isEmpty() || epocaClimatica == null ||
+                pendienteLongitud == null || gradoErosion == null || tipoMovimiento == null || anegamiento == null ||
                 pedregosidad == null  || afloramiento == null || fragmentoSuelo == null ||
                 drenajeNatural == null || profundidadEfectiva == null || epidedones == null ||
-                endopedones == null || formComprobacionHorizonteList.isEmpty() || imgViewPic.getDrawable()==null) {
+                (inputEndopedones.getVisibility() == View.VISIBLE && endopedones == null) || formComprobacionHorizonteList.isEmpty() || imgViewPic.getDrawable()==null) {
             Toast.makeText(getActivity(), "Los campos marcados con * son obligatorios!", Toast.LENGTH_SHORT).show();
         } else {
             if(formComprobacion == null || mode == Modes.NEW) {
@@ -1130,7 +1189,9 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
                 formComprobacion.setFechaHora(fechaHora);
                 formComprobacion.setAltitud(null);
                 formComprobacion.setNroObservacion(nroObservacion);
+                formComprobacionFoto = new FormComprobacionFoto();
             }
+
             formComprobacion.setReconocedor(reconocedor);
             formComprobacion.setEpocaClimatica(epocaClimatica);
             formComprobacion.setDiasLluvia(epocaDias);
@@ -1153,9 +1214,12 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
             Long result = dataBaseHelper.insertFormComprobacion(formComprobacion);
             if(result > 0) {
                 Bitmap bitmap = ((BitmapDrawable)imgViewPic.getDrawable()).getBitmap();
-                formComprobacionFoto = new FormComprobacionFoto();
                 formComprobacionFoto.setIdFormComprobacion(result.intValue());
-                formComprobacionFoto.setFoto(DBBitmapUtility.getBytes(bitmap));
+                //formComprobacionFoto.setFoto(DBBitmapUtility.getBytes(bitmap));
+
+                String nameFile = "img_" + inputNroObservacion.getText().toString() + ".jpeg";
+                DBBitmapUtility.saveImage(getActivity(), bitmap, nameFile);
+                formComprobacionFoto.setFoto(nameFile);
                 dataBaseHelper.insertFormComprobacionFoto(formComprobacionFoto);
 
                 int i = 0;
@@ -1272,7 +1336,7 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
                 inputStructureForm.setSelection(spinnerPosition);
                 spinnerPosition = structureReasonsAdapter.getPosition(Utils.getDomain(listStructureReasons, formComprobacionHorizonte.getMotivoNoEstructura()));
                 inputStructureReasons.setSelection(spinnerPosition);
-                spinnerPosition = skylineTypeAdapter.getPosition(Utils.getDomain(listHorizonteClase, formComprobacionHorizonte.getHorizonteClase()));
+                spinnerPosition = horizontesMaestrosAdapter.getPosition(Utils.getDomain(listHorizonteClase, formComprobacionHorizonte.getHorizonteClase()));
                 inputStructureTypeOther.setText(formComprobacionHorizonte.getEstructuraOtra()==null?null:formComprobacionHorizonte.getEstructuraOtra().toString());
                 inputSkylineType.setSelection(spinnerPosition);
                 spinnerPosition = horizonteCaracterisiticaAdapter.getPosition(Utils.getDomain(listHorizonteCaracterisitica, formComprobacionHorizonte.getHorizonteCaracterisitica()));
@@ -1344,6 +1408,7 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
         if(formComprobacionHorizonteList.isEmpty()) {
             clearFields();
             btnPreview.setEnabled(false);
+            btnPreviewTop.setEnabled(false);
             index = 0;
             mode = Modes.NEW;
             labelHorizonteNro.setText(String.format(getResources().getString(R.string.tst_horizonte_nro),(index + 1)));
@@ -1365,24 +1430,58 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
 
     @SuppressLint("InflateParams")
     public void addOptionalView(SkylineType skylineType){
+        Integer indexType;
+        int type;
+
         View rootView = this.inflater.inflate(R.layout.tab_testing_skyline, null);
         linearLayoutOpt.addView(rootView);
         TextView labelHorizonteNroOpt = (TextView) rootView.findViewById(R.id.label_horizonte_nro);
         if(skylineType.equals(SkylineType.OPTIONAL)) {
-            rootView.setId(indexOptional++);
-            labelHorizonteNroOpt.setText(String.format(getResources().getString(R.string.tst_skyline_optional), indexOptional));
+            indexType = ++indexOptional;
+            rootView.setId(indexType);
             viewListOptional.add(rootView);
+            type = R.string.tst_skyline_optional;
         } else {
-            rootView.setId(indexFlecked++);
-            labelHorizonteNroOpt.setText(String.format(getResources().getString(R.string.tst_skyline_flecked), indexFlecked));
+            indexType = ++indexFlecked;
+            rootView.setId(indexType);
             viewListFlecked.add(rootView);
+            type = R.string.tst_skyline_flecked;
         }
 
-        //final TextView labelHorizonteNro = (TextView) rootView.findViewById(R.id.label_horizonte_nro);
+        labelHorizonteNroOpt.setText(String.format(getResources().getString(type), indexType));
+        final Button btnDeleteOptional = (Button) rootView.findViewById(R.id.btn_delete_optional);
+        btnDeleteOptional.setTransformationMethod(null);
+        btnDeleteOptional.setTag(skylineType+"|"+indexType);
+        btnDeleteOptional.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String[] tag = v.getTag().toString().split("\\|");
+                int tagIndex = Integer.valueOf(tag[1]);
+                if(tag[0].equals(SkylineType.OPTIONAL.name())) {
+                    for(View row:viewListOptional) {
+                        if(row.getId() == tagIndex) {
+                            viewListOptional.remove(row);
+                            linearLayoutOpt.removeView(row);
+                            indexOptional--;
+                            break;
+                        }
+                    }
+                } else {
+                    for(View row:viewListFlecked) {
+                        if(row.getId() == tagIndex) {
+                            viewListFlecked.remove(row);
+                            linearLayoutOpt.removeView(row);
+                            indexFlecked--;
+                            break;
+                        }
+                    }
+                }
+            }
+        });
+
         final Spinner inputColorHue = (Spinner) rootView.findViewById(R.id.input_color_hue);
         final Spinner inputColorValue = (Spinner) rootView.findViewById(R.id.input_color_value);
         final Spinner inputColorChroma = (Spinner) rootView.findViewById(R.id.input_color_chroma);
-        //final EditText inputColorPercent = (EditText) rootView.findViewById(R.id.input_color_percent);
 
         colorHueAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, listColorHue);
         inputColorHue.setAdapter(colorHueAdapter);
@@ -1481,7 +1580,7 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
     public void editForm(){
         if(formComprobacion == null){
             formComprobacion = new FormComprobacion();
-            inputNroObservacion.setText(dataBaseHelper.getNroObservacion());
+            inputNroObservacion.setText(dataBaseHelper.getNroObservacion("C"));
             inputFecha.setText(Utils.dateToString(new Date(), "yyyy-MM-dd HH:mm:ss"));
             labelHorizonteNro.setText(String.format(getResources().getString(R.string.tst_horizonte_nro), (index + 1)));
             mode = Modes.NEW;
@@ -1520,9 +1619,10 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
             spinnerPosition = endopedonesAdapter.getPosition(Utils.getDomain(listEndopedones, formComprobacion.getEndopedones()));
             inputEndopedones.setSelection(spinnerPosition);
 
-            //formComprobacionFoto = dataBaseHelper.getFormComprobacionFoto(formComprobacion.getId());
+            formComprobacionFoto = dataBaseHelper.getFormComprobacionFoto(formComprobacion.getId());
             //Bitmap bitmap = DBBitmapUtility.getImage(formComprobacionFoto.getFoto());
-            //imgViewPic.setImageBitmap(bitmap);
+            Bitmap bitmap = DBBitmapUtility.loadImageBitmap(getActivity(), formComprobacionFoto.getFoto());
+            imgViewPic.setImageBitmap(bitmap);
 
             formComprobacionHorizonteList = dataBaseHelper.getListFormComprobacionHorizonte(formComprobacion.getId());
             if (formComprobacionHorizonteList != null && !formComprobacionHorizonteList.isEmpty()) {
@@ -1570,6 +1670,37 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
             nextFlag = false;
             nextFlagMaterialType = false;
             nextFlagEstructuraTipo = false;
+        }
+    }
+
+    class MyTask extends AsyncTask<Void, Void, Void> {
+
+        ProgressDialog progressDialog;
+        Context context;
+
+        public MyTask(ProgressDialog progressDialog, Context context) {
+            this.progressDialog = progressDialog;
+            this.context = context;
+        }
+
+        public void onPreExecute() {
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progressDialog.setIndeterminate(false);
+            progressDialog.setCancelable(false);
+            progressDialog.setCanceledOnTouchOutside(false);
+            progressDialog.show();
+            //aquí se puede colocar código a ejecutarse previo a la operación
+        }
+
+        public void onPostExecute(Void unused) {
+        //aquí se puede colocar código que
+        //se ejecutará tras finalizar
+            progressDialog.dismiss();
+        }
+
+        protected Void doInBackground(Void... params) {
+            //realizar la operación aquí
+            return null;
         }
     }
 

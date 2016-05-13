@@ -77,11 +77,13 @@
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"/>
 
-    <Button android:id="@+id/btn_delete_optional"
-        android:text="@string/btn_delete"
-        android:layout_height="50sp"
-        android:layout_weight="1"
-        android:layout_width="0sp">
-    </Button>
+    <Button
+        android:id="@+id/btn_delete_optional"
+        android:layout_width="wrap_content"
+        android:layout_height="45dp"
+        android:layout_alignParentRight="true"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="15dp"
+        android:text="@string/btn_delete" />
 
 </LinearLayout>

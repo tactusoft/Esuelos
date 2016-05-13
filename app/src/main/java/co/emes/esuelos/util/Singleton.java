@@ -5,8 +5,10 @@ package co.emes.esuelos.util;
  */
 public class Singleton {
     private static Singleton ourInstance = new Singleton();
-    private Float x;
-    private Float y;
+
+    private String androidId;
+    private Double x;
+    private Double y;
     private String tpkFile;
 
     public static Singleton getInstance() {
@@ -16,19 +18,27 @@ public class Singleton {
     private Singleton() {
     }
 
-    public Float getX() {
+    public String getAndroidId() {
+        return androidId;
+    }
+
+    public void setAndroidId(String androidId) {
+        this.androidId = androidId;
+    }
+
+    public Double getX() {
         return x;
     }
 
-    public void setX(Float x) {
+    public void setX(Double x) {
         this.x = x;
     }
 
-    public Float getY() {
+    public Double getY() {
         return y;
     }
 
-    public void setY(Float y) {
+    public void setY(Double y) {
         this.y = y;
     }
 

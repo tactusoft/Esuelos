@@ -9,12 +9,12 @@ public class FormComprobacionFoto implements Serializable {
 
     private Integer id;
     private Integer idFormComprobacion;
-    private byte[] foto;
+    private String foto;
 
     public FormComprobacionFoto() {
     }
 
-    public FormComprobacionFoto(Integer id, Integer idFormComprobacion, byte[] foto) {
+    public FormComprobacionFoto(Integer id, Integer idFormComprobacion, String foto) {
         this.id = id;
         this.idFormComprobacion = idFormComprobacion;
         this.foto = foto;
@@ -36,11 +36,11 @@ public class FormComprobacionFoto implements Serializable {
         this.idFormComprobacion = idFormComprobacion;
     }
 
-    public byte[] getFoto() {
+    public String getFoto() {
         return foto;
     }
 
-    public void setFoto(byte[] foto) {
+    public void setFoto(String foto) {
         this.foto = foto;
     }
 }

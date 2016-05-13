@@ -32,6 +32,7 @@
     <string name="btn_flecked">Moteados</string>
 
     <string name="msg_confirm">Está seguro de realizar esta operación?</string>
+    <string name="msg_gps">Por favor activar el GPS</string>
 
     <string name="ndi_home">Inicio</string>
     <string name="ndi_map">Mapa</string>
@@ -49,6 +50,7 @@
     <string name="tst_no_observacion">Nro. Observación</string>
     <string name="tst_reconocedor">Reconocedor *</string>
     <string name="tst_fecha">Fecha y Hora</string>
+    <string name="tst_nombre_sitio">Nombre del Sitio *</string>
     <string name="tst_epoca">Época climática *</string>
     <string name="tst_epoca_dias">Hace cuánto tiempo llovió (Días)</string>
     <string name="tst_gm">Geomorfología</string>
@@ -71,7 +73,7 @@
     <string name="tst_material_type">Tipo de Material *</string>
     <string name="tst_texture">Textura *</string>
     <string name="tst_texture_modifiers">Modificadores de Textura *</string>
-    <string name="tst_texture_percent">Porcentaje de Textura *</string>
+    <string name="tst_texture_percent">Porcentaje de Textura</string>
     <string name="tst_texture_other">¿Por qué? *</string>
     <string name="tst_structure">Estructura *</string>
     <string name="tst_horizonte_nro">Horizonte Nro. %d</string>

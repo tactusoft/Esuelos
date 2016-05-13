@@ -14,6 +14,7 @@ public class FormComprobacion implements Serializable {
     Double longitud;
     Double latitud;
     Double altitud;
+    String nombreSitio;
     Integer epocaClimatica;
     String diasLluvia;
     Integer pendienteLongitud;
@@ -32,37 +33,6 @@ public class FormComprobacion implements Serializable {
     Integer estado;
 
     public FormComprobacion() {
-    }
-
-    public FormComprobacion(Integer id, String nroObservacion, Integer reconocedor, String fechaHora, Double longitud,
-                            Double latitud, Double altitud, Integer epocaClimatica, String diasLluvia, Integer pendienteLongitud,
-                            Integer gradoErosion, Integer tipoMovimiento, Integer anegamiento, Integer frecuencia,
-                            Integer duracion, Integer pedregosidad, Integer afloramiento, Integer fragmentoSuelo,
-                            Integer drenajeNatural, Integer profundidadEfectiva, Integer epidedones, Integer endopedones,
-                            Integer estado) {
-        this.id = id;
-        this.nroObservacion = nroObservacion;
-        this.reconocedor = reconocedor;
-        this.fechaHora = fechaHora;
-        this.longitud = longitud;
-        this.latitud = latitud;
-        this.altitud = altitud;
-        this.epocaClimatica = epocaClimatica;
-        this.diasLluvia = diasLluvia;
-        this.pendienteLongitud = pendienteLongitud;
-        this.gradoErosion = gradoErosion;
-        this.tipoMovimiento = tipoMovimiento;
-        this.anegamiento = anegamiento;
-        this.frecuencia = frecuencia;
-        this.duracion = duracion;
-        this.pedregosidad = pedregosidad;
-        this.afloramiento = afloramiento;
-        this.fragmentoSuelo = fragmentoSuelo;
-        this.drenajeNatural = drenajeNatural;
-        this.profundidadEfectiva = profundidadEfectiva;
-        this.epidedones = epidedones;
-        this.endopedones = endopedones;
-        this.estado = estado;
     }
 
     public Integer getId() {
@@ -119,6 +89,14 @@ public class FormComprobacion implements Serializable {
 
     public void setAltitud(Double altitud) {
         this.altitud = altitud;
+    }
+
+    public String getNombreSitio() {
+        return nombreSitio;
+    }
+
+    public void setNombreSitio(String nombreSitio) {
+        this.nombreSitio = nombreSitio;
     }
 
     public Integer getEpocaClimatica() {

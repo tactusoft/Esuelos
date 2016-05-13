@@ -60,6 +60,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         String androidId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+        Singleton.getInstance().setAndroidId(androidId);
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mTitle = getTitle();
@@ -95,10 +97,10 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        listDataModel.add(new DataModel(R.drawable.home, getResources().getString(R.string.ndi_home)));
-        listDataModel.add(new DataModel(R.drawable.layers, getResources().getString(R.string.ndi_map)));
-        listDataModel.add(new DataModel(R.drawable.forms, getResources().getString(R.string.ndi_forms)));
-        listDataModel.add(new DataModel(R.drawable.list, getResources().getString(R.string.ndi_summary)));
+        listDataModel.add(new DataModel(R.drawable.ic_home, getResources().getString(R.string.ndi_home)));
+        listDataModel.add(new DataModel(R.drawable.ic_layers, getResources().getString(R.string.ndi_map)));
+        //listDataModel.add(new DataModel(R.drawable.ic_forms, getResources().getString(R.string.ndi_forms)));
+        listDataModel.add(new DataModel(R.drawable.ic_list, getResources().getString(R.string.ndi_summary)));
         listDataModel.add(new DataModel(R.drawable.folder, getResources().getString(R.string.ndi_tpk)));
         listDataModel.add(new DataModel(R.drawable.download, getResources().getString(R.string.ndi_database)));
         DataModel[] drawerItem = new DataModel[listDataModel.size()];
@@ -139,18 +141,18 @@ public class MainActivity extends AppCompatActivity {
                 title = getResources().getString(R.string.ndi_map);
                 fragment = new MapFragment();
                 break;
-            case 2:
+            /*case 2:
                 title = getResources().getString(R.string.ndi_forms);
                 fragment = new FormsFragment();
-                break;
-            case 3:
+                break;*/
+            case 2:
                 title = getResources().getString(R.string.ndi_summary);
                 fragment = new TableFragment();
                 break;
-            case 4:
+            case 3:
                 loadTPK();
                 break;
-            case 5:
+            case 4:
                 exportDatabse();
                 break;
             default:
