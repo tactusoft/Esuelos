@@ -33,6 +33,7 @@
 
     <string name="msg_confirm">Está seguro de realizar esta operación?</string>
     <string name="msg_gps">Por favor activar el GPS</string>
+    <string name="msg_loading">Espere un momento...</string>
 
     <string name="ndi_home">Inicio</string>
     <string name="ndi_map">Mapa</string>

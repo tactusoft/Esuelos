@@ -36,6 +36,9 @@ import android.widget.Toast;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import co.emes.esuelos.R;
 import co.emes.esuelos.forms.FormComprobacionHorizonteAdapter;
@@ -115,6 +118,27 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
 
     Button btnPreviewTop;
     Button btnPreview;
+
+    Bitmap foto;
+    String nroObservacion;
+    Integer reconocedor;
+    String nombreSitio;
+    String fechaHora;
+    Integer epocaClimatica;
+    String epocaDias;
+    Integer pendienteLongitud;
+    Integer gradoErosion;
+    Integer tipoMovimiento;
+    Integer anegamiento;
+    Integer frecuencia;
+    Integer duracion;
+    Integer pedregosidad;
+    Integer afloramiento;
+    Integer fragmentoSuelo;
+    Integer drenajeNatural;
+    Integer profundidadEfectiva;
+    Integer epidedones;
+    Integer endopedones;
 
     List<Domain> listReconocedor;
     List<Domain> listEpoca;
@@ -1087,6 +1111,27 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
                 && colorChroma.getId()!=null
                 && texture.getId()!=null) {
 
+            boolean validateProfundidad = true;
+            if(formComprobacionHorizonteList.size() > 0 && index > 0){
+                try {
+                    FormComprobacionHorizonte formComprobacionTemp =  formComprobacionHorizonteList.get(index-1);
+                    Integer profundidadAnterior = formComprobacionTemp.getProfundidad();
+                    Integer profundidadActual = Integer.valueOf(depth);
+                    if (profundidadAnterior >= profundidadActual) {
+                        validateProfundidad = false;
+                    }
+                }catch (Exception ex) {
+                    validateProfundidad = false;
+                }
+            }
+
+            if(!validateProfundidad) {
+                Toast.makeText(getActivity(),
+                        "La profundidad actual debe ser mayor a la anterior!", Toast.LENGTH_LONG)
+                        .show();
+                return;
+            }
+
             List<FormComprobacionHorizonteOpt> listFormComprobacionHorizonteOpt = validateOptional(null);
             boolean optionalFlag = true;
             if(listFormComprobacionHorizonteOpt.size() > 0){
@@ -1155,25 +1200,34 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
     }
 
     public void saveAction(){
-        String nroObservacion = inputNroObservacion.getText().toString();
-        Integer reconocedor = ((Domain)inputReconocedor.getSelectedItem()).getId();
-        String nombreSitio = inputNombreSitio.getText().toString();
-        String fechaHora = inputFecha.getText().toString();
-        Integer epocaClimatica = ((Domain)inputEpoca.getSelectedItem()).getId();
-        String epocaDias = inputEpocaDias.getText().toString();
-        Integer pendienteLongitud = ((Domain)inputLongitud.getSelectedItem()).getId();
-        Integer gradoErosion = ((Domain)inputErosion.getSelectedItem()).getId();
-        Integer tipoMovimiento = ((Domain)inputMovimiento.getSelectedItem()).getId();
-        Integer anegamiento = ((Domain)inputAnegamiento.getSelectedItem()).getId();
-        Integer frecuencia = ((Domain)inputFrecuencia.getSelectedItem()).getId();
-        Integer duracion = ((Domain)inputDuracion.getSelectedItem()).getId();
-        Integer pedregosidad = ((Domain)inputPedegrosidad.getSelectedItem()).getId();
-        Integer afloramiento = ((Domain)inputAfloramiento.getSelectedItem()).getId();
-        Integer fragmentoSuelo = ((Domain) inputFragmentoSuelo.getSelectedItem()).getId();
-        Integer drenajeNatural = ((Domain)inputDrenajeNatural.getSelectedItem()).getId();
-        Integer profundidadEfectiva = ((Domain)inputProfundidadEfectiva.getSelectedItem()).getId();
-        Integer epidedones = ((Domain)inputEpidedones.getSelectedItem()).getId();
-        Integer endopedones = ((Domain)inputEndopedones.getSelectedItem()).getId();
+        nroObservacion = inputNroObservacion.getText().toString();
+        reconocedor = ((Domain)inputReconocedor.getSelectedItem()).getId();
+        nombreSitio = inputNombreSitio.getText().toString();
+        fechaHora = inputFecha.getText().toString();
+        epocaClimatica = ((Domain)inputEpoca.getSelectedItem()).getId();
+        epocaDias = inputEpocaDias.getText().toString();
+        pendienteLongitud = ((Domain)inputLongitud.getSelectedItem()).getId();
+        gradoErosion = ((Domain)inputErosion.getSelectedItem()).getId();
+        tipoMovimiento = ((Domain)inputMovimiento.getSelectedItem()).getId();
+        anegamiento = ((Domain)inputAnegamiento.getSelectedItem()).getId();
+        if(inputFrecuencia.getSelectedItem() == null){
+            inputFrecuencia.setSelection(0);
+        }
+        frecuencia = ((Domain)inputFrecuencia.getSelectedItem()).getId();
+        if(inputDuracion.getSelectedItem() == null){
+            inputDuracion.setSelection(0);
+        }
+        duracion = ((Domain)inputDuracion.getSelectedItem()).getId();
+        pedregosidad = ((Domain)inputPedegrosidad.getSelectedItem()).getId();
+        afloramiento = ((Domain)inputAfloramiento.getSelectedItem()).getId();
+        fragmentoSuelo = ((Domain) inputFragmentoSuelo.getSelectedItem()).getId();
+        drenajeNatural = ((Domain)inputDrenajeNatural.getSelectedItem()).getId();
+        profundidadEfectiva = ((Domain)inputProfundidadEfectiva.getSelectedItem()).getId();
+        epidedones = ((Domain)inputEpidedones.getSelectedItem()).getId();
+        if(inputEndopedones.getSelectedItem() == null){
+            inputEndopedones.setSelection(0);
+        }
+        endopedones = ((Domain)inputEndopedones.getSelectedItem()).getId();
 
         if(reconocedor == null || nombreSitio.isEmpty() || epocaClimatica == null ||
                 pendienteLongitud == null || gradoErosion == null || tipoMovimiento == null || anegamiento == null ||
@@ -1182,78 +1236,9 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
                 (inputEndopedones.getVisibility() == View.VISIBLE && endopedones == null) || formComprobacionHorizonteList.isEmpty() || imgViewPic.getDrawable()==null) {
             Toast.makeText(getActivity(), "Los campos marcados con * son obligatorios!", Toast.LENGTH_SHORT).show();
         } else {
-            if(formComprobacion == null || mode == Modes.NEW) {
-                formComprobacion = new FormComprobacion();
-                formComprobacion.setLongitud(Double.valueOf(Singleton.getInstance().getX()));
-                formComprobacion.setLatitud(Double.valueOf(Singleton.getInstance().getY()));
-                formComprobacion.setFechaHora(fechaHora);
-                formComprobacion.setAltitud(null);
-                formComprobacion.setNroObservacion(nroObservacion);
-                formComprobacionFoto = new FormComprobacionFoto();
-            }
-
-            formComprobacion.setReconocedor(reconocedor);
-            formComprobacion.setEpocaClimatica(epocaClimatica);
-            formComprobacion.setDiasLluvia(epocaDias);
-            formComprobacion.setPendienteLongitud(pendienteLongitud);
-            formComprobacion.setGradoErosion(gradoErosion);
-            formComprobacion.setTipoMovimiento(tipoMovimiento);
-            formComprobacion.setAnegamiento(anegamiento);
-            formComprobacion.setFrecuencia(frecuencia);
-            formComprobacion.setDuracion(duracion);
-            formComprobacion.setPedregosidad(pedregosidad);
-            formComprobacion.setAfloramiento(afloramiento);
-            formComprobacion.setFragmentoSuelo(fragmentoSuelo);
-            formComprobacion.setDrenajeNatural(drenajeNatural);
-            formComprobacion.setProfundidadEfectiva(profundidadEfectiva);
-            formComprobacion.setEpidedones(epidedones);
-            formComprobacion.setEndopedones(endopedones);
-            formComprobacion.setEstado(1);
-
-            DataBaseHelper dataBaseHelper = new DataBaseHelper(getActivity());
-            Long result = dataBaseHelper.insertFormComprobacion(formComprobacion);
-            if(result > 0) {
-                Bitmap bitmap = ((BitmapDrawable)imgViewPic.getDrawable()).getBitmap();
-                formComprobacionFoto.setIdFormComprobacion(result.intValue());
-                //formComprobacionFoto.setFoto(DBBitmapUtility.getBytes(bitmap));
-
-                String nameFile = "img_" + inputNroObservacion.getText().toString() + ".jpeg";
-                DBBitmapUtility.saveImage(getActivity(), bitmap, nameFile);
-                formComprobacionFoto.setFoto(nameFile);
-                dataBaseHelper.insertFormComprobacionFoto(formComprobacionFoto);
-
-                int i = 0;
-                for(FormComprobacionHorizonte row:formComprobacionHorizonteList){
-                    row.setIdFormComprobacion(result.intValue());
-                    Long id = dataBaseHelper.insertFormComprobacionHorizonte(row);
-                    row.setId(id.intValue());
-
-                    for(OptionalEntity optionalEntity : listOptionalEntity) {
-                        if(optionalEntity.getIndex() == i) {
-                            viewListOptional = optionalEntity.getViewListOptional();
-                            List<FormComprobacionHorizonteOpt> listFormComprobacionHorizonteOptional = validateOptional(id.intValue());
-                            for(FormComprobacionHorizonteOpt row2:listFormComprobacionHorizonteOptional){
-                                Long id2 = dataBaseHelper.insertFormComprobacionHorizonteOptional(row2);
-                                row2.setId(id2.intValue());
-                            }
-
-                            viewListFlecked = optionalEntity.getViewListFlecked();
-                            List<FormComprobacionHorizonteOpt> listFormComprobacionHorizonteFlecked = validateFlecked(id.intValue());
-                            for(FormComprobacionHorizonteOpt row2:listFormComprobacionHorizonteFlecked){
-                                Long id2 = dataBaseHelper.insertFormComprobacionHorizonteFlecked(row2);
-                                row2.setId(id2.intValue());
-                            }
-                            break;
-                        }
-                    }
-
-                    i++;
-                }
-                mode = Modes.EDIT;
-            }
-
-            Toast.makeText(getActivity(), "Formulario " + formComprobacion.getNroObservacion()
-                    + " actualizado correctamente!", Toast.LENGTH_SHORT).show();
+            foto = ((BitmapDrawable)imgViewPic.getDrawable()).getBitmap();
+            SaveFormTask task = new SaveFormTask(getActivity());
+            task.execute();
         }
     }
 
@@ -1390,7 +1375,7 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
         formComprobacionHorizonte.setTipoMaterial(materialType.getId());
         formComprobacionHorizonte.setDescTipoMaterial(materialType.getDescripcion());
         formComprobacionHorizonte.setClaseTextural(texturaClase!=null?texturaClase.getId():null);
-        formComprobacionHorizonte.setModificadorTextura(texturaModificador!=null?texturaClase.getId():null);
+        formComprobacionHorizonte.setModificadorTextura(texturaModificador!=null?texturaModificador.getId():null);
         formComprobacionHorizonte.setTexturaPorcentaje(texturaPorcentaje.isEmpty()?null:Integer.valueOf(texturaPorcentaje));
         formComprobacionHorizonte.setClaseOrganico(organicoClase!=null?organicoClase.getId():null);
         formComprobacionHorizonte.setClaseComposicion(organicoComposicion!=null?organicoComposicion.getId():null);
@@ -1590,6 +1575,7 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
             int spinnerPosition = reconocedorAdapter.getPosition(Utils.getDomain(listReconocedor, formComprobacion.getReconocedor()));
             inputReconocedor.setSelection(spinnerPosition);
             spinnerPosition = epocaAdapter.getPosition(Utils.getDomain(listEpoca, formComprobacion.getEpocaClimatica()));
+            inputNombreSitio.setText(formComprobacion.getNombreSitio());
             inputEpoca.setSelection(spinnerPosition);
             inputEpocaDias.setText(formComprobacion.getDiasLluvia());
             spinnerPosition = longitudAdapter.getPosition(Utils.getDomain(listLongitud, formComprobacion.getPendienteLongitud()));
@@ -1653,7 +1639,7 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
                         dataBaseHelper.getListFormComprobacionHorizonteFlecked(row.getId());
                 j = 0;
                 for(FormComprobacionHorizonteOpt opt:listFormComprobacionHorizonteFlecked){
-                    View view = addOptionalView(SkylineType.OPTIONAL, j, opt.getColorHue(),
+                    View view = addOptionalView(SkylineType.FLECKED, j, opt.getColorHue(),
                             opt.getColorValue(), opt.getColorChroma(), String.valueOf(opt.getColorPorcentaje()));
                     viewListFlecked.add(view);
                     j++;
@@ -1673,14 +1659,12 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
         }
     }
 
-    class MyTask extends AsyncTask<Void, Void, Void> {
+    class SaveFormTask extends AsyncTask<Void, Void, Void> {
 
         ProgressDialog progressDialog;
-        Context context;
 
-        public MyTask(ProgressDialog progressDialog, Context context) {
-            this.progressDialog = progressDialog;
-            this.context = context;
+        public SaveFormTask(Context context) {
+            progressDialog = new ProgressDialog(context);
         }
 
         public void onPreExecute() {
@@ -1688,18 +1672,85 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
             progressDialog.setIndeterminate(false);
             progressDialog.setCancelable(false);
             progressDialog.setCanceledOnTouchOutside(false);
+            progressDialog.setMessage(getResources().getString(R.string.msg_loading));
             progressDialog.show();
-            //aquí se puede colocar código a ejecutarse previo a la operación
         }
 
         public void onPostExecute(Void unused) {
-        //aquí se puede colocar código que
-        //se ejecutará tras finalizar
             progressDialog.dismiss();
+            Toast.makeText(getActivity(), "Formulario " + formComprobacion.getNroObservacion()
+                    + " actualizado correctamente!", Toast.LENGTH_SHORT).show();
         }
 
         protected Void doInBackground(Void... params) {
-            //realizar la operación aquí
+            if(formComprobacion == null || mode == Modes.NEW) {
+                formComprobacion = new FormComprobacion();
+                formComprobacion.setLongitud(Double.valueOf(Singleton.getInstance().getX()));
+                formComprobacion.setLatitud(Double.valueOf(Singleton.getInstance().getY()));
+                formComprobacion.setFechaHora(fechaHora);
+                formComprobacion.setAltitud(null);
+                formComprobacion.setNroObservacion(nroObservacion);
+                formComprobacionFoto = new FormComprobacionFoto();
+            }
+
+            formComprobacion.setReconocedor(reconocedor);
+            formComprobacion.setNombreSitio(nombreSitio);
+            formComprobacion.setEpocaClimatica(epocaClimatica);
+            formComprobacion.setDiasLluvia(epocaDias);
+            formComprobacion.setPendienteLongitud(pendienteLongitud);
+            formComprobacion.setGradoErosion(gradoErosion);
+            formComprobacion.setTipoMovimiento(tipoMovimiento);
+            formComprobacion.setAnegamiento(anegamiento);
+            formComprobacion.setFrecuencia(frecuencia);
+            formComprobacion.setDuracion(duracion);
+            formComprobacion.setPedregosidad(pedregosidad);
+            formComprobacion.setAfloramiento(afloramiento);
+            formComprobacion.setFragmentoSuelo(fragmentoSuelo);
+            formComprobacion.setDrenajeNatural(drenajeNatural);
+            formComprobacion.setProfundidadEfectiva(profundidadEfectiva);
+            formComprobacion.setEpidedones(epidedones);
+            formComprobacion.setEndopedones(endopedones);
+            formComprobacion.setEstado(1);
+
+            DataBaseHelper dataBaseHelper = new DataBaseHelper(getActivity());
+            Long result = dataBaseHelper.insertFormComprobacion(formComprobacion);
+            if(result > 0) {
+                formComprobacionFoto.setIdFormComprobacion(result.intValue());
+                String nameFile = "img_" + nroObservacion + ".jpeg";
+                DBBitmapUtility.saveImage(getActivity(), foto, nameFile);
+                formComprobacionFoto.setFoto(nameFile);
+                dataBaseHelper.insertFormComprobacionFoto(formComprobacionFoto);
+
+                int i = 0;
+                for(FormComprobacionHorizonte row:formComprobacionHorizonteList){
+                    row.setIdFormComprobacion(result.intValue());
+                    Long id = dataBaseHelper.insertFormComprobacionHorizonte(row);
+                    row.setId(id.intValue());
+
+                    for(OptionalEntity optionalEntity : listOptionalEntity) {
+                        if(optionalEntity.getIndex() == i) {
+                            viewListOptional = optionalEntity.getViewListOptional();
+                            List<FormComprobacionHorizonteOpt> listFormComprobacionHorizonteOptional = validateOptional(id.intValue());
+                            for(FormComprobacionHorizonteOpt row2:listFormComprobacionHorizonteOptional){
+                                Long id2 = dataBaseHelper.insertFormComprobacionHorizonteOptional(row2);
+                                row2.setId(id2.intValue());
+                            }
+
+                            viewListFlecked = optionalEntity.getViewListFlecked();
+                            List<FormComprobacionHorizonteOpt> listFormComprobacionHorizonteFlecked = validateFlecked(id.intValue());
+                            for(FormComprobacionHorizonteOpt row2:listFormComprobacionHorizonteFlecked){
+                                Long id2 = dataBaseHelper.insertFormComprobacionHorizonteFlecked(row2);
+                                row2.setId(id2.intValue());
+                            }
+                            break;
+                        }
+                    }
+
+                    i++;
+                }
+                mode = Modes.EDIT;
+            }
+
             return null;
         }
     }

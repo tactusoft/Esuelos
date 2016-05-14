@@ -469,32 +469,8 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         List<FormComprobacionHorizonte> list = new LinkedList<>();
         try {
             openDataBase();
-            Cursor cur = myDataBase.rawQuery("SELECT id,\n" +
-                    "id_form_comprobacion,\n" +
-                    "numero_horizonte,\n" +
-                    "profundidad,\n" +
-                    "color_hue,\n" +
-                    "color_value,\n" +
-                    "color_chroma,\n" +
-                    "color_porcentaje,\n" +
-                    "tipo_material,\n" +
-                    "clase_textural,\n" +
-                    "modificador_textura,\n" +
-                    "clase_organico,\n" +
-                    "clase_composicion,\n" +
-                    "textura_porcentaje,\n" +
-                    "estructura_tipo,\n" +
-                    "estructura_clase,\n" +
-                    "estructura_grado,\n" +
-                    "forma_rompe,\n" +
-                    "motivo_no_estructura,\n" +
-                    "horizonte_clase,\n" +
-                    "horizonte_caracterisitica,\n" +
-                    "textura_otro,\n" +
-                    "estructura_otra " +
-                    "FROM form_comprobacion_horizonte\n" +
-                    "WHERE id_form_comprobacion = ?\n" +
-                    "ORDER BY numero_horizonte", new String[] {idFormComprobacion.toString()});
+            Cursor cur = myDataBase.rawQuery("SELECT * FROM vw_form_comprobacion_horizonte WHERE id_form_comprobacion = ?" +
+                    " ORDER BY numero_horizonte", new String[] {idFormComprobacion.toString()});
             while (cur.moveToNext()) {
                 FormComprobacionHorizonte row = new FormComprobacionHorizonte();
                 row.setId(cur.getInt(0));
@@ -520,6 +496,9 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                 row.setHorizonteCaracterisitica(cur.getInt(20));
                 row.setTexturaOtro(cur.getString(21));
                 row.setEstructuraOtra(cur.getString(22));
+                row.setDescColorHue(cur.getString(23));
+                row.setDescColorValue(cur.getString(24));
+                row.setDescColorChroma(cur.getString(25));
                 list.add(row);
             }
             cur.close();
