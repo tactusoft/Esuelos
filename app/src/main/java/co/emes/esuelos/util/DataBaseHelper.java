@@ -397,6 +397,27 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         return id;
     }
 
+    public Integer deleteFormComprobacionHorizonteOptizonteOptional(Integer idFormComprHoriz) {
+        return deleteFormComprobacionHorizonteOpt("form_comprobacion_opcional", idFormComprHoriz);
+    }
+
+    public Integer deleteFormComprobacionHorizonteFlecked(Integer idFormComprHoriz) {
+        return deleteFormComprobacionHorizonteOpt("form_comprobacion_moteado", idFormComprHoriz);
+    }
+
+    private Integer deleteFormComprobacionHorizonteOpt(String table, Integer idFormComprHoriz) {
+        Integer id = null;
+        try {
+            openDataBase();
+            id = myDataBase.delete(table, "id_form_compr_horiz = " + idFormComprHoriz, null);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            close();
+        }
+        return id;
+    }
+
     public List<FormComprobacion> getListFormComprobacion() {
         List<FormComprobacion> list = new LinkedList<>();
         try {
@@ -431,7 +452,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                 row.setDrenajeNatural(cur.getInt(19));
                 row.setProfundidadEfectiva(cur.getInt(20));
                 row.setEpidedones(cur.getInt(21));
-                row.setEndopedones(cur.getInt(21));
+                row.setEndopedones(cur.getInt(22));
                 row.setEstado(cur.getInt(23));
                 list.add(row);
             }

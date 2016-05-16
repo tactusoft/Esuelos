@@ -23,7 +23,7 @@ android {
             signingConfig getSigningConfig()
             applicationVariants.all { variant ->
                 variant.outputs.each { output ->
-                    project.ext { appName = 'esuelos' }
+                    project.ext { appName = 'escollector' }
                     def date = new Date();
                     def formattedDate = date.format('yyyyMMddHHmmss')
                     def newName = output.outputFile.name

@@ -36,9 +36,6 @@ import android.widget.Toast;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import co.emes.esuelos.R;
 import co.emes.esuelos.forms.FormComprobacionHorizonteAdapter;
@@ -225,7 +222,9 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
     boolean nextFlag = true;
     boolean nextFlagMaterialType = true;
     boolean nextFlagEstructuraTipo = true;
+
     static Modes mode;
+    static Modes modeSkyline;
 
     enum Modes {
         NEW, EDIT
@@ -474,7 +473,7 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
         btnOptionalTop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                addOptionalView(SkylineType.OPTIONAL);
+                addOptionalView(SkylineType.OPTIONAL, null, null, null, null);
                 bottomScrollView();
             }
         });
@@ -482,7 +481,7 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
         btnOptional.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                addOptionalView(SkylineType.OPTIONAL);
+                addOptionalView(SkylineType.OPTIONAL, null, null, null, null);
                 bottomScrollView();
             }
         });
@@ -490,7 +489,7 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
         btnFleckedTop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                addOptionalView(SkylineType.FLECKED);
+                addOptionalView(SkylineType.FLECKED, null, null, null, null);
                 bottomScrollView();
             }
         });
@@ -498,7 +497,7 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
         btnFlecked.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                addOptionalView(SkylineType.FLECKED);
+                addOptionalView(SkylineType.FLECKED, null, null, null, null);
                 bottomScrollView();
             }
         });
@@ -795,10 +794,6 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
 
     }
 
-    public FormComprobacion getFormComprobacion() {
-        return formComprobacion;
-    }
-
     public void setFormComprobacion(FormComprobacion formComprobacion) {
         this.formComprobacion = formComprobacion;
     }
@@ -927,7 +922,7 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
     }
 
     public void previewAction(){
-        if(mode == Modes.EDIT) {
+        if(modeSkyline == Modes.EDIT) {
             String depth = inputDepth.getText().toString();
             Domain colorHue = ((Domain)inputColorHue.getSelectedItem());
             Domain colorValue = ((Domain)inputColorValue.getSelectedItem());
@@ -948,6 +943,7 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
             Domain organicoClase = ((Domain) inputOrganicType.getSelectedItem());
             Domain organicoComposicion = ((Domain) inputOrganicType2.getSelectedItem());
             String texturePercent = inputTexturePercent.getText().toString();
+            String texturaOtro = inputTextureOther.getText().toString();
             Domain estructuraTipo = ((Domain) inputStructure.getSelectedItem());
             Domain estructuraClase = ((Domain) inputStructureType.getSelectedItem());
             Domain estructuraGrado = ((Domain) inputStructureType2.getSelectedItem());
@@ -960,11 +956,11 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
             if(!depth.isEmpty() && colorHue.getId()!=null && colorValue.getId()!=null
                     && colorChroma.getId()!=null
                     && texture.getId()!=null) {
-                setValues(depth, colorHue, colorValue, colorChroma, colorPercent,
+                setValues(index + 1, depth, colorHue, colorValue, colorChroma, colorPercent,
                         materialType, texturaClase, textureModifiers, texturePercent,
                         organicoClase, organicoComposicion,
                         estructuraTipo, estructuraClase, estructuraGrado, formaRompe, motivoNoEstructura,
-                        estructuraOtra, skylineType, horizonteCaracterisitica);
+                        estructuraOtra, texturaOtro, skylineType, horizonteCaracterisitica);
                 index--;
                 if(index >= 0) {
                     getValues();
@@ -991,54 +987,12 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
         }
     }
 
-    public List<FormComprobacionHorizonteOpt> validateOptional(Integer idFormComprobacion){
+    public List<FormComprobacionHorizonteOpt> validateOptional(SkylineType skylineType,  Integer idFormComprobacionHorz){
         List<FormComprobacionHorizonteOpt> listFormComprobacionHorizonteOpt = new LinkedList<>();
-        for(View row:viewListOptional){
+        List<View> viewListTemp = (skylineType == SkylineType.OPTIONAL)?viewListOptional:viewListFlecked;
+        for(View row:viewListTemp){
             FormComprobacionHorizonteOpt entity = new FormComprobacionHorizonteOpt();
-            entity.setIdFormComprobacionHorz(idFormComprobacion);
-            LinearLayout child = (LinearLayout)row;
-            for(int index = 0; index < child.getChildCount(); index++) {
-                View object = child.getChildAt(index);
-                if (object instanceof LinearLayout && object.getId() == R.id.lyr_colors) {
-                    LinearLayout lyr = (LinearLayout)object;
-                    for(int index2 = 0; index2 < lyr.getChildCount(); index2++) {
-                        View object2 = lyr.getChildAt(index2);
-                        if (object2 instanceof Spinner) {
-                            Spinner spinner = (Spinner) object2;
-                            switch (spinner.getId()) {
-                                case R.id.input_color_hue:
-                                    entity.setColorHue(((Domain) spinner.getSelectedItem()).getId());
-                                    break;
-                                case R.id.input_color_value:
-                                    entity.setColorValue(((Domain) spinner.getSelectedItem()).getId());
-                                    break;
-                                case R.id.input_color_chroma:
-                                    entity.setColorChroma(((Domain) spinner.getSelectedItem()).getId());
-                                    break;
-                            }
-                        }
-                    }
-                } else if (object instanceof EditText) {
-                    EditText editText = (EditText) object;
-                    if (editText.getId() == R.id.input_color_percent) {
-                        try {
-                            entity.setColorPorcentaje(Integer.valueOf(editText.getText().toString()));
-                        } catch (Exception ex) {
-                            entity.setColorPorcentaje(null);
-                        }
-                    }
-                }
-            }
-            listFormComprobacionHorizonteOpt.add(entity);
-        }
-        return listFormComprobacionHorizonteOpt;
-    }
-
-    public List<FormComprobacionHorizonteOpt> validateFlecked(Integer idFormComprobacion){
-        List<FormComprobacionHorizonteOpt> listFormComprobacionHorizonteOpt = new LinkedList<>();
-        for(View row:viewListFlecked){
-            FormComprobacionHorizonteOpt entity = new FormComprobacionHorizonteOpt();
-            entity.setIdFormComprobacionHorz(idFormComprobacion);
+            entity.setIdFormComprobacionHorz(idFormComprobacionHorz);
             LinearLayout child = (LinearLayout)row;
             for(int index = 0; index < child.getChildCount(); index++) {
                 View object = child.getChildAt(index);
@@ -1096,6 +1050,7 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
         Domain texturaClase = ((Domain) inputTexture.getSelectedItem());
         Domain textureModifiers = ((Domain) inputTextureModifiers.getSelectedItem());
         String texturePercent = inputTexturePercent.getText().toString();
+        String texturaOtro = inputTextureOther.getText().toString();
         Domain estructuraTipo = ((Domain) inputStructure.getSelectedItem());
         Domain estructuraClase = ((Domain) inputStructureType.getSelectedItem());
         Domain estructuraGrado = ((Domain) inputStructureType2.getSelectedItem());
@@ -1132,7 +1087,7 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
                 return;
             }
 
-            List<FormComprobacionHorizonteOpt> listFormComprobacionHorizonteOpt = validateOptional(null);
+            List<FormComprobacionHorizonteOpt> listFormComprobacionHorizonteOpt = validateOptional(SkylineType.OPTIONAL, null);
             boolean optionalFlag = true;
             if(listFormComprobacionHorizonteOpt.size() > 0){
                 for(FormComprobacionHorizonteOpt row:listFormComprobacionHorizonteOpt){
@@ -1144,7 +1099,7 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
                 }
             }
 
-            List<FormComprobacionHorizonteOpt> listFormComprobacionHorizonteFlecked = validateFlecked(null);
+            List<FormComprobacionHorizonteOpt> listFormComprobacionHorizonteFlecked = validateOptional(SkylineType.FLECKED, null);
             boolean fleckedFlag = true;
             if(listFormComprobacionHorizonteFlecked.size() > 0){
                 for(FormComprobacionHorizonteOpt row:listFormComprobacionHorizonteFlecked){
@@ -1160,13 +1115,13 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
                 btnPreview.setEnabled(true);
                 btnPreviewTop.setEnabled(true);
                 index++;
-                if (mode == Modes.NEW) {
+                if (modeSkyline == Modes.NEW) {
                     formComprobacionHorizonte = new FormComprobacionHorizonte();
-                    setValues(depth, colorHue, colorValue, colorChroma, colorPercent,
+                    setValues(index, depth, colorHue, colorValue, colorChroma, colorPercent,
                             materialType, texturaClase, textureModifiers, texturePercent,
                             organicoClase, organicoComposicion,
                             estructuraTipo, estructuraClase, estructuraGrado, formaRompe, motivoNoEstructura,
-                            estructuraOtra, skylineType, horizonteCaracterisitica);
+                            estructuraOtra, texturaOtro, skylineType, horizonteCaracterisitica);
                     formComprobacionHorizonteList.add(formComprobacionHorizonte);
                     if(formComprobacionHorizonteList.size() > 1) {
                         labelEndopedones.setVisibility(View.VISIBLE);
@@ -1174,11 +1129,21 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
                     }
                     listOptionalEntity.add(new OptionalEntity(index-1, viewListOptional, viewListFlecked));
                 } else {
-                    setValues(depth, colorHue, colorValue, colorChroma, colorPercent,
+                    setValues(index, depth, colorHue, colorValue, colorChroma, colorPercent,
                             materialType, texturaClase, textureModifiers, texturePercent,
                             organicoClase, organicoComposicion,
                             estructuraTipo, estructuraClase, estructuraGrado, formaRompe, motivoNoEstructura,
-                            estructuraOtra, skylineType, horizonteCaracterisitica);
+                            estructuraOtra, texturaOtro, skylineType, horizonteCaracterisitica);
+                    boolean isNoExists = true;
+                    for(OptionalEntity opt:listOptionalEntity) {
+                        if(opt.getIndex() == index-1){
+                            isNoExists = false;
+                            break;
+                        }
+                    }
+                    if(isNoExists) {
+                        listOptionalEntity.add(new OptionalEntity(index-1, viewListOptional, viewListFlecked));
+                    }
                 }
                 getValues();
 
@@ -1322,16 +1287,21 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
                 spinnerPosition = structureReasonsAdapter.getPosition(Utils.getDomain(listStructureReasons, formComprobacionHorizonte.getMotivoNoEstructura()));
                 inputStructureReasons.setSelection(spinnerPosition);
                 spinnerPosition = horizontesMaestrosAdapter.getPosition(Utils.getDomain(listHorizonteClase, formComprobacionHorizonte.getHorizonteClase()));
-                inputStructureTypeOther.setText(formComprobacionHorizonte.getEstructuraOtra()==null?null:formComprobacionHorizonte.getEstructuraOtra().toString());
+                inputStructureTypeOther.setText(formComprobacionHorizonte.getEstructuraOtra()==null?null:formComprobacionHorizonte.getEstructuraOtra());
                 inputSkylineType.setSelection(spinnerPosition);
                 spinnerPosition = horizonteCaracterisiticaAdapter.getPosition(Utils.getDomain(listHorizonteCaracterisitica, formComprobacionHorizonte.getHorizonteCaracterisitica()));
                 inputHorizonteCaracterisitica.setSelection(spinnerPosition);
-                mode = Modes.EDIT;
+                modeSkyline = Modes.EDIT;
                 nextFlag = false;
                 nextFlagMaterialType = false;
                 nextFlagEstructuraTipo = false;
 
                 linearLayoutOpt.removeAllViews();
+                indexOptional = 0;
+                indexFlecked = 0;
+                viewListOptional = new LinkedList<>();
+                viewListFlecked = new LinkedList<>();
+
                 for(OptionalEntity optionalEntity : listOptionalEntity) {
                     if(optionalEntity.getIndex() == index) {
                         viewListOptional = optionalEntity.getViewListOptional();
@@ -1348,22 +1318,22 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
                     }
                 }
             } else {
-                mode = Modes.NEW;
+                modeSkyline = Modes.NEW;
                 clearFields();
             }
         } catch(IndexOutOfBoundsException ex) {
-            mode = Modes.NEW;
+            modeSkyline = Modes.NEW;
             clearFields();
         }
     }
 
-    void setValues(String depth, Domain colorHue , Domain colorValue, Domain colorChroma, String colorPercent,
+    void setValues(Integer numeroHorizonte, String depth, Domain colorHue , Domain colorValue, Domain colorChroma, String colorPercent,
                    Domain materialType, Domain texturaClase, Domain texturaModificador, String texturaPorcentaje,
                    Domain organicoClase, Domain organicoComposicion,
                    Domain estructuraTipo, Domain estructuraClase, Domain estructuraGrado, Domain formaRompe,
-                   Domain motivoNoEstructura, String estructuraOtra,
+                   Domain motivoNoEstructura, String estructuraOtra, String texturaOtro,
                    Domain skylineType, Domain horizonteCaracterisitica) {
-        formComprobacionHorizonte.setNumeroHorizonte(index);
+        formComprobacionHorizonte.setNumeroHorizonte(numeroHorizonte);
         formComprobacionHorizonte.setProfundidad(Integer.valueOf(depth));
         formComprobacionHorizonte.setColorHue(colorHue.getId());
         formComprobacionHorizonte.setDescColorHue(colorHue.getDescripcion());
@@ -1384,6 +1354,7 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
         formComprobacionHorizonte.setEstructuraGrado(estructuraGrado!=null?estructuraGrado.getId():null);
         formComprobacionHorizonte.setFormaRompe(formaRompe!=null?formaRompe.getId():null);
         formComprobacionHorizonte.setMotivoNoEstructura(motivoNoEstructura!=null?motivoNoEstructura.getId():null);
+        formComprobacionHorizonte.setTexturaOtro(texturaOtro);
         formComprobacionHorizonte.setEstructuraOtra(estructuraOtra);
         formComprobacionHorizonte.setHorizonteClase(skylineType.getId());
         formComprobacionHorizonte.setHorizonteCaracterisitica(horizonteCaracterisitica.getId());
@@ -1411,10 +1382,19 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
         index = position;
         getValues();
         host.setCurrentTab(2);
+
+        if(index > 0) {
+            btnPreviewTop.setEnabled(true);
+            btnPreview.setEnabled(true);
+        } else {
+            btnPreviewTop.setEnabled(false);
+            btnPreview.setEnabled(false);
+        }
     }
 
     @SuppressLint("InflateParams")
-    public void addOptionalView(SkylineType skylineType){
+    public View addOptionalView(SkylineType skylineType, Integer colorHue, Integer colorValue, Integer colorChroma,
+                                String colorPercent){
         Integer indexType;
         int type;
 
@@ -1461,38 +1441,16 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
                         }
                     }
                 }
+
+                for(OptionalEntity ope: listOptionalEntity) {
+                    if(ope.getIndex() == index) {
+                        ope.setViewListOptional(viewListOptional);
+                        ope.setViewListFlecked(viewListFlecked);
+                        break;
+                    }
+                }
             }
         });
-
-        final Spinner inputColorHue = (Spinner) rootView.findViewById(R.id.input_color_hue);
-        final Spinner inputColorValue = (Spinner) rootView.findViewById(R.id.input_color_value);
-        final Spinner inputColorChroma = (Spinner) rootView.findViewById(R.id.input_color_chroma);
-
-        colorHueAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, listColorHue);
-        inputColorHue.setAdapter(colorHueAdapter);
-
-        colorValueAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, listColorValue);
-        inputColorValue.setAdapter(colorValueAdapter);
-
-        colorChromaAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, listColorChroma);
-        inputColorChroma.setAdapter(colorChromaAdapter);
-    }
-
-    public View addOptionalView(SkylineType skylineType, Integer index,
-                                Integer colorHue, Integer colorValue, Integer colorChroma,
-                                String colorPercent){
-        View rootView = this.inflater.inflate(R.layout.tab_testing_skyline, null);
-        linearLayoutOpt.addView(rootView);
-        TextView labelHorizonteNroOpt = (TextView) rootView.findViewById(R.id.label_horizonte_nro);
-        if(skylineType.equals(SkylineType.OPTIONAL)) {
-            rootView.setId(indexOptional++);
-            labelHorizonteNroOpt.setText(String.format(getResources().getString(R.string.tst_skyline_optional), index + 1));
-            viewListOptional.add(rootView);
-        } else {
-            rootView.setId(indexFlecked++);
-            labelHorizonteNroOpt.setText(String.format(getResources().getString(R.string.tst_skyline_flecked), index + 1));
-            viewListFlecked.add(rootView);
-        }
 
         final Spinner inputColorHue = (Spinner) rootView.findViewById(R.id.input_color_hue);
         final Spinner inputColorValue = (Spinner) rootView.findViewById(R.id.input_color_value);
@@ -1531,13 +1489,13 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
 
         Cursor cursor = getActivity().getContentResolver().query(selectedImage, filePathColumn,
                 null, null, null);
+        String picturePath = null;
         if (cursor != null) {
             cursor.moveToFirst();
+            int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+            picturePath = cursor.getString(columnIndex);
+            cursor.close();
         }
-
-        int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-        String picturePath = cursor.getString(columnIndex);
-        cursor.close();
         Bitmap pic = BitmapFactory.decodeFile(picturePath);
         imgViewPic.setImageBitmap(pic);
     }
@@ -1602,11 +1560,8 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
             inputProfundidadEfectiva.setSelection(spinnerPosition);
             spinnerPosition = epidedonesAdapter.getPosition(Utils.getDomain(listEpidedones, formComprobacion.getEpidedones()));
             inputEpidedones.setSelection(spinnerPosition);
-            spinnerPosition = endopedonesAdapter.getPosition(Utils.getDomain(listEndopedones, formComprobacion.getEndopedones()));
-            inputEndopedones.setSelection(spinnerPosition);
 
             formComprobacionFoto = dataBaseHelper.getFormComprobacionFoto(formComprobacion.getId());
-            //Bitmap bitmap = DBBitmapUtility.getImage(formComprobacionFoto.getFoto());
             Bitmap bitmap = DBBitmapUtility.loadImageBitmap(getActivity(), formComprobacionFoto.getFoto());
             imgViewPic.setImageBitmap(bitmap);
 
@@ -1617,40 +1572,49 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
                 listViewSkyline.setItemsCanFocus(false);
                 listViewSkyline.setAdapter(skylineAdapter);
                 index = 0;
+
+                int i = 0;
+                for (FormComprobacionHorizonte row : formComprobacionHorizonteList != null ? formComprobacionHorizonteList : null) {
+                    List<View> viewListOptionalTemp = new LinkedList<>();
+                    List<View> viewListFleckedTemp = new LinkedList<>();
+
+                    List<FormComprobacionHorizonteOpt> listFormComprobacionHorizonteOptional =
+                            dataBaseHelper.getListFormComprobacionHorizonteOptional(row.getId());
+                    indexOptional = 0;
+                    for(FormComprobacionHorizonteOpt opt:listFormComprobacionHorizonteOptional) {
+                        View view = addOptionalView(SkylineType.OPTIONAL, opt.getColorHue(),
+                                opt.getColorValue(), opt.getColorChroma(), String.valueOf(opt.getColorPorcentaje()));
+                        viewListOptionalTemp.add(view);
+                    }
+
+                    List<FormComprobacionHorizonteOpt> listFormComprobacionHorizonteFlecked =
+                            dataBaseHelper.getListFormComprobacionHorizonteFlecked(row.getId());
+                    indexFlecked = 0;
+                    for(FormComprobacionHorizonteOpt opt:listFormComprobacionHorizonteFlecked){
+                        View view = addOptionalView(SkylineType.FLECKED, opt.getColorHue(),
+                                opt.getColorValue(), opt.getColorChroma(), String.valueOf(opt.getColorPorcentaje()));
+                        viewListFleckedTemp.add(view);
+                    }
+
+                    if(viewListOptionalTemp.size() > 0 || viewListFleckedTemp.size() > 0) {
+                        OptionalEntity optionalEntity = new OptionalEntity();
+                        optionalEntity.setIndex(i);
+                        optionalEntity.setViewListOptional(viewListOptionalTemp);
+                        optionalEntity.setViewListFlecked(viewListFleckedTemp);
+                        listOptionalEntity.add(optionalEntity);
+                    }
+                    i++;
+                }
+
                 getValues();
-            }
 
-            int i = 0;
-            for (FormComprobacionHorizonte row : formComprobacionHorizonteList) {
-                List<View> viewListOptional = new LinkedList<>();
-                List<View> viewListFlecked = new LinkedList<>();
+                if(formComprobacionHorizonteList.size() > 1) {
+                    labelEndopedones.setVisibility(View.VISIBLE);
+                    inputEndopedones.setVisibility(View.VISIBLE);
 
-                List<FormComprobacionHorizonteOpt> listFormComprobacionHorizonteOptional =
-                        dataBaseHelper.getListFormComprobacionHorizonteOptional(row.getId());
-                int j = 0;
-                for(FormComprobacionHorizonteOpt opt:listFormComprobacionHorizonteOptional) {
-                    View view = addOptionalView(SkylineType.OPTIONAL, j, opt.getColorHue(),
-                            opt.getColorValue(), opt.getColorChroma(), String.valueOf(opt.getColorPorcentaje()));
-                    viewListOptional.add(view);
-                    j++;
+                    spinnerPosition = endopedonesAdapter.getPosition(Utils.getDomain(listEndopedones, formComprobacion.getEndopedones()));
+                    inputEndopedones.setSelection(spinnerPosition);
                 }
-
-                List<FormComprobacionHorizonteOpt> listFormComprobacionHorizonteFlecked =
-                        dataBaseHelper.getListFormComprobacionHorizonteFlecked(row.getId());
-                j = 0;
-                for(FormComprobacionHorizonteOpt opt:listFormComprobacionHorizonteFlecked){
-                    View view = addOptionalView(SkylineType.FLECKED, j, opt.getColorHue(),
-                            opt.getColorValue(), opt.getColorChroma(), String.valueOf(opt.getColorPorcentaje()));
-                    viewListFlecked.add(view);
-                    j++;
-                }
-
-                OptionalEntity optionalEntity = new OptionalEntity();
-                optionalEntity.setIndex(i);
-                optionalEntity.setViewListOptional(viewListOptional);
-                optionalEntity.setViewListFlecked(viewListFlecked);
-                listOptionalEntity.add(optionalEntity);
-                i++;
             }
 
             nextFlag = false;
@@ -1685,8 +1649,8 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
         protected Void doInBackground(Void... params) {
             if(formComprobacion == null || mode == Modes.NEW) {
                 formComprobacion = new FormComprobacion();
-                formComprobacion.setLongitud(Double.valueOf(Singleton.getInstance().getX()));
-                formComprobacion.setLatitud(Double.valueOf(Singleton.getInstance().getY()));
+                formComprobacion.setLongitud(Singleton.getInstance().getX());
+                formComprobacion.setLatitud(Singleton.getInstance().getY());
                 formComprobacion.setFechaHora(fechaHora);
                 formComprobacion.setAltitud(null);
                 formComprobacion.setNroObservacion(nroObservacion);
@@ -1727,17 +1691,22 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
                     Long id = dataBaseHelper.insertFormComprobacionHorizonte(row);
                     row.setId(id.intValue());
 
+                    dataBaseHelper.deleteFormComprobacionHorizonteOptizonteOptional(id.intValue());
+                    dataBaseHelper.deleteFormComprobacionHorizonteFlecked(id.intValue());
+
                     for(OptionalEntity optionalEntity : listOptionalEntity) {
                         if(optionalEntity.getIndex() == i) {
                             viewListOptional = optionalEntity.getViewListOptional();
-                            List<FormComprobacionHorizonteOpt> listFormComprobacionHorizonteOptional = validateOptional(id.intValue());
+                            List<FormComprobacionHorizonteOpt>
+                                    listFormComprobacionHorizonteOptional = validateOptional(SkylineType.OPTIONAL, id.intValue());
                             for(FormComprobacionHorizonteOpt row2:listFormComprobacionHorizonteOptional){
                                 Long id2 = dataBaseHelper.insertFormComprobacionHorizonteOptional(row2);
                                 row2.setId(id2.intValue());
                             }
 
                             viewListFlecked = optionalEntity.getViewListFlecked();
-                            List<FormComprobacionHorizonteOpt> listFormComprobacionHorizonteFlecked = validateFlecked(id.intValue());
+                            List<FormComprobacionHorizonteOpt>
+                                    listFormComprobacionHorizonteFlecked = validateOptional(SkylineType.FLECKED, id.intValue());
                             for(FormComprobacionHorizonteOpt row2:listFormComprobacionHorizonteFlecked){
                                 Long id2 = dataBaseHelper.insertFormComprobacionHorizonteFlecked(row2);
                                 row2.setId(id2.intValue());
