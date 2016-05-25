@@ -460,7 +460,7 @@
                         android:layout_marginRight="20dp"/>
 
                     <EditText
-                        android:id="@+id/input_vegetacion"
+                        android:id="@+id/input_vegetacion_natural"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textColor="@android:color/white"

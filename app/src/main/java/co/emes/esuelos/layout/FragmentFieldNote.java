@@ -78,6 +78,8 @@ public class FragmentFieldNote extends DialogFragment implements View.OnClickLis
     Spinner inputSubgrupoUso;
     TextView labelNombreCultivo;
     EditText inputNombreCultivo;
+    EditText inputVegetacionNatural;
+    EditText inputObservaciones;
     ImageView imgViewPic;
 
     Bitmap foto;
@@ -93,16 +95,19 @@ public class FragmentFieldNote extends DialogFragment implements View.OnClickLis
     Integer claseErosion;
     Integer tipoErosion;
     Integer gradoErosion;
-    Integer clasesMovimiento;
-    Integer tiposMovimiento;
-    Integer gradosMovimiento;
+    Integer claseMovimiento;
+    Integer tipoMovimiento;
+    Integer frecuenciaMovimiento;
     Integer anegamiento;
     Integer frecuencia;
     Integer duracion;
     Integer pedregosidad;
     Integer afloramiento;
+    String vegetacionNatural;
     Integer grupoUso;
     Integer subgrupoUso;
+    String nombreCultivo;
+    String observaciones;
 
     List<Domain> listReconocedor;
     List<Domain> listEpoca;
@@ -249,6 +254,8 @@ public class FragmentFieldNote extends DialogFragment implements View.OnClickLis
         inputSubgrupoUso = (Spinner) rootView.findViewById(R.id.input_subgrupo_uso);
         labelNombreCultivo = (TextView) rootView.findViewById(R.id.label_nombre_cultivo);
         inputNombreCultivo = (EditText) rootView.findViewById(R.id.input_nombre_cultivo);
+        inputVegetacionNatural = (EditText) rootView.findViewById(R.id.input_vegetacion_natural);
+        inputObservaciones = (EditText) rootView.findViewById(R.id.input_observacion);
 
         Button btnSave = (Button) rootView.findViewById(R.id.btn_save);
         Button btnTakePhoto = (Button) rootView.findViewById(R.id.btn_take_photo);
@@ -687,7 +694,12 @@ public class FragmentFieldNote extends DialogFragment implements View.OnClickLis
         gradiente = ((Domain)inputGradiente.getSelectedItem()).getId();
         pendienteLongitud = ((Domain)inputPendienteLongitud.getSelectedItem()).getId();
         pendienteForma = ((Domain)inputPendienteForma.getSelectedItem()).getId();
-        tiposMovimiento = ((Domain)inputTiposMovimiento.getSelectedItem()).getId();
+        claseErosion = ((Domain)inputClaseErosion.getSelectedItem()).getId();
+        tipoErosion = ((Domain)inputTipoErosion.getSelectedItem()).getId();
+        gradoErosion = ((Domain)inputGradoErosion.getSelectedItem()).getId();
+        claseMovimiento = ((Domain)inputClasesMovimiento.getSelectedItem()).getId();
+        tipoMovimiento = ((Domain)inputTiposMovimiento.getSelectedItem()).getId();
+        frecuenciaMovimiento = ((Domain)inputFrecuenciasMovimiento.getSelectedItem()).getId();
         anegamiento = ((Domain)inputAnegamiento.getSelectedItem()).getId();
         if(inputFrecuencia.getSelectedItem() == null){
             inputFrecuencia.setSelection(0);
@@ -701,11 +713,12 @@ public class FragmentFieldNote extends DialogFragment implements View.OnClickLis
         afloramiento = ((Domain)inputAfloramiento.getSelectedItem()).getId();
         grupoUso = ((Domain) inputGrupoUso.getSelectedItem()).getId();
         subgrupoUso = ((Domain)inputSubgrupoUso.getSelectedItem()).getId();
+        nombreCultivo = inputNombreCultivo.getText().toString();
+        vegetacionNatural = inputVegetacionNatural.getText().toString();
+        observaciones = inputObservaciones.getText().toString();
 
-        if(reconocedor == null || nombreSitio.isEmpty() || epocaClimatica == null ||
-                pendienteLongitud == null || gradoErosion == null || tiposMovimiento == null || anegamiento == null ||
-                pedregosidad == null  || afloramiento == null || grupoUso == null ||
-                subgrupoUso == null ) {
+        if(reconocedor == null || nombreSitio.isEmpty() ||
+                gradiente == null || claseErosion == null || tipoErosion == null || gradoErosion == null) {
             Toast.makeText(getActivity(), "Los campos marcados con * son obligatorios!", Toast.LENGTH_SHORT).show();
         } else {
             foto = ((BitmapDrawable)imgViewPic.getDrawable()).getBitmap();
@@ -856,19 +869,25 @@ public class FragmentFieldNote extends DialogFragment implements View.OnClickLis
             formNotaCampo.setNombreSitio(nombreSitio);
             formNotaCampo.setEpocaClimatica(epocaClimatica);
             formNotaCampo.setDiasLluvia(epocaDias);
+            formNotaCampo.setGradiente(gradiente);
             formNotaCampo.setPendienteLongitud(pendienteLongitud);
+            formNotaCampo.setPendienteForma(pendienteForma);
+            formNotaCampo.setClaseErosion(claseErosion);
+            formNotaCampo.setTipoErosion(tipoErosion);
             formNotaCampo.setGradoErosion(gradoErosion);
-            formNotaCampo.setTipoMovimiento(tiposMovimiento);
+            formNotaCampo.setClaseMovimiento(claseMovimiento);
+            formNotaCampo.setTipoMovimiento(tipoMovimiento);
+            formNotaCampo.setFrecuenciaMovimiento(frecuencia);
             formNotaCampo.setAnegamiento(anegamiento);
             formNotaCampo.setFrecuencia(frecuencia);
             formNotaCampo.setDuracion(duracion);
             formNotaCampo.setPedregosidad(pedregosidad);
             formNotaCampo.setAfloramiento(afloramiento);
-            //formNotaCampo.setFragmentoSuelo(fragmentoSuelo);
-            //formNotaCampo.setDrenajeNatural(drenajeNatural);
-            //formNotaCampo.setProfundidadEfectiva(profundidadEfectiva);
-            //formNotaCampo.setEpidedones(epidedones);
-            //formNotaCampo.setEndopedones(endopedones);
+            formNotaCampo.setVegetacionNatural(vegetacionNatural);
+            formNotaCampo.setGrupoUso(grupoUso);
+            formNotaCampo.setSubgrupoUso(subgrupoUso);
+            formNotaCampo.setNombreCultivo(nombreCultivo);
+            formNotaCampo.setObservaciones(observaciones);
             formNotaCampo.setEstado(1);
 
             DataBaseHelper dataBaseHelper = new DataBaseHelper(getActivity());
