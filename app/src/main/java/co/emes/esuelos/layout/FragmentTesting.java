@@ -10,6 +10,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -58,7 +59,7 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
     public static final String TAG = FragmentTesting.class.getSimpleName();
 
     LayoutInflater inflater;
-    TabHost host;
+    TabHost tabHost;
     EditText inputNroObservacion;
     EditText inputFecha;
     Spinner inputReconocedor;
@@ -243,6 +244,8 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
         viewListFlecked = new LinkedList<>();
         listOptionalEntity = new LinkedList<>();
         dataBaseHelper =  new DataBaseHelper(getActivity());
+        mode = Modes.NEW;
+        modeSkyline = Modes.NEW;
     }
 
     public static FragmentTesting newInstance(FormComprobacion formComprobacion) {
@@ -262,7 +265,7 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
         final Dialog dialog = new Dialog(getActivity());
         dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(root);
-        //dialog.getWindow().setBackgroundDrawable(new ColorDrawable(getResources().getColor(android.R.color.white)));
+        //dialog.getWindow().setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.principal_background)));
         dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
 
         return dialog;
@@ -274,38 +277,38 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
         View rootView = inflater.inflate(R.layout.fragment_testing, container, false);
         getDialog().setCancelable(false);
 
-        host = (TabHost)rootView.findViewById(R.id.tabHost);
-        host.setup();
+        tabHost = (TabHost)rootView.findViewById(R.id.tabHost);
+        tabHost.setup();
 
         //Tab 1
-        TabHost.TabSpec spec = host.newTabSpec(getResources().getString(R.string.tst_general));
+        TabHost.TabSpec spec = tabHost.newTabSpec(getResources().getString(R.string.tst_general));
         spec.setContent(R.id.tab1);
         spec.setIndicator(getResources().getString(R.string.tst_general));
-        host.addTab(spec);
+        tabHost.addTab(spec);
 
         //Tab 2
-        spec = host.newTabSpec(getResources().getString(R.string.tst_externa));
+        spec = tabHost.newTabSpec(getResources().getString(R.string.tst_externa));
         spec.setContent(R.id.tab2);
         spec.setIndicator(getResources().getString(R.string.tst_externa));
-        host.addTab(spec);
+        tabHost.addTab(spec);
 
         //Tab 3
-        spec = host.newTabSpec(getResources().getString(R.string.tst_profile));
+        spec = tabHost.newTabSpec(getResources().getString(R.string.tst_profile));
         spec.setContent(R.id.tab3);
         spec.setIndicator(getResources().getString(R.string.tst_profile));
-        host.addTab(spec);
+        tabHost.addTab(spec);
 
         //Tab 4
-        spec = host.newTabSpec(getResources().getString(R.string.tst_horizontes));
+        spec = tabHost.newTabSpec(getResources().getString(R.string.tst_horizontes));
         spec.setContent(R.id.tab4);
         spec.setIndicator(getResources().getString(R.string.tst_horizontes));
-        host.addTab(spec);
+        tabHost.addTab(spec);
 
         //Tab 5
-        spec = host.newTabSpec(getResources().getString(R.string.tst_integral));
+        spec = tabHost.newTabSpec(getResources().getString(R.string.tst_integral));
         spec.setContent(R.id.tab5);
         spec.setIndicator(getResources().getString(R.string.tst_integral));
-        host.addTab(spec);
+        tabHost.addTab(spec);
 
         imgViewPic  = (ImageView) rootView.findViewById(R.id.imgView_pic);
 
@@ -397,7 +400,7 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
 
         linearLayoutOpt = (LinearLayout) rootView.findViewById(R.id.lyr_optional);
 
-        host.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
+        tabHost.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
             @Override
             public void onTabChanged(String tabId) {
                 nextFlag = false;
@@ -1381,7 +1384,7 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
     public void editFormComprobacionHorizonte(int position) {
         index = position;
         getValues();
-        host.setCurrentTab(2);
+        tabHost.setCurrentTab(2);
 
         if(index > 0) {
             btnPreviewTop.setEnabled(true);

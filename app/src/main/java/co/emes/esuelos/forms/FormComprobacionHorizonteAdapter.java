@@ -48,8 +48,8 @@ public class FormComprobacionHorizonteAdapter extends ArrayAdapter<FormComprobac
             holder.inputDepth1 = (TextView) row.findViewById(R.id.input_depth_1);
             holder.inputColor1 = (TextView) row.findViewById(R.id.input_color_1);
             holder.inputTexture1 = (TextView) row.findViewById(R.id.input_texture_1);
-            holder.btnEditFormComprobacion = (Button) row.findViewById(R.id.btn_edit_skyline);
-            holder.btnDeleteFormComprobacion = (Button) row.findViewById(R.id.btn_delete_skyline);
+            holder.btnEditFormComprobacion = (TextView) row.findViewById(R.id.btn_edit_skyline);
+            holder.btnDeleteFormComprobacion = (TextView) row.findViewById(R.id.btn_delete_skyline);
 
             holder.btnEditFormComprobacion.setTransformationMethod(null);
             holder.btnDeleteFormComprobacion.setTransformationMethod(null);
@@ -112,8 +112,8 @@ public class FormComprobacionHorizonteAdapter extends ArrayAdapter<FormComprobac
         TextView inputDepth1;
         TextView inputColor1;
         TextView inputTexture1;
-        Button btnEditFormComprobacion;
-        Button btnDeleteFormComprobacion;
+        TextView btnEditFormComprobacion;
+        TextView btnDeleteFormComprobacion;
     }
 
 }

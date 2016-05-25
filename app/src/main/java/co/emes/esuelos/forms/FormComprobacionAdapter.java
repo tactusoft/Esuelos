@@ -51,8 +51,8 @@ public class FormComprobacionAdapter extends ArrayAdapter<FormComprobacion> {
             holder.inputDepth1 = (TextView) row.findViewById(R.id.input_depth_1);
             holder.inputColor1 = (TextView) row.findViewById(R.id.input_color_1);
             holder.inputTexture1 = (TextView) row.findViewById(R.id.input_texture_1);
-            holder.btnEditFormComprobacion = (Button) row.findViewById(R.id.btn_edit_skyline);
-            holder.btnDeleteFormComprobacion = (Button) row.findViewById(R.id.btn_delete_skyline);
+            //holder.btnEditFormComprobacion = (Button) row.findViewById(R.id.btn_edit_skyline);
+            //holder.btnDeleteFormComprobacion = (Button) row.findViewById(R.id.btn_delete_skyline);
 
             holder.btnEditFormComprobacion.setTransformationMethod(null);
             holder.btnDeleteFormComprobacion.setTransformationMethod(null);

@@ -34,6 +34,7 @@
     <string name="msg_confirm">Está seguro de realizar esta operación?</string>
     <string name="msg_gps">Por favor activar el GPS</string>
     <string name="msg_loading">Espere un momento...</string>
+    <string name="msg_obs">Observaciones</string>
 
     <string name="ndi_home">Inicio</string>
     <string name="ndi_map">Mapa</string>
@@ -52,7 +53,7 @@
     <string name="tst_reconocedor">Reconocedor *</string>
     <string name="tst_fecha">Fecha y Hora</string>
     <string name="tst_nombre_sitio">Nombre del Sitio *</string>
-    <string name="tst_epoca">Época climática *</string>
+    <string name="tst_epoca">Época climática</string>
     <string name="tst_epoca_dias">Hace cuánto tiempo llovió (Días)</string>
     <string name="tst_gm">Geomorfología</string>
     <string name="tst_longitud">Pendiente Longitud *</string>
@@ -89,6 +90,17 @@
     <string name="tst_input_effective_depth">Profundidad efectiva *</string>
     <string name="tst_epidedones">Epidedones *</string>
     <string name="tst_endopedones">Endopedones *</string>
+
+    <string name="fnd_other">Otros</string>
+    <string name="fnd_gradiente">Gradiente *</string>
+    <string name="fnd_longitud">Pendiente Longitud</string>
+    <string name="fnd_forma">Pendiente Forma</string>
+    <string name="fnd_erosion">Erosión (Clase, Tipo y Grado) *</string>
+    <string name="fnd_movimiento">Movimientos en Masa (Clase, Tipo y Frecuencia)</string>
+    <string name="fnd_vegetacion">Vegetación Natural</string>
+    <string name="fnd_grupo">Grupo de Uso de la Tierra</string>
+    <string name="fnd_subgrupo">Subgrupo de Uso de la Tierra</string>
+    <string name="fnd_cultivo">Nombre del cultivo *</string>
 
     <string name="enterFileName">Digite el nombre del archivo:</string>
     <string name="saveButtonText">Guardar</string>

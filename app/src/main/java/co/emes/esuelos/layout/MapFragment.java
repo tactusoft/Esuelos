@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -17,7 +18,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -222,6 +225,8 @@ public class MapFragment extends Fragment {
                         int selectedPosition = ((AlertDialog)dialog).getListView().getCheckedItemPosition();
                         switch (selectedPosition) {
                             case 0:
+                                new FragmentFieldNote().show(getFragmentManager(),
+                                        FragmentFieldNote.TAG);
                                 break;
                             case 1:
                                 break;
@@ -234,7 +239,28 @@ public class MapFragment extends Fragment {
                 });
 
         builderSingle.setSingleChoiceItems(arrayAdapter, 0, null);
-        builderSingle.show();
+
+        AlertDialog dialog = builderSingle.create();
+        dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(final DialogInterface dialog) {
+                Window view = ((AlertDialog)dialog).getWindow();
+                //view.setBackgroundDrawableResource(R.color.principal_background);
+                //view.setTitleColor(getActivity().getResources().getColor(R.color.principal_font));
+
+                Button positiveButton = ((AlertDialog)dialog).getButton(DialogInterface.BUTTON_POSITIVE);
+                positiveButton.setTextColor(getActivity().getResources().getColor(R.color.second_font));
+                positiveButton.setTransformationMethod(null);
+                positiveButton.invalidate();
+
+                Button negativeButton = ((AlertDialog)dialog).getButton(DialogInterface.BUTTON_NEGATIVE);
+                negativeButton.setTextColor(getActivity().getResources().getColor(R.color.second_font));
+                negativeButton.setTransformationMethod(null);
+                negativeButton.invalidate();
+            }
+        });
+
+        dialog.show();
     }
 
     @Override
@@ -274,10 +300,6 @@ public class MapFragment extends Fragment {
             super();
         }
 
-        /**
-         * If location changes, update our current location. If being found for
-         * the first time, zoom to our current position with a resolution of 20
-         */
         public void onLocationChanged(Location loc) {
             if (loc == null)
                 return;

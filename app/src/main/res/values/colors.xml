@@ -5,4 +5,8 @@
     <color name="colorAccent">#9BA9B7</color>
     <color name="colorPrimaryDark">#3B4957</color>
 
+    <color name="principal_background">#FFFFFF</color>
+    <color name="principal_font">#000000</color>
+    <color name="second_font">#FFFFFF</color>
+
 </resources>

@@ -21,6 +21,8 @@ import co.emes.esuelos.model.FormComprobacion;
 import co.emes.esuelos.model.FormComprobacionFoto;
 import co.emes.esuelos.model.FormComprobacionHorizonte;
 import co.emes.esuelos.model.FormComprobacionHorizonteOpt;
+import co.emes.esuelos.model.FormNotaCampo;
+import co.emes.esuelos.model.FormNotaCampoFoto;
 import co.emes.esuelos.model.Research;
 
 /**
@@ -280,6 +282,57 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         return id;
     }
 
+    public Long insertFormNotaCampo(FormNotaCampo entity) {
+        Long id = null;
+        try {
+            openDataBase();
+            ContentValues row = new ContentValues();
+            row.put("id", entity.getId());
+            row.put("nro_observacion", entity.getNroObservacion());
+            row.put("reconocedor", entity.getReconocedor());
+            row.put("fecha_hora", entity.getFechaHora());
+            row.put("longitud", entity.getLongitud());
+            row.put("latitud", entity.getLatitud());
+            row.put("altitud", entity.getAltitud());
+            row.put("nombre_sitio", entity.getNombreSitio());
+            row.put("epoca_climatica", entity.getEpocaClimatica());
+            row.put("dias_lluvia", entity.getDiasLluvia());
+            row.put("gradiente", entity.getGradiente());
+            row.put("pendiente_longitud", entity.getPendienteLongitud());
+            row.put("pendiente_forma", entity.getPendienteForma());
+            row.put("clase_erosion", entity.getClaseErosion());
+            row.put("tipo_erosion", entity.getTipoErosion());
+            row.put("grado_erosion", entity.getGradoErosion());
+            row.put("clase_movimiento", entity.getClaseMovimiento());
+            row.put("tipo_movimiento", entity.getTipoMovimiento());
+            row.put("frecuencia_movimiento", entity.getFrecuenciaMovimiento());
+            row.put("anegamiento", entity.getAnegamiento());
+            row.put("frecuencia", entity.getFrecuencia());
+            row.put("duracion", entity.getDuracion());
+            row.put("pedregosidad", entity.getPedregosidad());
+            row.put("afloramiento", entity.getAfloramiento());
+            row.put("vegetacion_natural", entity.getVegetacionNatural());
+            row.put("grupo_uso", entity.getGrupoUso());
+            row.put("subgrupo_uso", entity.getSubgrupoUso());
+            row.put("nombre_cultivo", entity.getNombreCultivo());
+            row.put("observaciones", entity.getObservaciones());
+            row.put("estado", entity.getEstado());
+            id = myDataBase.insert("form_nota_campo", null, row);
+            if(id == -1) {
+                myDataBase.update("form_nota_campo", row,
+                        "nro_observacion = ?", new String[] { entity.getNroObservacion() });
+                id = Long.valueOf(entity.getId());
+            } else {
+                entity.setId(id.intValue());
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            close();
+        }
+        return id;
+    }
+
     public Long insertFormComprobacionFoto(FormComprobacionFoto entity) {
         Long id = null;
         try {
@@ -291,6 +344,30 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             id = myDataBase.insert("form_comprobacion_foto", null, row);
             if(id == -1) {
                 myDataBase.update("form_comprobacion_foto", row,
+                        "id = " + entity.getId(), null);
+                id = Long.valueOf(entity.getId());
+            } else {
+                entity.setId(id.intValue());
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            close();
+        }
+        return id;
+    }
+
+    public Long insertFormNotaCampoFoto(FormNotaCampoFoto entity) {
+        Long id = null;
+        try {
+            openDataBase();
+            ContentValues row = new ContentValues();
+            row.put("id", entity.getId());
+            row.put("id_form_nota_campo", entity.getIdFormNotaCampo());
+            row.put("foto", entity.getFoto());
+            id = myDataBase.insert("form_nota_campo_foto", null, row);
+            if(id == -1) {
+                myDataBase.update("form_nota_campo_foto", row,
                         "id = " + entity.getId(), null);
                 id = Long.valueOf(entity.getId());
             } else {
@@ -486,6 +563,27 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         return result;
     }
 
+    public FormNotaCampoFoto getFormNotaCampoFoto(Integer idFormNotaCampo) {
+        FormNotaCampoFoto result = new FormNotaCampoFoto();
+        try {
+            openDataBase();
+            Cursor cur = myDataBase.rawQuery("SELECT id, id_form_nota_campo, foto "+
+                            "FROM form_comprobacion_nota_campo WHERE id_form_nota_campo = ?",
+                    new String[]{String.valueOf(idFormNotaCampo)});
+            if(cur.moveToNext()){
+                result.setId(cur.getInt(0));
+                result.setIdFormNotaCampo(cur.getInt(1));
+                result.setFoto(cur.getString(2));
+            }
+        }catch(SQLException e) {
+            e.printStackTrace();;
+        } finally {
+            close();
+        }
+
+        return result;
+    }
+
     public List<FormComprobacionHorizonte> getListFormComprobacionHorizonte(Integer idFormComprobacion) {
         List<FormComprobacionHorizonte> list = new LinkedList<>();
         try {
@@ -609,7 +707,13 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         String result = null;
         try {
             openDataBase();
-            Cursor cur = myDataBase.rawQuery("SELECT MAX(id)+1 FROM form_comprobacion", new String[] {});
+            String table = null;
+            if(type.equals("C")) {
+                table = "form_comprobacion";
+            } else if(type.equals("N")) {
+                table = "form_nota_campo";
+            }
+            Cursor cur = myDataBase.rawQuery("SELECT MAX(id)+1 FROM " + table, new String[] {});
             if (cur.moveToNext()) {
                 int maxId = (cur.getInt(0) == 0)?1:cur.getInt(0);
                 String date = Utils.dateToString(new Date(), "yyyyMMdd");
