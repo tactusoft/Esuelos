@@ -2,7 +2,6 @@ package co.emes.esuelos.forms;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.support.v4.app.FragmentManager;
@@ -18,21 +17,24 @@ import java.util.LinkedList;
 import java.util.List;
 
 import co.emes.esuelos.R;
+import co.emes.esuelos.layout.FragmentFieldNote;
 import co.emes.esuelos.layout.FragmentTesting;
 import co.emes.esuelos.model.FormComprobacion;
+import co.emes.esuelos.model.FormNotaCampo;
+import co.emes.esuelos.model.FormTodos;
 import co.emes.esuelos.util.Utils;
 
 /**
  * Created by csarmiento on 25/04/16.
  */
-public class FormComprobacionAdapter extends ArrayAdapter<FormComprobacion> {
+public class FormTodosArrayAdapter extends ArrayAdapter<FormTodos> {
     Context context;
     int layoutResourceId;
-    List<FormComprobacion> data = new LinkedList<>();
+    List<FormTodos> data = new LinkedList<>();
     FragmentManager fragmentManager;
 
-    public FormComprobacionAdapter(Context context, FragmentManager fragmentManager,
-                                   int layoutResourceId, List<FormComprobacion> data) {
+    public FormTodosArrayAdapter(Context context, FragmentManager fragmentManager,
+                                 int layoutResourceId, List<FormTodos> data) {
         super(context, layoutResourceId, data);
         this.layoutResourceId = layoutResourceId;
         this.context = context;
@@ -51,25 +53,28 @@ public class FormComprobacionAdapter extends ArrayAdapter<FormComprobacion> {
             holder.inputDepth1 = (TextView) row.findViewById(R.id.input_depth_1);
             holder.inputColor1 = (TextView) row.findViewById(R.id.input_color_1);
             holder.inputTexture1 = (TextView) row.findViewById(R.id.input_texture_1);
-            //holder.btnEditFormComprobacion = (Button) row.findViewById(R.id.btn_edit_skyline);
-            //holder.btnDeleteFormComprobacion = (Button) row.findViewById(R.id.btn_delete_skyline);
-
+            holder.btnEditFormComprobacion = (TextView) row.findViewById(R.id.btn_edit_skyline);
+            holder.btnDeleteFormComprobacion = (TextView) row.findViewById(R.id.btn_delete_skyline);
             holder.btnEditFormComprobacion.setTransformationMethod(null);
             holder.btnDeleteFormComprobacion.setTransformationMethod(null);
-
             row.setTag(holder);
         } else {
             holder = (UserHolder) row.getTag();
         }
 
-        final FormComprobacion object = data.get(position);
+        final FormTodos object = data.get(position);
         holder.inputDepth1.setText(object.getNroObservacion());
         holder.inputColor1.setText(object.getFechaHora());
         holder.inputTexture1.setText(Utils.getEstado(object.getEstado()));
+
         holder.btnEditFormComprobacion.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                edit(object);
+                if(object.getTipo() == "Nota de Campo") {
+                    editFieldNote((FormNotaCampo) object.getFormulario());
+                } else if(object.getTipo() == "Comprobación") {
+                    editTesting((FormComprobacion) object.getFormulario());
+                }
             }
         });
 
@@ -79,13 +84,18 @@ public class FormComprobacionAdapter extends ArrayAdapter<FormComprobacion> {
                 confirmDelete(position);
             }
         });
+
         return row;
     }
 
-    private void edit(final FormComprobacion object){
+    private void editTesting(final FormComprobacion object){
         FragmentTesting fragmentTesting =  FragmentTesting.newInstance(object);
         fragmentTesting.show(fragmentManager, FragmentTesting.TAG);
-        //fragmentTesting.editForm(object);
+    }
+
+    private void editFieldNote(final FormNotaCampo object){
+        FragmentFieldNote fragmentFieldNote =  FragmentFieldNote.newInstance(object);
+        fragmentFieldNote.show(fragmentManager, FragmentTesting.TAG);
     }
 
     private void confirmDelete(final int position){
@@ -103,7 +113,7 @@ public class FormComprobacionAdapter extends ArrayAdapter<FormComprobacion> {
                         //data.remove(position);
                         //notifyDataSetChanged();
                         //FragmentTesting fragmentTesting = (FragmentTesting)fragmentManager.findFragmentByTag("FragmentTesting");
-                        //fragmentTesting.removeItemFormComprobacion();
+                        //fragmentTesting.removeItemCustomForm();
                     }
                 });
         alert.setButton(DialogInterface.BUTTON_NEGATIVE, context.getResources().getString(R.string.btn_no),
@@ -119,8 +129,8 @@ public class FormComprobacionAdapter extends ArrayAdapter<FormComprobacion> {
         TextView inputDepth1;
         TextView inputColor1;
         TextView inputTexture1;
-        Button btnEditFormComprobacion;
-        Button btnDeleteFormComprobacion;
+        TextView btnEditFormComprobacion;
+        TextView btnDeleteFormComprobacion;
     }
 
 }

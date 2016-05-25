@@ -782,53 +782,61 @@ public class FragmentFieldNote extends DialogFragment implements View.OnClickLis
     }
 
     public void editForm(){
-        if(formNotaCampo == null){
-            formNotaCampo = new FormNotaCampo();
-            inputNroObservacion.setText(dataBaseHelper.getNroObservacion("C"));
-            inputFecha.setText(Utils.dateToString(new Date(), "yyyy-MM-dd HH:mm:ss"));
-            mode = Modes.NEW;
-        } else {
-            inputNroObservacion.setText(formNotaCampo.getNroObservacion());
-            inputFecha.setText(formNotaCampo.getFechaHora());
-            int spinnerPosition = reconocedorAdapter.getPosition(Utils.getDomain(listReconocedor, formNotaCampo.getReconocedor()));
-            inputReconocedor.setSelection(spinnerPosition);
-            spinnerPosition = epocaAdapter.getPosition(Utils.getDomain(listEpoca, formNotaCampo.getEpocaClimatica()));
-            inputNombreSitio.setText(formNotaCampo.getNombreSitio());
-            inputEpoca.setSelection(spinnerPosition);
-            inputEpocaDias.setText(formNotaCampo.getDiasLluvia());
-            spinnerPosition = gradienteAdapter.getPosition(Utils.getDomain(listGradiente, formNotaCampo.getPendienteLongitud()));
-            inputGradiente.setSelection(spinnerPosition);
-            spinnerPosition = pendienteLongitudAdapter.getPosition(Utils.getDomain(listPendienteLongitud, formNotaCampo.getPendienteLongitud()));
-            inputPendienteLongitud.setSelection(spinnerPosition);
-            spinnerPosition = pendienteFormaAdapter.getPosition(Utils.getDomain(listPendienteForma, formNotaCampo.getGradoErosion()));
-            inputPendienteForma.setSelection(spinnerPosition);
-            spinnerPosition = clasesMovimientoAdapter.getPosition(Utils.getDomain(listClasesMovimiento, formNotaCampo.getTipoMovimiento()));
-            inputClasesMovimiento.setSelection(spinnerPosition);
-            spinnerPosition = anegamientoAdapter.getPosition(Utils.getDomain(listAnegamiento, formNotaCampo.getAnegamiento()));
-            inputAnegamiento.setSelection(spinnerPosition);
-            spinnerPosition = frecuenciaAdapter.getPosition(Utils.getDomain(listFrecuencia, formNotaCampo.getFrecuencia()));
-            inputFrecuencia.setSelection(spinnerPosition);
-            spinnerPosition = duracionAdapter.getPosition(Utils.getDomain(listDuracion, formNotaCampo.getDuracion()));
-            inputDuracion.setSelection(spinnerPosition);
-            spinnerPosition = pedegrosidadAdapter.getPosition(Utils.getDomain(listPedegrosidad, formNotaCampo.getPedregosidad()));
-            inputPedegrosidad.setSelection(spinnerPosition);
-            spinnerPosition = afloramientoAdapter.getPosition(Utils.getDomain(listAfloramiento, formNotaCampo.getAfloramiento()));
-            inputAfloramiento.setSelection(spinnerPosition);
-            spinnerPosition = grupoUsoAdapter.getPosition(Utils.getDomain(listGrupoUso, formNotaCampo.getGrupoUso()));
-            inputGrupoUso.setSelection(spinnerPosition);
-            spinnerPosition = subgrupoUsoAdapter.getPosition(Utils.getDomain(listSubgrupoUso, formNotaCampo.getSubgrupoUso()));
-            inputSubgrupoUso.setSelection(spinnerPosition);
+        inputNroObservacion.setText(formNotaCampo.getNroObservacion());
+        inputFecha.setText(formNotaCampo.getFechaHora());
+        int spinnerPosition = reconocedorAdapter.getPosition(Utils.getDomain(listReconocedor, formNotaCampo.getReconocedor()));
+        inputReconocedor.setSelection(spinnerPosition);
+        spinnerPosition = epocaAdapter.getPosition(Utils.getDomain(listEpoca, formNotaCampo.getEpocaClimatica()));
+        inputNombreSitio.setText(formNotaCampo.getNombreSitio());
+        inputEpoca.setSelection(spinnerPosition);
+        inputEpocaDias.setText(formNotaCampo.getDiasLluvia());
+        spinnerPosition = gradienteAdapter.getPosition(Utils.getDomain(listGradiente, formNotaCampo.getGradiente()));
+        inputGradiente.setSelection(spinnerPosition);
+        spinnerPosition = pendienteLongitudAdapter.getPosition(Utils.getDomain(listPendienteLongitud, formNotaCampo.getPendienteLongitud()));
+        inputPendienteLongitud.setSelection(spinnerPosition);
+        spinnerPosition = pendienteFormaAdapter.getPosition(Utils.getDomain(listPendienteForma, formNotaCampo.getPendienteForma()));
+        inputPendienteForma.setSelection(spinnerPosition);
+        spinnerPosition = claseErosionAdapter.getPosition(Utils.getDomain(listClaseErosion, formNotaCampo.getClaseErosion()));
+        inputClaseErosion.setSelection(spinnerPosition);
+        spinnerPosition = tipoErosionAdapter.getPosition(Utils.getDomain(listTipoErosion, formNotaCampo.getTipoErosion()));
+        inputTipoErosion.setSelection(spinnerPosition);
+        spinnerPosition = gradoErosionAdapter.getPosition(Utils.getDomain(listGradoErosion, formNotaCampo.getGradoErosion()));
+        inputGradoErosion.setSelection(spinnerPosition);
 
-            formNotaCampoFoto = dataBaseHelper.getFormNotaCampoFoto(formNotaCampo.getId());
-            Bitmap bitmap = DBBitmapUtility.loadImageBitmap(getActivity(), formNotaCampoFoto.getFoto());
-            imgViewPic.setImageBitmap(bitmap);
+        spinnerPosition = clasesMovimientoAdapter.getPosition(Utils.getDomain(listClasesMovimiento, formNotaCampo.getClaseMovimiento()));
+        inputClasesMovimiento.setSelection(spinnerPosition);
+        spinnerPosition = tiposMovimientoAdapter.getPosition(Utils.getDomain(listTiposMovimiento, formNotaCampo.getTipoMovimiento()));
+        inputTiposMovimiento.setSelection(spinnerPosition);
+        spinnerPosition = frecuenciasMovimientoAdapter.getPosition(Utils.getDomain(listFrecuenciasMovimiento, formNotaCampo.getFrecuenciaMovimiento()));
+        inputFrecuenciasMovimiento.setSelection(spinnerPosition);
 
-            nextFlag = false;
-            nextFlagClaseErosion = false;
-            nextFlagClaseMovimiento = false;
-            nextFlagGrupoUso = false;
-            nextFlagSubgrupoUso = false;
-        }
+        spinnerPosition = anegamientoAdapter.getPosition(Utils.getDomain(listAnegamiento, formNotaCampo.getAnegamiento()));
+        inputAnegamiento.setSelection(spinnerPosition);
+        spinnerPosition = frecuenciaAdapter.getPosition(Utils.getDomain(listFrecuencia, formNotaCampo.getFrecuencia()));
+        inputFrecuencia.setSelection(spinnerPosition);
+        spinnerPosition = duracionAdapter.getPosition(Utils.getDomain(listDuracion, formNotaCampo.getDuracion()));
+        inputDuracion.setSelection(spinnerPosition);
+        spinnerPosition = pedegrosidadAdapter.getPosition(Utils.getDomain(listPedegrosidad, formNotaCampo.getPedregosidad()));
+        inputPedegrosidad.setSelection(spinnerPosition);
+        spinnerPosition = afloramientoAdapter.getPosition(Utils.getDomain(listAfloramiento, formNotaCampo.getAfloramiento()));
+        inputAfloramiento.setSelection(spinnerPosition);
+        spinnerPosition = grupoUsoAdapter.getPosition(Utils.getDomain(listGrupoUso, formNotaCampo.getGrupoUso()));
+        inputGrupoUso.setSelection(spinnerPosition);
+        spinnerPosition = subgrupoUsoAdapter.getPosition(Utils.getDomain(listSubgrupoUso, formNotaCampo.getSubgrupoUso()));
+        inputSubgrupoUso.setSelection(spinnerPosition);
+        inputNombreCultivo.setText(formNotaCampo.getNombreCultivo());
+        inputVegetacionNatural.setText(formNotaCampo.getVegetacionNatural());
+        inputObservaciones.setText(formNotaCampo.getObservaciones());
+
+        formNotaCampoFoto = dataBaseHelper.getFormNotaCampoFoto(formNotaCampo.getId());
+        Bitmap bitmap = DBBitmapUtility.loadImageBitmap(getActivity(), formNotaCampoFoto.getFoto());
+        imgViewPic.setImageBitmap(bitmap);
+
+        nextFlag = false;
+        nextFlagClaseErosion = false;
+        nextFlagClaseMovimiento = false;
+        nextFlagGrupoUso = false;
+        nextFlagSubgrupoUso = false;
     }
 
     class SaveFormTask extends AsyncTask<Void, Void, Void> {
@@ -877,7 +885,7 @@ public class FragmentFieldNote extends DialogFragment implements View.OnClickLis
             formNotaCampo.setGradoErosion(gradoErosion);
             formNotaCampo.setClaseMovimiento(claseMovimiento);
             formNotaCampo.setTipoMovimiento(tipoMovimiento);
-            formNotaCampo.setFrecuenciaMovimiento(frecuencia);
+            formNotaCampo.setFrecuenciaMovimiento(frecuenciaMovimiento);
             formNotaCampo.setAnegamiento(anegamiento);
             formNotaCampo.setFrecuencia(frecuencia);
             formNotaCampo.setDuracion(duracion);

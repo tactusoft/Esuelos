@@ -542,6 +542,60 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         return list;
     }
 
+    public List<FormNotaCampo> getListFormNotaCampo() {
+        List<FormNotaCampo> list = new LinkedList<>();
+        try {
+            openDataBase();
+            Cursor cur = myDataBase.rawQuery("SELECT id, nro_observacion, reconocedor, fecha_hora, longitud, latitud, altitud,\n" +
+                    "nombre_sitio, epoca_climatica, dias_lluvia, gradiente, pendiente_longitud, pendiente_forma,\n" +
+                    "clase_erosion, tipo_erosion, grado_erosion, clase_movimiento, tipo_movimiento, frecuencia_movimiento, anegamiento,\n" +
+                    "frecuencia, duracion, pedregosidad, afloramiento, vegetacion_natural, grupo_uso, subgrupo_uso,\n" +
+                    "nombre_cultivo, observaciones, estado\n" +
+                    "FROM form_nota_campo\n" +
+                    "ORDER BY id", new String[] {});
+            while (cur.moveToNext()) {
+                FormNotaCampo row = new FormNotaCampo();
+                row.setId(cur.getInt(0));
+                row.setNroObservacion(cur.getString(1));
+                row.setReconocedor(cur.getInt(2));
+                row.setFechaHora(cur.getString(3));
+                row.setLongitud(cur.getDouble(4));
+                row.setLatitud(cur.getDouble(5));
+                row.setAltitud(cur.getDouble(6));
+                row.setNombreSitio(cur.getString(7));
+                row.setEpocaClimatica(cur.getInt(8));
+                row.setDiasLluvia(cur.getString(9));
+                row.setGradiente(cur.getInt(10));
+                row.setPendienteLongitud(cur.getInt(11));
+                row.setPendienteForma(cur.getInt(12));
+                row.setClaseErosion(cur.getInt(13));
+                row.setTipoErosion(cur.getInt(14));
+                row.setGradoErosion(cur.getInt(15));
+                row.setClaseMovimiento(cur.getInt(16));
+                row.setTipoMovimiento(cur.getInt(17));
+                row.setFrecuenciaMovimiento(cur.getInt(18));
+                row.setAnegamiento(cur.getInt(19));
+                row.setFrecuencia(cur.getInt(20));
+                row.setDuracion(cur.getInt(21));
+                row.setPedregosidad(cur.getInt(22));
+                row.setAfloramiento(cur.getInt(23));
+                row.setVegetacionNatural(cur.getString(24));
+                row.setGrupoUso(cur.getInt(25));
+                row.setSubgrupoUso(cur.getInt(26));
+                row.setNombreCultivo(cur.getString(27));
+                row.setObservaciones(cur.getString(28));
+                row.setEstado(cur.getInt(29));
+                list.add(row);
+            }
+            cur.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            close();
+        }
+        return list;
+    }
+
     public FormComprobacionFoto getFormComprobacionFoto(Integer idFormComprobacion) {
         FormComprobacionFoto result = new FormComprobacionFoto();
         try {
@@ -568,7 +622,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         try {
             openDataBase();
             Cursor cur = myDataBase.rawQuery("SELECT id, id_form_nota_campo, foto "+
-                            "FROM form_comprobacion_nota_campo WHERE id_form_nota_campo = ?",
+                            "FROM form_nota_campo_foto WHERE id_form_nota_campo = ?",
                     new String[]{String.valueOf(idFormNotaCampo)});
             if(cur.moveToNext()){
                 result.setId(cur.getInt(0));
