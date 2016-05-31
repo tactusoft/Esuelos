@@ -11,6 +11,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -70,7 +71,6 @@ public class MapFragment extends Fragment {
     BasemapComponent basemapComponent;
     GraphicsLayer graphicsLayer;
 
-    // Spatial references used for projecting points
     final SpatialReference wm = SpatialReference.create(102100);
     final SpatialReference egs = SpatialReference.create(4326);
 
@@ -79,6 +79,8 @@ public class MapFragment extends Fragment {
     LocationManager manager;
     Point mLocation = null;
     Point tempPoint;
+
+    android.support.v7.app.AlertDialog.Builder alertDialog;
 
     public MapFragment() {
     }
@@ -164,7 +166,6 @@ public class MapFragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle menu item selection.
         switch (item.getItemId()) {
             case R.id.item_gps:
                 gpsAction();
@@ -177,6 +178,30 @@ public class MapFragment extends Fragment {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void setupAlertBuilder(){
+        alertDialog = new android.support.v7.app.AlertDialog.Builder(
+                getActivity());
+        alertDialog.setCancelable(false);
+        alertDialog.setTitle("Seleccionar Mapa");
+        alertDialog.setMessage("Actualmente no existe una cartografía asociada al Estudio de Suelos." +
+                " Seleccione Aceptar para realizar la búsqueda de un Mapa (tpk)");
+        alertDialog.setIcon(android.R.drawable.ic_dialog_info);
+        alertDialog.setPositiveButton("Si",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        //FragmentManager fragmentManager = getSupportFragmentManager();
+                        //fragmentManager.beginTransaction().replace(R.id.content_frame, new FragmentDatabase()).commit();
+                    }
+                });
+        alertDialog.setNegativeButton("No",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        //FragmentManager fragmentManager = getSupportFragmentManager();
+                        //fragmentManager.beginTransaction().replace(R.id.content_frame, new FragmentDatabase()).commit();
+                    }
+                });
     }
 
     private void addMapAction() {
@@ -200,8 +225,6 @@ public class MapFragment extends Fragment {
 
     public void searchSuelos(List<FeatureLayer> featureLayerList, Point point){
         QueryParameters queryParameters = new QueryParameters();
-        // optional
-        //q.setWhere("PROD_GAS='Yes'");
         queryParameters.setReturnGeometry(true);
         queryParameters.setInSpatialReference(mMapView.getSpatialReference());
         queryParameters.setGeometry(point);

@@ -7,35 +7,43 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/btn_load_map"
-            android:id="@+id/btn_load_map"
-            android:layout_gravity="center_horizontal" />
+        android:orientation="vertical"
+        android:layout_marginTop="20dp">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:id="@+id/txt_load_map"
-            android:layout_gravity="center_horizontal" />
+            android:text="@string/dtb_msg_map"
+            android:layout_gravity="left"
+            android:textColor="@color/colorLetter"/>
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/btn_load_geo"
-            android:id="@+id/btn_load_geo"
-            android:layout_gravity="center_horizontal" />
+            android:text="@string/btn_load_map"
+            android:id="@+id/btn_load_map"
+            android:layout_gravity="left"
+            android:layout_marginTop="20dp"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:id="@+id/txt_load_geo"
-            android:layout_gravity="center_horizontal" />
+            android:text="@string/dtb_msg_geo"
+            android:layout_gravity="left"
+            android:layout_marginTop="20dp"
+            android:textColor="@color/colorLetter"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/btn_load_geo"
+            android:id="@+id/btn_load_geo"
+            android:layout_gravity="left"
+            android:layout_marginTop="20dp"/>
     </LinearLayout>
 
 </RelativeLayout>

@@ -142,8 +142,7 @@ public class MainActivity extends AppCompatActivity {
                 fragment = new TableFragment();
                 break;
             case 3:
-                //loadTPK();
-                title = getResources().getString(R.string.ndi_database);
+                title = getResources().getString(R.string.ndi_tpk);
                 fragment = new FragmentDatabase();
                 break;
             case 4:

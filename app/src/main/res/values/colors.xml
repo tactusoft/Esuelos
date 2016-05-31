@@ -9,4 +9,6 @@
     <color name="principal_font">#000000</color>
     <color name="second_font">#FFFFFF</color>
 
+    <color name="colorLetter">#FFFFFF</color>
+
 </resources>
