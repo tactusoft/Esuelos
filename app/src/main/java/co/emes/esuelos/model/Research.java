@@ -1,9 +1,6 @@
 package co.emes.esuelos.model;
 
 import java.io.Serializable;
-import java.util.Date;
-
-import co.emes.esuelos.util.Utils;
 
 /**
  * Created by csarmiento on 18/04/16.
@@ -15,18 +12,10 @@ public class Research implements Serializable {
     private String endDate;
     private Integer status;
     private String user;
-    private String filePath;
+    private String tpkFilePath;
+    private String geoFilePath;
 
     public Research() {
-    }
-
-    public Research(Integer id, String startDate, String endDate, Integer status, String user, String filePath) {
-        this.id = id;
-        this.startDate = startDate;
-        this.endDate = endDate;
-        this.status = status;
-        this.user = user;
-        this.filePath = filePath;
     }
 
     public Integer getId() {
@@ -69,11 +58,19 @@ public class Research implements Serializable {
         this.user = user;
     }
 
-    public String getFilePath() {
-        return filePath;
+    public String getTpkFilePath() {
+        return tpkFilePath;
     }
 
-    public void setFilePath(String filePath) {
-        this.filePath = filePath;
+    public void setTpkFilePath(String tpkFilePath) {
+        this.tpkFilePath = tpkFilePath;
+    }
+
+    public String getGeoFilePath() {
+        return geoFilePath;
+    }
+
+    public void setGeoFilePath(String geoFilePath) {
+        this.geoFilePath = geoFilePath;
     }
 }

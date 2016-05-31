@@ -1,5 +1,7 @@
 package co.emes.esuelos.util;
 
+import co.emes.esuelos.model.Research;
+
 /**
  * Created by csarmiento on 11/04/16.
  */
@@ -9,7 +11,9 @@ public class Singleton {
     private String androidId;
     private Double x;
     private Double y;
-    private String tpkFile;
+    private Research research;
+    private String paisaje;
+    private String simbolo;
 
     public static Singleton getInstance() {
         return ourInstance;
@@ -42,11 +46,27 @@ public class Singleton {
         this.y = y;
     }
 
-    public String getTpkFile() {
-        return tpkFile;
+    public Research getResearch() {
+        return research;
     }
 
-    public void setTpkFile(String tpkFile) {
-        this.tpkFile = tpkFile;
+    public void setResearch(Research research) {
+        this.research = research;
+    }
+
+    public String getPaisaje() {
+        return paisaje;
+    }
+
+    public void setPaisaje(String paisaje) {
+        this.paisaje = paisaje;
+    }
+
+    public String getSimbolo() {
+        return simbolo;
+    }
+
+    public void setSimbolo(String simbolo) {
+        this.simbolo = simbolo;
     }
 }

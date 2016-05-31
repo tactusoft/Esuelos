@@ -11,6 +11,7 @@ import com.esri.core.geodatabase.GeodatabaseFeatureTable;
 import com.esri.core.geometry.Envelope;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public class BasemapComponent {
@@ -95,23 +96,19 @@ public class BasemapComponent {
      * Loads a geodatabase to be used as a basemap.
      *
      * @param filePath The absolute path to the runtime geodatabase.
-     * @param useLabels If true, labeling will be enabled.
      */
-    public void loadGeodatabaseLayer(String filePath, boolean useLabels, boolean removeLayer) {
-        if(removeLayer) {
-            removeActiveLayers();
-        }
-
+    public List<FeatureLayer> loadGeodatabaseLayer(String filePath) {
+        List<FeatureLayer> result = new LinkedList<>();
         try {
             Geodatabase gdb = new Geodatabase(filePath);
             for (GeodatabaseFeatureTable gdbFeatureTable : gdb.getGeodatabaseTables()) {
                 if (gdbFeatureTable.hasGeometry())
-                    mActiveLayers.add(new FeatureLayer(gdbFeatureTable));
-                    mMapView.addLayer(new FeatureLayer(gdbFeatureTable), mActiveLayers.size());
+                    result.add(new FeatureLayer(gdbFeatureTable));
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return result;
     }
 
     /**

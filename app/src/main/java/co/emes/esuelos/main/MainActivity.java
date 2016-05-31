@@ -1,6 +1,5 @@
 package co.emes.esuelos.main;
 
-import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Environment;
@@ -32,11 +31,11 @@ import co.emes.esuelos.R;
 import co.emes.esuelos.fileselector.FileOperation;
 import co.emes.esuelos.fileselector.FileSelector;
 import co.emes.esuelos.fileselector.OnHandleFileListener;
+import co.emes.esuelos.layout.FragmentDatabase;
 import co.emes.esuelos.layout.HomeFragment;
 import co.emes.esuelos.layout.MapFragment;
 import co.emes.esuelos.layout.DataModel;
 import co.emes.esuelos.layout.DrawerItemCustomAdapter;
-import co.emes.esuelos.layout.FormsFragment;
 import co.emes.esuelos.layout.TableFragment;
 import co.emes.esuelos.model.Research;
 import co.emes.esuelos.util.DataBaseHelper;
@@ -55,6 +54,8 @@ public class MainActivity extends AppCompatActivity {
     DataBaseHelper dataBaseHelper;
     List<DataModel> listDataModel;
 
+    Research research;
+
     private static final int PICKFILE_RESULT_CODE = 1;
 
     @Override
@@ -69,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
 
         setupToolbar();
+        setupAlertBuilder();
 
         listDataModel =  new LinkedList<>();
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
@@ -77,21 +79,12 @@ public class MainActivity extends AppCompatActivity {
         try {
             dataBaseHelper = new DataBaseHelper(getApplicationContext());
             dataBaseHelper.createDataBase();
-            if(!dataBaseHelper.getOpenResearch()){
-                alertDialog = new AlertDialog.Builder(
-                        MainActivity.this);
-                alertDialog.setCancelable(false);
-                alertDialog.setTitle("Seleccionar Mapa");
-                alertDialog.setMessage("Actualmente no existe una cartografía asociada al Estudio de Suelos." +
-                        " Seleccione Aceptar para realizar la búsqueda de un Mapa (tpk)");
-                alertDialog.setIcon(android.R.drawable.ic_dialog_info);
-                alertDialog.setPositiveButton("Aceptar",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                loadTPK();
-                            }
-                        });
+            research = dataBaseHelper.getOpenResearch();
+            if(research==null) {
+                research = new Research();
                 alertDialog.show();
+            } else {
+                Singleton.getInstance().setResearch(research);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -99,7 +92,6 @@ public class MainActivity extends AppCompatActivity {
 
         listDataModel.add(new DataModel(R.drawable.ic_home, getResources().getString(R.string.ndi_home)));
         listDataModel.add(new DataModel(R.drawable.ic_layers, getResources().getString(R.string.ndi_map)));
-        //listDataModel.add(new DataModel(R.drawable.ic_forms, getResources().getString(R.string.ndi_forms)));
         listDataModel.add(new DataModel(R.drawable.ic_list, getResources().getString(R.string.ndi_summary)));
         listDataModel.add(new DataModel(R.drawable.folder, getResources().getString(R.string.ndi_tpk)));
         listDataModel.add(new DataModel(R.drawable.download, getResources().getString(R.string.ndi_database)));
@@ -150,7 +142,9 @@ public class MainActivity extends AppCompatActivity {
                 fragment = new TableFragment();
                 break;
             case 3:
-                loadTPK();
+                //loadTPK();
+                title = getResources().getString(R.string.ndi_database);
+                fragment = new FragmentDatabase();
                 break;
             case 4:
                 exportDatabse();
@@ -217,13 +211,12 @@ public class MainActivity extends AppCompatActivity {
                         try {
                             TPKHelper tpkHelper = new TPKHelper(getApplicationContext(), file);
                             tpkHelper.createTPK();
-                            Singleton.getInstance().setTpkFile(tpkHelper.getFilePath());
                             Research research = new Research();
                             research.setStartDate(Utils.dateToString(new Date(), "yyyy-MM-dd HH:mm:ss"));
                             research.setEndDate(Utils.dateToString(new Date(), "yyyy-MM-dd HH:mm:ss"));
                             research.setStatus(1);
                             research.setUser("carlossarmientor@gmail.com");
-                            research.setFilePath(tpkHelper.getFilePath());
+                            research.setTpkFilePath(tpkHelper.getFilePath());
                             dataBaseHelper.insertResearch(research);
                         }catch(Exception ex){
                             ex.printStackTrace();;
@@ -239,30 +232,59 @@ public class MainActivity extends AppCompatActivity {
         new FileSelector(MainActivity.this, FileOperation.SAVE, mSaveFileListener, mFileFilter).show();
     }
 
-    private void loadTPK() {
+    public void loadTPK() {
         final String[] mFileFilter = { ".tpk" };
         new FileSelector(MainActivity.this, FileOperation.LOAD, mLoadFileListener, mFileFilter).show();
+    }
+
+    public void loadGEO() {
+        final String[] mFileFilter = { ".geodatabase" };
+        new FileSelector(MainActivity.this, FileOperation.LOAD, mLoadFileListener, mFileFilter).show();
+    }
+
+    private void setupAlertBuilder(){
+        alertDialog = new AlertDialog.Builder(
+                MainActivity.this);
+        alertDialog.setCancelable(false);
+        alertDialog.setTitle("Seleccionar Mapa");
+        alertDialog.setMessage("Actualmente no existe una cartografía asociada al Estudio de Suelos." +
+                " Seleccione Aceptar para realizar la búsqueda de un Mapa (tpk)");
+        alertDialog.setIcon(android.R.drawable.ic_dialog_info);
+        alertDialog.setPositiveButton("Aceptar",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        FragmentManager fragmentManager = getSupportFragmentManager();
+                        fragmentManager.beginTransaction().replace(R.id.content_frame, new FragmentDatabase()).commit();
+                    }
+                });
     }
 
     OnHandleFileListener mLoadFileListener = new OnHandleFileListener() {
         @Override
         public void handleFile(final String filePath) {
             File file = new File(filePath);
-            if (!Utils.isLocalTiledLayer(file)) {
+            if (!Utils.isLocalTiledLayer(file) && !Utils.isGeodatabase(file) ) {
                 alertDialog.show();
             } else {
+                boolean isTPK = false;
+                if (Utils.isLocalTiledLayer(file)) {
+                    isTPK = true;
+                }
                 try {
                     TPKHelper tpkHelper = new TPKHelper(getApplicationContext(), file);
                     tpkHelper.createTPK();
-                    Singleton.getInstance().setTpkFile(tpkHelper.getFilePath());
-                    Research research = new Research();
                     research.setStartDate(Utils.dateToString(new Date(), "yyyy-MM-dd HH:mm:ss"));
                     research.setEndDate(Utils.dateToString(new Date(), "yyyy-MM-dd HH:mm:ss"));
                     research.setStatus(1);
                     research.setUser("carlossarmientor@gmail.com");
-                    research.setFilePath(tpkHelper.getFilePath());
+                    if(isTPK) {
+                        research.setTpkFilePath(tpkHelper.getFilePath());
+                    } else {
+                        research.setGeoFilePath(tpkHelper.getFilePath());
+                    }
                     dataBaseHelper.insertResearch(research);
-                    Toast.makeText(getApplicationContext(), "Cartografía cargada exitosamente!", Toast.LENGTH_LONG).show();
+                    Singleton.getInstance().setResearch(research);
+                    Toast.makeText(getApplicationContext(), "Archivo cargado exitosamente!", Toast.LENGTH_LONG).show();
                 }catch(Exception ex){
                     ex.printStackTrace();;
                 }

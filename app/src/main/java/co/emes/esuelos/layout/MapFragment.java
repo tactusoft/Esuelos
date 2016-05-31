@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.Typeface;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -25,6 +24,8 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import co.emes.esuelos.R;
+
+import com.esri.android.map.FeatureLayer;
 import com.esri.android.map.GraphicsLayer;
 import com.esri.android.map.LocationDisplayManager;
 import com.esri.android.map.MapView;
@@ -34,14 +35,20 @@ import com.esri.android.runtime.ArcGISRuntime;
 import com.esri.core.geometry.GeometryEngine;
 import com.esri.core.geometry.Point;
 import com.esri.core.geometry.SpatialReference;
+import com.esri.core.map.CallbackListener;
+import com.esri.core.map.Feature;
+import com.esri.core.map.FeatureResult;
 import com.esri.core.map.Graphic;
 import com.esri.core.symbol.SimpleMarkerSymbol;
+import com.esri.core.tasks.SpatialRelationship;
+import com.esri.core.tasks.query.QueryParameters;
 
-import java.io.File;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import co.emes.esuelos.util.BasemapComponent;
 import co.emes.esuelos.util.Singleton;
-import co.emes.esuelos.util.Utils;
 
 /**
  * Created by csarmiento on 11/14/16
@@ -96,6 +103,16 @@ public class MapFragment extends Fragment {
         lDisplayManager.start();
         lDisplayManager.setAutoPanMode(LocationDisplayManager.AutoPanMode.OFF);
 
+        basemapComponent = new BasemapComponent(mMapView);
+        localTiledLayer = basemapComponent.loadLocalTileLayer(Singleton.getInstance().getResearch().getTpkFilePath());
+        mMapView.setExtent(localTiledLayer.getFullExtent(), 0, false);
+
+        final List<FeatureLayer> featureLayerList =
+                basemapComponent.loadGeodatabaseLayer(Singleton.getInstance().getResearch().getGeoFilePath());
+        for(FeatureLayer featureLayer:featureLayerList){
+            mMapView.addLayer(featureLayer);
+        }
+
         mMapView.setOnLongPressListener(new OnLongPressListener() {
             private static final long serialVersionUID = 1L;
             public boolean onLongPress(final float x, final float y) {
@@ -104,13 +121,10 @@ public class MapFragment extends Fragment {
                 graphicsLayer.removeAll();
                 graphicsLayer.addGraphic(new Graphic(loc,new  SimpleMarkerSymbol(Color.GREEN, 25, SimpleMarkerSymbol.STYLE.CROSS)));
                 showListView();
+                searchSuelos(featureLayerList, loc);
                 return true;
             }
         });
-
-        basemapComponent = new BasemapComponent(mMapView);
-        localTiledLayer = basemapComponent.loadLocalTileLayer(Singleton.getInstance().getTpkFile());
-        mMapView.setExtent(localTiledLayer.getFullExtent(), 0, false);
 
         imgAddMap = (ImageView) rootView.findViewById(R.id.imgAddMap);
         imgAddMap.setOnClickListener(new View.OnClickListener() {
@@ -182,6 +196,17 @@ public class MapFragment extends Fragment {
         mMapView.zoomToResolution(p, 20.0);
         Singleton.getInstance().setX(mLocation.getX());
         Singleton.getInstance().setY(mLocation.getY());
+    }
+
+    public void searchSuelos(List<FeatureLayer> featureLayerList, Point point){
+        QueryParameters queryParameters = new QueryParameters();
+        // optional
+        //q.setWhere("PROD_GAS='Yes'");
+        queryParameters.setReturnGeometry(true);
+        queryParameters.setInSpatialReference(mMapView.getSpatialReference());
+        queryParameters.setGeometry(point);
+        queryParameters.setSpatialRelationship(SpatialRelationship.INTERSECTS);
+        featureLayerList.get(4).selectFeatures(queryParameters, FeatureLayer.SelectionMode.NEW, callback);
     }
 
     private void addFormAction() {
@@ -263,24 +288,6 @@ public class MapFragment extends Fragment {
         dialog.show();
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode) {
-            case PICKFILE_RESULT_CODE:
-                if (resultCode == -1) {
-                    String filePath = data.getData().getPath();
-                    File file = new File(filePath);
-                    if (Utils.isLocalTiledLayer(file)) {
-                        localTiledLayer = basemapComponent.loadLocalTileLayer(filePath, true);
-                        mMapView.setExtent(localTiledLayer.getFullExtent(), 0, false);
-                    } else if (Utils.isGeodatabase(file)) {
-                        basemapComponent.loadGeodatabaseLayer(filePath, true, true);
-                    }
-                }
-                break;
-        }
-    }
-
     private void buildAlertMessageNoGps() {
         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setMessage(getResources().getString(R.string.msg_gps))
@@ -329,5 +336,27 @@ public class MapFragment extends Fragment {
         }
 
     }
+
+    CallbackListener<FeatureResult> callback = new CallbackListener<FeatureResult>() {
+        public void onCallback(FeatureResult fSet) {
+            Iterator itr = fSet.iterator();
+            while(itr.hasNext()) {
+                Object element = itr.next();
+                if (element instanceof Feature) {
+                    Feature feature = (Feature) element;
+                    Map<String, Object> map = feature.getAttributes();
+                    String paisaje = (String) map.get("Paisaje");
+                    Singleton.getInstance().setPaisaje(paisaje);
+                    String simbolo = (String) map.get("Simbolo");
+                    Singleton.getInstance().setSimbolo(simbolo);
+                    break;
+                }
+            }
+        }
+
+        public void onError(Throwable arg0) {
+
+        }
+    };
 
 }

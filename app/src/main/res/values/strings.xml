@@ -30,6 +30,8 @@
     <string name="select_photo">Seleccionar Foto</string>
     <string name="btn_optional">Opcionales</string>
     <string name="btn_flecked">Moteados</string>
+    <string name="btn_load_map">Cargar Cartografía</string>
+    <string name="btn_load_geo">Cargar GeoDatabase</string>
 
     <string name="msg_confirm">Está seguro de realizar esta operación?</string>
     <string name="msg_gps">Por favor activar el GPS</string>
@@ -40,7 +42,7 @@
     <string name="ndi_map">Mapa</string>
     <string name="ndi_forms">Formularios</string>
     <string name="ndi_summary">Resúmen</string>
-    <string name="ndi_database">Copiar Base de Datos</string>
+    <string name="ndi_database">Bases de Datos</string>
     <string name="ndi_tpk">Cargar TPK</string>
 
     <string name="tst_title">Formulario de Comprobación</string>
@@ -56,6 +58,8 @@
     <string name="tst_epoca">Época climática</string>
     <string name="tst_epoca_dias">Hace cuánto tiempo llovió (Días)</string>
     <string name="tst_gm">Geomorfología</string>
+    <string name="tst_label_paisaje">Paisaje</string>
+    <string name="tst_label_simbolo">Símbolo</string>
     <string name="tst_longitud">Pendiente Longitud *</string>
     <string name="tst_erosion">Grado de Erosión *</string>
     <string name="tst_movimiento">Tipos de Movimientos en Masa *</string>

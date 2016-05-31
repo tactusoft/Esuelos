@@ -144,17 +144,19 @@ public class DataBaseHelper extends SQLiteOpenHelper {
      * @return All column values are stored as properties in the ContentValues object
      */
     public Research getResearch(long id) {
-        Research row = new Research();
+        Research row = null;
         try {
             openDataBase();
-            Cursor cur = myDataBase.rawQuery("select id, start_date, end_date, status, user, file_path from research where status = ?", new String[] { String.valueOf(id) });
+            Cursor cur = myDataBase.rawQuery("select id, start_date, end_date, status, user, file_path, geo_file_path from research where status = ?", new String[] { String.valueOf(id) });
             if (cur.moveToLast()) {
+                row = new Research();
                 row.setId(cur.getInt(0));
                 row.setStartDate(cur.getString(1));
                 row.setEndDate(cur.getString(2));
                 row.setStatus(cur.getInt(3));
                 row.setUser(cur.getString(4));
-                row.setFilePath(cur.getString(5));
+                row.setTpkFilePath(cur.getString(5));
+                row.setGeoFilePath(cur.getString(6));
             }
             cur.close();
         } catch (SQLException e) {
@@ -206,16 +208,9 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         return getListDomain(grupo, true, true);
     }
 
-    public boolean getOpenResearch() {
-        boolean result = false;
+    public Research getOpenResearch() {
         Research research = getResearch(1);
-        if(research.getStatus()!=null) {
-            if (research.getStatus() == 1) {
-                Singleton.getInstance().setTpkFile(research.getFilePath());
-                result = true;
-            }
-        }
-        return result;
+        return research;
     }
 
     public Long insertResearch(Research research) {
@@ -227,8 +222,16 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             row.put("end_date", research.getEndDate());
             row.put("user", research.getUser());
             row.put("status", research.getStatus());
-            row.put("file_path", research.getFilePath());
+            row.put("file_path", research.getTpkFilePath());
+            row.put("geo_file_path", research.getGeoFilePath());
             id = myDataBase.insert("research", null, row);
+            if(id == -1) {
+                myDataBase.update("research", row,
+                        "id = ?", new String[] { String.valueOf(research.getId()) });
+                id = Long.valueOf(research.getId());
+            } else {
+                research.setId(id.intValue());
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {

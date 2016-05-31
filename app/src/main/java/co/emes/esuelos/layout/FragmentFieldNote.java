@@ -82,6 +82,9 @@ public class FragmentFieldNote extends DialogFragment implements View.OnClickLis
     EditText inputObservaciones;
     ImageView imgViewPic;
 
+    TextView labelPaisaje;
+    TextView labelSimbolo;
+
     Bitmap foto;
     String nroObservacion;
     Integer reconocedor;
@@ -225,6 +228,8 @@ public class FragmentFieldNote extends DialogFragment implements View.OnClickLis
         tabHost.addTab(spec);
 
         imgViewPic  = (ImageView) rootView.findViewById(R.id.imgView_pic);
+        labelPaisaje = (TextView) rootView.findViewById(R.id.label_paisaje);
+        labelSimbolo = (TextView) rootView.findViewById(R.id.label_simbolo);
 
         inputNroObservacion = (EditText) rootView.findViewById(R.id.input_nro_observacion);
         inputFecha = (EditText) rootView.findViewById(R.id.input_fecha);
@@ -589,6 +594,8 @@ public class FragmentFieldNote extends DialogFragment implements View.OnClickLis
         });
 
         populateDomains();
+        labelSimbolo.setText(Singleton.getInstance().getSimbolo());
+        labelPaisaje.setText(Singleton.getInstance().getPaisaje());
 
         if(mode == null || mode == Modes.NEW) {
             inputNroObservacion.setText(dataBaseHelper.getNroObservacion("N"));
