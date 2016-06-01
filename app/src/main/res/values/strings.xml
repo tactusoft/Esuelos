@@ -126,4 +126,8 @@
     <string name="dtb_select_file">Archivo Cargado Actualmente: %s</string>
     <string name="dtb_msg_map">Seleccione un archivo TPK</string>
     <string name="dtb_msg_geo">Seleccione un archivo GEODATABASE</string>
+
+    <string name="map_empty_all">No ha cargado los archivos de cartografía y geodatabase. ¿Desea cargalo (Si) antes de continuar?</string>
+    <string name="map_empty_map">No ha cargado el archivo  de cartografía. ¿Desea cargalo (Si) antes de continuar?</string>
+    <string name="map_empty_geo">No ha cargado el archivo de geodatabase. ¿Desea cargalo (Si) antes de continuar?</string>
 </resources>

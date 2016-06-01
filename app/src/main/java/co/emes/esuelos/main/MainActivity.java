@@ -133,10 +133,6 @@ public class MainActivity extends AppCompatActivity {
                 title = getResources().getString(R.string.ndi_map);
                 fragment = new MapFragment();
                 break;
-            /*case 2:
-                title = getResources().getString(R.string.ndi_forms);
-                fragment = new FormsFragment();
-                break;*/
             case 2:
                 title = getResources().getString(R.string.ndi_summary);
                 fragment = new TableFragment();

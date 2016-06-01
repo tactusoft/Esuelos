@@ -44,12 +44,14 @@ import com.esri.core.symbol.SimpleMarkerSymbol;
 import com.esri.core.tasks.SpatialRelationship;
 import com.esri.core.tasks.query.QueryParameters;
 
+import java.io.File;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import co.emes.esuelos.util.BasemapComponent;
 import co.emes.esuelos.util.Singleton;
+import co.emes.esuelos.util.Utils;
 
 /**
  * Created by csarmiento on 11/14/16
@@ -83,6 +85,23 @@ public class MapFragment extends Fragment {
     android.support.v7.app.AlertDialog.Builder alertDialog;
 
     public MapFragment() {
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        if(Singleton.getInstance().getResearch()==null) {
+            setupAlertBuilder(R.string.map_empty_all);
+        } else {
+            String tpkFilePath = Singleton.getInstance().getResearch().getTpkFilePath();
+            if (tpkFilePath.isEmpty()) {
+                setupAlertBuilder(R.string.map_empty_map);
+            } else {
+                String geoFilePath = Singleton.getInstance().getResearch().getGeoFilePath();
+                if (geoFilePath.isEmpty()) {
+                    setupAlertBuilder(R.string.map_empty_geo);
+                }
+            }
+        }
     }
 
     @Override
@@ -180,13 +199,12 @@ public class MapFragment extends Fragment {
         }
     }
 
-    private void setupAlertBuilder(){
+    private void setupAlertBuilder(int message){
         alertDialog = new android.support.v7.app.AlertDialog.Builder(
                 getActivity());
         alertDialog.setCancelable(false);
         alertDialog.setTitle("Seleccionar Mapa");
-        alertDialog.setMessage("Actualmente no existe una cartografía asociada al Estudio de Suelos." +
-                " Seleccione Aceptar para realizar la búsqueda de un Mapa (tpk)");
+        alertDialog.setMessage(message);
         alertDialog.setIcon(android.R.drawable.ic_dialog_info);
         alertDialog.setPositiveButton("Si",
                 new DialogInterface.OnClickListener() {
@@ -202,6 +220,7 @@ public class MapFragment extends Fragment {
                         //fragmentManager.beginTransaction().replace(R.id.content_frame, new FragmentDatabase()).commit();
                     }
                 });
+        alertDialog.show();
     }
 
     private void addMapAction() {
