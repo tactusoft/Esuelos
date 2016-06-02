@@ -121,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void selectItem(int position) {
+    public void selectItem(int position) {
         Fragment fragment = null;
         String title = getResources().getString(R.string.ndi_home);
         switch (position) {

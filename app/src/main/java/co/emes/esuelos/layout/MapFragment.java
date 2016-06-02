@@ -11,7 +11,6 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -44,14 +43,13 @@ import com.esri.core.symbol.SimpleMarkerSymbol;
 import com.esri.core.tasks.SpatialRelationship;
 import com.esri.core.tasks.query.QueryParameters;
 
-import java.io.File;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import co.emes.esuelos.main.MainActivity;
 import co.emes.esuelos.util.BasemapComponent;
 import co.emes.esuelos.util.Singleton;
-import co.emes.esuelos.util.Utils;
 
 /**
  * Created by csarmiento on 11/14/16
@@ -73,6 +71,8 @@ public class MapFragment extends Fragment {
     BasemapComponent basemapComponent;
     GraphicsLayer graphicsLayer;
 
+    List<FeatureLayer> featureLayerList;
+
     final SpatialReference wm = SpatialReference.create(102100);
     final SpatialReference egs = SpatialReference.create(4326);
 
@@ -82,22 +82,23 @@ public class MapFragment extends Fragment {
     Point mLocation = null;
     Point tempPoint;
 
-    android.support.v7.app.AlertDialog.Builder alertDialog;
+    AlertDialog.Builder alertDialog;
 
     public MapFragment() {
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         if(Singleton.getInstance().getResearch()==null) {
             setupAlertBuilder(R.string.map_empty_all);
         } else {
             String tpkFilePath = Singleton.getInstance().getResearch().getTpkFilePath();
-            if (tpkFilePath.isEmpty()) {
+            if (tpkFilePath== null || tpkFilePath.isEmpty()) {
                 setupAlertBuilder(R.string.map_empty_map);
             } else {
                 String geoFilePath = Singleton.getInstance().getResearch().getGeoFilePath();
-                if (geoFilePath.isEmpty()) {
+                if (geoFilePath == null || geoFilePath.isEmpty()) {
                     setupAlertBuilder(R.string.map_empty_geo);
                 }
             }
@@ -124,14 +125,15 @@ public class MapFragment extends Fragment {
         lDisplayManager.start();
         lDisplayManager.setAutoPanMode(LocationDisplayManager.AutoPanMode.OFF);
 
-        basemapComponent = new BasemapComponent(mMapView);
-        localTiledLayer = basemapComponent.loadLocalTileLayer(Singleton.getInstance().getResearch().getTpkFilePath());
-        mMapView.setExtent(localTiledLayer.getFullExtent(), 0, false);
+        if(Singleton.getInstance().getResearch() != null) {
+            basemapComponent = new BasemapComponent(mMapView);
+            localTiledLayer = basemapComponent.loadLocalTileLayer(Singleton.getInstance().getResearch().getTpkFilePath());
+            mMapView.setExtent(localTiledLayer.getFullExtent(), 0, false);
 
-        final List<FeatureLayer> featureLayerList =
-                basemapComponent.loadGeodatabaseLayer(Singleton.getInstance().getResearch().getGeoFilePath());
-        for(FeatureLayer featureLayer:featureLayerList){
-            mMapView.addLayer(featureLayer);
+            featureLayerList = basemapComponent.loadGeodatabaseLayer(Singleton.getInstance().getResearch().getGeoFilePath());
+            for (FeatureLayer featureLayer : featureLayerList) {
+                mMapView.addLayer(featureLayer);
+            }
         }
 
         mMapView.setOnLongPressListener(new OnLongPressListener() {
@@ -200,8 +202,7 @@ public class MapFragment extends Fragment {
     }
 
     private void setupAlertBuilder(int message){
-        alertDialog = new android.support.v7.app.AlertDialog.Builder(
-                getActivity());
+        alertDialog = new AlertDialog.Builder(getActivity());
         alertDialog.setCancelable(false);
         alertDialog.setTitle("Seleccionar Mapa");
         alertDialog.setMessage(message);
@@ -209,18 +210,33 @@ public class MapFragment extends Fragment {
         alertDialog.setPositiveButton("Si",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        //FragmentManager fragmentManager = getSupportFragmentManager();
-                        //fragmentManager.beginTransaction().replace(R.id.content_frame, new FragmentDatabase()).commit();
+                        ((MainActivity)getActivity()).selectItem(3);
                     }
                 });
         alertDialog.setNegativeButton("No",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        //FragmentManager fragmentManager = getSupportFragmentManager();
-                        //fragmentManager.beginTransaction().replace(R.id.content_frame, new FragmentDatabase()).commit();
+
                     }
                 });
-        alertDialog.show();
+
+        AlertDialog dialog = alertDialog.create();
+        dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(final DialogInterface dialog) {
+                Button positiveButton = ((AlertDialog)dialog).getButton(DialogInterface.BUTTON_POSITIVE);
+                positiveButton.setTextColor(getActivity().getResources().getColor(R.color.second_font));
+                positiveButton.setTransformationMethod(null);
+                positiveButton.invalidate();
+
+                Button negativeButton = ((AlertDialog)dialog).getButton(DialogInterface.BUTTON_NEGATIVE);
+                negativeButton.setTextColor(getActivity().getResources().getColor(R.color.second_font));
+                negativeButton.setTransformationMethod(null);
+                negativeButton.invalidate();
+            }
+        });
+
+        dialog.show();
     }
 
     private void addMapAction() {
@@ -292,14 +308,12 @@ public class MapFragment extends Fragment {
                         int selectedPosition = ((AlertDialog)dialog).getListView().getCheckedItemPosition();
                         switch (selectedPosition) {
                             case 0:
-                                new FragmentFieldNote().show(getFragmentManager(),
-                                        FragmentFieldNote.TAG);
+                                showFragmentFieldNote();
                                 break;
                             case 1:
                                 break;
                             case 2:
-                                new FragmentTesting().show(getFragmentManager(),
-                                        FragmentTesting.TAG);
+                                showFragmentTesting();
                                 break;
                         }
                     }
@@ -341,6 +355,16 @@ public class MapFragment extends Fragment {
                 });
         final AlertDialog alert = builder.create();
         alert.show();
+    }
+
+    public void showFragmentFieldNote() {
+        new FragmentFieldNote().show(getFragmentManager(),
+                FragmentFieldNote.TAG);
+    }
+
+    public void showFragmentTesting() {
+        new FragmentTesting().show(getFragmentManager(),
+                FragmentTesting.TAG);
     }
 
     private class MyLocationListener implements LocationListener {

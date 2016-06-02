@@ -36,12 +36,12 @@ public class FragmentDatabase extends Fragment {
 
         if(Singleton.getInstance().getResearch()!=null) {
             String tpkFilePath = Singleton.getInstance().getResearch().getTpkFilePath();
-            if(!tpkFilePath.isEmpty()) {
+            if(tpkFilePath!=null && !tpkFilePath.isEmpty()) {
                 File file = new File(tpkFilePath);
                 txtLoadMap.setText(String.format(getResources().getString(R.string.dtb_select_file), Utils.getFileName(file)));
             }
             String geoFilePath = Singleton.getInstance().getResearch().getGeoFilePath();
-            if(!geoFilePath.isEmpty()) {
+            if(geoFilePath!=null && !geoFilePath.isEmpty()) {
                 File file = new File(geoFilePath);
                 txtLoadGeo.setText(String.format(getResources().getString(R.string.dtb_select_file), Utils.getFileName(file)));
             }
