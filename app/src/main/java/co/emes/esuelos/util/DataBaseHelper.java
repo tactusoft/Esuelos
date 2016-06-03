@@ -31,8 +31,9 @@ import co.emes.esuelos.model.Research;
 public class DataBaseHelper extends SQLiteOpenHelper {
 
     //The Android"s default system path of your application database.
-    private static String DB_PATH =  "/data/data/co.emes.esuelos/databases/";
-    private static String DB_NAME = "esuelosdb.sqlite";
+    public static String DB_PATH =  "/data/data/co.emes.esuelos/databases/";
+    public static String DB_NAME = "esuelosdb.sqlite";
+    public static String TPK_NAME = "Base_Cartografica500k_v2.tpk";
 
     private SQLiteDatabase myDataBase;
     private final Context myContext;
@@ -57,6 +58,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             this.getReadableDatabase();
             try {
                 copyDataBase();
+                copyTPK();
             } catch (IOException e) {
                 throw new Error("Error copying database");
             }
@@ -92,6 +94,34 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
         // Path to the just created empty db
         String outFileName = DB_PATH + DB_NAME;
+
+        //Open the empty db as the output stream
+        OutputStream myOutput = new FileOutputStream(outFileName);
+
+        //transfer bytes from the inputfile to the outputfile
+        byte[] buffer = new byte[1024];
+        int length;
+        while ((length = myInput.read(buffer))>0){
+            myOutput.write(buffer, 0, length);
+        }
+
+        //Close the streams
+        myOutput.flush();
+        myOutput.close();
+        myInput.close();
+    }
+
+    /**
+     * Copies your database from your local assets-folder to the just created empty database in the
+     * system folder, from where it can be accessed and handled.
+     * This is done by transfering bytestream.
+     * */
+    private void copyTPK() throws IOException{
+        //Open your local db as the input stream
+        InputStream myInput = myContext.getAssets().open(TPK_NAME);
+
+        // Path to the just created empty db
+        String outFileName = DB_PATH + TPK_NAME;
 
         //Open the empty db as the output stream
         OutputStream myOutput = new FileOutputStream(outFileName);

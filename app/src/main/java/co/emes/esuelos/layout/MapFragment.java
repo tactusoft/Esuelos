@@ -49,6 +49,7 @@ import java.util.Map;
 
 import co.emes.esuelos.main.MainActivity;
 import co.emes.esuelos.util.BasemapComponent;
+import co.emes.esuelos.util.DataBaseHelper;
 import co.emes.esuelos.util.Singleton;
 
 /**
@@ -81,6 +82,7 @@ public class MapFragment extends Fragment {
     LocationManager manager;
     Point mLocation = null;
     Point tempPoint;
+    Boolean localMap = false;
 
     AlertDialog.Builder alertDialog;
 
@@ -125,8 +127,8 @@ public class MapFragment extends Fragment {
         lDisplayManager.start();
         lDisplayManager.setAutoPanMode(LocationDisplayManager.AutoPanMode.OFF);
 
+        basemapComponent = new BasemapComponent(mMapView);
         if(Singleton.getInstance().getResearch() != null) {
-            basemapComponent = new BasemapComponent(mMapView);
             localTiledLayer = basemapComponent.loadLocalTileLayer(Singleton.getInstance().getResearch().getTpkFilePath());
             mMapView.setExtent(localTiledLayer.getFullExtent(), 0, false);
 
@@ -134,17 +136,27 @@ public class MapFragment extends Fragment {
             for (FeatureLayer featureLayer : featureLayerList) {
                 mMapView.addLayer(featureLayer);
             }
+        } else {
+            localTiledLayer = basemapComponent.loadLocalTileLayer(DataBaseHelper.DB_PATH + DataBaseHelper.TPK_NAME);
+            mMapView.setExtent(localTiledLayer.getFullExtent(), 0, false);
+            localMap = true;
         }
 
         mMapView.setOnLongPressListener(new OnLongPressListener() {
             private static final long serialVersionUID = 1L;
             public boolean onLongPress(final float x, final float y) {
                 final Point loc = mMapView.toMapPoint(x, y);
-                tempPoint = (Point) GeometryEngine.project(loc, wm, egs);
+                if(localMap) {
+                    tempPoint = loc;
+                } else {
+                    tempPoint = (Point) GeometryEngine.project(loc, wm, egs);
+                }
                 graphicsLayer.removeAll();
                 graphicsLayer.addGraphic(new Graphic(loc,new  SimpleMarkerSymbol(Color.GREEN, 25, SimpleMarkerSymbol.STYLE.CROSS)));
                 showListView();
-                searchSuelos(featureLayerList, loc);
+                if(featureLayerList!=null && !featureLayerList.isEmpty()) {
+                    searchSuelos(featureLayerList, loc);
+                }
                 return true;
             }
         });
@@ -252,10 +264,14 @@ public class MapFragment extends Fragment {
 
     private void gpsAction() {
         clearMapAction();
-        Point p = (Point) GeometryEngine.project(mLocation, egs, wm);
-        mMapView.zoomToResolution(p, 20.0);
         Singleton.getInstance().setX(mLocation.getX());
         Singleton.getInstance().setY(mLocation.getY());
+        if(!localMap) {
+            Point p = (Point) GeometryEngine.project(mLocation, egs, wm);
+            mMapView.zoomToResolution(p, 20.0);
+        } else {
+            mMapView.centerAndZoom(mLocation.getY(), mLocation.getX(), 0.05f);
+        }
     }
 
     public void searchSuelos(List<FeatureLayer> featureLayerList, Point point){
@@ -382,8 +398,12 @@ public class MapFragment extends Fragment {
                 tempPoint = mLocation;
                 Singleton.getInstance().setX(mLocation.getX());
                 Singleton.getInstance().setY(mLocation.getY());
-                Point p = (Point) GeometryEngine.project(mLocation, egs, wm);
-                mMapView.zoomToResolution(p, 20.0);
+                if(!localMap) {
+                    Point p = (Point) GeometryEngine.project(mLocation, egs, wm);
+                    mMapView.zoomToResolution(p, 20.0);
+                } else {
+                    mMapView.centerAndZoom(mLocation.getY(), mLocation.getX(), 0.05f);
+                }
             }
         }
 

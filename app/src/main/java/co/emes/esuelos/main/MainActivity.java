@@ -248,8 +248,7 @@ public class MainActivity extends AppCompatActivity {
         alertDialog.setPositiveButton("Aceptar",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        FragmentManager fragmentManager = getSupportFragmentManager();
-                        fragmentManager.beginTransaction().replace(R.id.content_frame, new FragmentDatabase()).commit();
+                        selectItem(3);
                     }
                 });
     }
