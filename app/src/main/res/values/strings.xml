@@ -18,6 +18,7 @@
     <string name="btn_clear_map">Limpiar Mapa</string>
     <string name="btn_ok">Aceptar</string>
     <string name="btn_save">Guardar</string>
+    <string name="btn_close">Terminar</string>
     <string name="btn_cancel">Cancelar</string>
     <string name="btn_add">Adicionar</string>
     <string name="btn_prev">Anterior</string>
@@ -52,6 +53,7 @@
     <string name="tst_externa">Externa</string>
     <string name="tst_profile">Perfil</string>
     <string name="tst_no_observacion">Nro. Observación</string>
+    <string name="tst_coords">Coordenadas</string>
     <string name="tst_reconocedor">Reconocedor *</string>
     <string name="tst_fecha">Fecha y Hora</string>
     <string name="tst_nombre_sitio">Nombre del Sitio *</string>

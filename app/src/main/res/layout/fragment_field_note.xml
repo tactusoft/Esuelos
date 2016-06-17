@@ -12,7 +12,7 @@
         android:gravity="center_horizontal"
         android:textSize="25sp"
         android:text="@string/fdn_title"
-        android:textColor="@android:color/white"
+        android:textColor="@color/colorAccent"
         android:textStyle="bold"/>
 
     <TabHost
@@ -27,12 +27,26 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <Button
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:id="@+id/lyr_buttons"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/btn_save"
-                android:id="@+id/btn_save"
-                android:layout_gravity="right" />
+                android:orientation="horizontal">
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/btn_save"
+                    android:id="@+id/btn_save"
+                    android:layout_gravity="right"
+                    android:textSize="16sp"/>
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/btn_close"
+                    android:id="@+id/btn_close"
+                    android:layout_gravity="right"
+                    android:textSize="16sp"/>
+            </LinearLayout>
 
             <TabWidget
                 android:id="@android:id/tabs"
@@ -50,145 +64,178 @@
                     android:layout_height="match_parent"
                     android:orientation="vertical">
 
-                    <LinearLayout android:id="@+id/linearLayout1"
-                        android:layout_height="wrap_content"
-                        android:layout_width="fill_parent">
-                        <Button android:id="@+id/btn_take_photo"
-                            android:text="@string/take_photo"
-                            android:layout_height="50sp"
-                            android:layout_weight="1"
-                            android:layout_width="0sp">
-                        </Button>
-                        <Button android:id="@+id/btn_select_photo"
-                            android:text="@string/select_photo"
-                            android:layout_height="50sp"
-                            android:layout_weight="1"
-                            android:layout_width="0sp">
-                        </Button>
-                    </LinearLayout>
-
-                    <ImageView
-                        android:id="@+id/imgView_pic"
-                        android:layout_width="fill_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"/>
-
-                    <TextView
+                    <android.support.v4.widget.NestedScrollView
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/tst_no_observacion"
-                        android:textColor="@android:color/holo_red_dark"
-                        android:layout_marginTop="20dp"
-                        android:layout_marginLeft="20dp"
-                        android:layout_marginRight="20dp"/>
+                        android:layout_height="match_parent"
+                        android:id="@+id/scrollview_tab1">
 
-                    <EditText
-                        android:id="@+id/input_nro_observacion"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textColor="@android:color/white"
-                        android:enabled="false"
-                        android:inputType="text"
-                        android:layout_marginLeft="20dp"
-                        android:layout_marginRight="20dp"/>
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/tst_reconocedor"
-                        android:textColor="@android:color/holo_red_dark"
-                        android:layout_marginLeft="20dp"
-                        android:layout_marginRight="20dp"/>
-
-                    <Spinner
-                        android:id="@+id/input_reconocedor"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textColor="@android:color/white"
-                        android:layout_marginLeft="20dp"
-                        android:layout_marginRight="20dp"/>
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/tst_fecha"
-                        android:textColor="@android:color/holo_red_dark"
-                        android:layout_marginLeft="20dp"
-                        android:layout_marginRight="20dp"/>
-
-                    <EditText
-                        android:id="@+id/input_fecha"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:enabled="false"
-                        android:textColor="@android:color/white"
-                        android:inputType="text"
-                        android:layout_marginLeft="20dp"
-                        android:layout_marginRight="20dp"/>
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:layout_marginLeft="20dp"
-                        android:layout_marginRight="20dp">
-
-                        <TextView
-                            android:layout_width="match_parent"
+                        <LinearLayout android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="@string/tst_epoca"
-                            android:textColor="@android:color/holo_red_dark"
-                            android:layout_marginTop="5dp"
-                            android:layout_weight="1"/>
+                            android:orientation="vertical">
 
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="@string/tst_epoca_dias"
-                            android:textColor="@android:color/holo_red_dark"
-                            android:layout_weight="1"/>
+                            <LinearLayout android:id="@+id/linearLayout1"
+                                android:layout_height="wrap_content"
+                                android:layout_width="fill_parent">
+                                <Button android:id="@+id/btn_take_photo"
+                                    android:text="@string/take_photo"
+                                    android:layout_height="50sp"
+                                    android:layout_weight="1"
+                                    android:layout_width="0sp"
+                                    android:textSize="16sp">
+                                </Button>
+                                <Button android:id="@+id/btn_select_photo"
+                                    android:text="@string/select_photo"
+                                    android:layout_height="50sp"
+                                    android:layout_weight="1"
+                                    android:layout_width="0sp"
+                                    android:textSize="16sp">
+                                </Button>
+                            </LinearLayout>
 
-                    </LinearLayout>
+                            <ImageView
+                                android:id="@+id/imgView_pic"
+                                android:layout_width="200dp"
+                                android:layout_height="200dp"
+                                android:layout_gravity="center"
+                                android:scaleType="fitXY"/>
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:layout_marginLeft="20dp"
-                        android:layout_marginRight="20dp">
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="@string/tst_no_observacion"
+                                android:textColor="@color/colorPrimary"
+                                android:layout_marginTop="20dp"
+                                android:layout_marginLeft="20dp"
+                                android:layout_marginRight="20dp"/>
 
-                        <Spinner
-                            android:id="@+id/input_epoca"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:textColor="@android:color/white"
-                            android:layout_weight="1"/>
+                            <EditText
+                                android:id="@+id/input_nro_observacion"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/principal_font"
+                                android:enabled="false"
+                                android:inputType="text"
+                                android:layout_marginLeft="20dp"
+                                android:layout_marginRight="20dp"/>
 
-                        <EditText
-                            android:id="@+id/input_epoca_dias"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:textColor="@android:color/white"
-                            android:inputType="number"
-                            android:layout_weight="1"/>
-                    </LinearLayout>
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="@string/tst_coords"
+                                android:textColor="@color/colorPrimary"
+                                android:layout_marginTop="20dp"
+                                android:layout_marginLeft="20dp"
+                                android:layout_marginRight="20dp"/>
 
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/tst_nombre_sitio"
-                        android:textColor="@android:color/holo_red_dark"
-                        android:layout_marginLeft="20dp"
-                        android:layout_marginRight="20dp"/>
+                            <EditText
+                                android:id="@+id/input_coords"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/principal_font"
+                                android:enabled="false"
+                                android:inputType="text"
+                                android:layout_marginLeft="20dp"
+                                android:layout_marginRight="20dp"/>
 
-                    <EditText
-                        android:id="@+id/input_nombre_sitio"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textColor="@android:color/white"
-                        android:inputType="text"
-                        android:layout_marginLeft="20dp"
-                        android:layout_marginRight="20dp"/>
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="@string/tst_reconocedor"
+                                android:textColor="@color/colorPrimary"
+                                android:layout_marginLeft="20dp"
+                                android:layout_marginRight="20dp"/>
+
+                            <Spinner
+                                android:id="@+id/input_reconocedor"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/principal_font"
+                                android:layout_marginLeft="20dp"
+                                android:layout_marginRight="20dp"/>
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="@string/tst_fecha"
+                                android:textColor="@color/colorPrimary"
+                                android:layout_marginLeft="20dp"
+                                android:layout_marginRight="20dp"/>
+
+                            <EditText
+                                android:id="@+id/input_fecha"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:enabled="false"
+                                android:textColor="@color/principal_font"
+                                android:inputType="text"
+                                android:layout_marginLeft="20dp"
+                                android:layout_marginRight="20dp"/>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:layout_marginLeft="20dp"
+                                android:layout_marginRight="20dp">
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/tst_epoca"
+                                    android:textColor="@color/colorPrimary"
+                                    android:layout_marginTop="5dp"
+                                    android:layout_weight="1"/>
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/tst_epoca_dias"
+                                    android:textColor="@color/colorPrimary"
+                                    android:layout_weight="1"/>
+
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:layout_marginLeft="20dp"
+                                android:layout_marginRight="20dp">
+
+                                <Spinner
+                                    android:id="@+id/input_epoca"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:textColor="@color/principal_font"
+                                    android:layout_weight="1"/>
+
+                                <EditText
+                                    android:id="@+id/input_epoca_dias"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:textColor="@color/principal_font"
+                                    android:inputType="number"
+                                    android:layout_weight="1"/>
+                            </LinearLayout>
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="@string/tst_nombre_sitio"
+                                android:textColor="@color/colorPrimary"
+                                android:layout_marginLeft="20dp"
+                                android:layout_marginRight="20dp"/>
+
+                            <EditText
+                                android:id="@+id/input_nombre_sitio"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/principal_font"
+                                android:inputType="text"
+                                android:layout_marginLeft="20dp"
+                                android:layout_marginRight="20dp"/>
+                        </LinearLayout>
+                    </android.support.v4.widget.NestedScrollView>
 
                 </LinearLayout>
 
@@ -198,295 +245,315 @@
                     android:layout_height="match_parent"
                     android:orientation="vertical">
 
-                    <TextView
+                    <android.support.v4.widget.NestedScrollView
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/tst_gm"
-                        android:textColor="@android:color/holo_red_dark"
-                        android:layout_marginTop="5dp"
-                        android:layout_marginBottom="5dp"
-                        android:layout_marginLeft="20dp"
-                        android:layout_marginRight="20dp"
-                        android:textSize="20sp"/>
+                        android:layout_height="match_parent"
+                        android:id="@+id/scrollview_tab2">
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:layout_marginLeft="20dp"
-                        android:layout_marginRight="20dp">
-
-                        <TextView
-                            android:layout_width="match_parent"
+                        <LinearLayout android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="@string/tst_label_paisaje"
-                            android:textColor="@android:color/holo_red_dark"
-                            android:layout_weight="1"/>
+                            android:orientation="vertical">
 
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="@string/tst_label_simbolo"
-                            android:textColor="@android:color/holo_red_dark"
-                            android:layout_weight="1"/>
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="@string/tst_gm"
+                                android:textColor="@color/colorPrimary"
+                                android:layout_marginTop="5dp"
+                                android:layout_marginBottom="5dp"
+                                android:layout_marginLeft="20dp"
+                                android:layout_marginRight="20dp"
+                                android:textSize="20sp"/>
 
-                    </LinearLayout>
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:layout_marginLeft="20dp"
+                                android:layout_marginRight="20dp">
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:layout_marginLeft="20dp"
-                        android:layout_marginRight="20dp">
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/tst_label_paisaje"
+                                    android:textColor="@color/colorPrimary"
+                                    android:layout_weight="1"/>
 
-                        <TextView
-                            android:id="@+id/label_paisaje"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:textColor="@android:color/white"
-                            android:layout_weight="1"/>
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/tst_label_simbolo"
+                                    android:textColor="@color/colorPrimary"
+                                    android:layout_weight="1"/>
 
-                        <TextView
-                            android:id="@+id/label_simbolo"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:textColor="@android:color/white"
-                            android:layout_weight="1"/>
+                            </LinearLayout>
 
-                    </LinearLayout>
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:layout_marginLeft="20dp"
+                                android:layout_marginRight="20dp">
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:layout_marginLeft="20dp"
-                        android:layout_marginRight="20dp">
+                                <TextView
+                                    android:id="@+id/label_paisaje"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:textColor="@color/principal_font"
+                                    android:layout_weight="1"/>
 
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="@string/fnd_gradiente"
-                            android:textColor="@android:color/holo_red_dark"
-                            android:layout_weight="1"/>
+                                <TextView
+                                    android:id="@+id/label_simbolo"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:textColor="@color/principal_font"
+                                    android:layout_weight="1"/>
 
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="@string/tst_longitud"
-                            android:textColor="@android:color/holo_red_dark"
-                            android:layout_weight="1"/>
+                            </LinearLayout>
 
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="@string/fnd_forma"
-                            android:textColor="@android:color/holo_red_dark"
-                            android:layout_weight="1"/>
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:layout_marginLeft="20dp"
+                                android:layout_marginRight="20dp"
+                                android:layout_marginTop="20dp">
 
-                    </LinearLayout>
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/fnd_gradiente"
+                                    android:textColor="@color/colorPrimary"
+                                    android:layout_weight="1"/>
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:layout_marginLeft="20dp"
-                        android:layout_marginRight="20dp">
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/tst_longitud"
+                                    android:textColor="@color/colorPrimary"
+                                    android:layout_weight="1"/>
 
-                        <Spinner
-                            android:id="@+id/input_gradiente"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:textColor="@android:color/white"
-                            android:layout_weight="1"/>
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/fnd_forma"
+                                    android:textColor="@color/colorPrimary"
+                                    android:layout_weight="1"/>
 
-                        <Spinner
-                            android:id="@+id/input_pendiente_longitud"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:textColor="@android:color/white"
-                            android:layout_weight="1"/>
+                            </LinearLayout>
 
-                        <Spinner
-                            android:id="@+id/input_pendiente_forma"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:textColor="@android:color/white"
-                            android:layout_weight="1"/>
-                    </LinearLayout>
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:layout_marginLeft="20dp"
+                                android:layout_marginRight="20dp">
 
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/fnd_erosion"
-                        android:textColor="@android:color/holo_red_dark"
-                        android:layout_marginLeft="20dp"
-                        android:layout_marginRight="20dp"/>
+                                <Spinner
+                                    android:id="@+id/input_gradiente"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:textColor="@color/principal_font"
+                                    android:layout_weight="1"/>
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:layout_marginLeft="20dp"
-                        android:layout_marginRight="20dp">
+                                <Spinner
+                                    android:id="@+id/input_pendiente_longitud"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:textColor="@color/principal_font"
+                                    android:layout_weight="1"/>
 
-                        <Spinner
-                            android:id="@+id/input_clase_erosion"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:textColor="@android:color/white"
-                            android:layout_weight="1"/>
+                                <Spinner
+                                    android:id="@+id/input_pendiente_forma"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:textColor="@color/principal_font"
+                                    android:layout_weight="1"/>
+                            </LinearLayout>
 
-                        <Spinner
-                            android:id="@+id/input_tipo_erosion"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:textColor="@android:color/white"
-                            android:layout_weight="1"/>
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="@string/fnd_erosion"
+                                android:textColor="@color/colorPrimary"
+                                android:layout_marginLeft="20dp"
+                                android:layout_marginRight="20dp"
+                                android:layout_marginTop="20dp"/>
 
-                        <Spinner
-                            android:id="@+id/input_grado_erosion"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:textColor="@android:color/white"
-                            android:layout_weight="1"/>
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:layout_marginLeft="20dp"
+                                android:layout_marginRight="20dp">
 
-                    </LinearLayout>
+                                <Spinner
+                                    android:id="@+id/input_clase_erosion"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:textColor="@color/principal_font"
+                                    android:layout_weight="1"/>
 
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/fnd_movimiento"
-                        android:textColor="@android:color/holo_red_dark"
-                        android:layout_marginLeft="20dp"
-                        android:layout_marginRight="20dp"/>
+                                <Spinner
+                                    android:id="@+id/input_tipo_erosion"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:textColor="@color/principal_font"
+                                    android:layout_weight="1"/>
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:layout_marginLeft="20dp"
-                        android:layout_marginRight="20dp">
+                                <Spinner
+                                    android:id="@+id/input_grado_erosion"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:textColor="@color/principal_font"
+                                    android:layout_weight="1"/>
 
-                        <Spinner
-                            android:id="@+id/input_clases_movimiento"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:textColor="@android:color/white"
-                            android:layout_weight="1"/>
+                            </LinearLayout>
 
-                        <Spinner
-                            android:id="@+id/input_tipos_movimiento"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:textColor="@android:color/white"
-                            android:layout_weight="1"/>
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="@string/fnd_movimiento"
+                                android:textColor="@color/colorPrimary"
+                                android:layout_marginLeft="20dp"
+                                android:layout_marginRight="20dp"
+                                android:layout_marginTop="20dp"/>
 
-                        <Spinner
-                            android:id="@+id/input_grados_movimiento"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:textColor="@android:color/white"
-                            android:layout_weight="1"/>
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:layout_marginLeft="20dp"
+                                android:layout_marginRight="20dp">
 
-                    </LinearLayout>
+                                <Spinner
+                                    android:id="@+id/input_clases_movimiento"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:textColor="@color/principal_font"
+                                    android:layout_weight="1"/>
 
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/tst_anegamiento"
-                        android:textColor="@android:color/holo_red_dark"
-                        android:layout_marginLeft="20dp"
-                        android:layout_marginRight="20dp"/>
+                                <Spinner
+                                    android:id="@+id/input_tipos_movimiento"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:textColor="@color/principal_font"
+                                    android:layout_weight="1"/>
 
-                    <Spinner
-                        android:id="@+id/input_anegamiento"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textColor="@android:color/white"
-                        android:layout_marginLeft="20dp"
-                        android:layout_marginRight="20dp"/>
+                                <Spinner
+                                    android:id="@+id/input_grados_movimiento"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:textColor="@color/principal_font"
+                                    android:layout_weight="1"/>
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:layout_marginLeft="20dp"
-                        android:layout_marginRight="20dp">
+                            </LinearLayout>
 
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="@string/tst_frecuencia"
-                            android:textColor="@android:color/holo_red_dark"
-                            android:id="@+id/label_frecuencia"
-                            android:layout_weight="1"/>
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="@string/tst_anegamiento"
+                                android:textColor="@color/colorPrimary"
+                                android:layout_marginLeft="20dp"
+                                android:layout_marginRight="20dp"
+                                android:layout_marginTop="20dp"/>
 
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="@string/tst_duracion"
-                            android:textColor="@android:color/holo_red_dark"
-                            android:id="@+id/label_duracion"
-                            android:layout_weight="1"/>
+                            <Spinner
+                                android:id="@+id/input_anegamiento"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/principal_font"
+                                android:layout_marginLeft="20dp"
+                                android:layout_marginRight="20dp"/>
 
-                    </LinearLayout>
+                            <LinearLayout
+                                android:id="@+id/lyr_anegamiento_label"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:layout_marginLeft="20dp"
+                                android:layout_marginRight="20dp"
+                                android:layout_marginTop="20dp">
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:layout_marginLeft="20dp"
-                        android:layout_marginRight="20dp">
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/tst_frecuencia"
+                                    android:textColor="@color/colorPrimary"
+                                    android:id="@+id/label_frecuencia"
+                                    android:layout_weight="1"/>
 
-                        <Spinner
-                            android:id="@+id/input_frecuencia"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:textColor="@android:color/white"
-                            android:layout_weight="1"/>
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/tst_duracion"
+                                    android:textColor="@color/colorPrimary"
+                                    android:id="@+id/label_duracion"
+                                    android:layout_weight="1"/>
 
-                        <Spinner
-                            android:id="@+id/input_duracion"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:textColor="@android:color/white"
-                            android:layout_weight="1"/>
+                            </LinearLayout>
 
-                    </LinearLayout>
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:layout_marginLeft="20dp"
+                                android:layout_marginRight="20dp"
+                                android:id="@+id/lyr_anegamiento_input">
 
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/tst_pedegrosidad"
-                        android:textColor="@android:color/holo_red_dark"
-                        android:layout_marginLeft="20dp"
-                        android:layout_marginRight="20dp"
-                        android:id="@+id/label_pedegrosidad"/>
+                                <Spinner
+                                    android:id="@+id/input_frecuencia"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:textColor="@color/principal_font"
+                                    android:layout_weight="1"/>
 
-                    <Spinner
-                        android:id="@+id/input_pedegrosidad"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textColor="@android:color/white"
-                        android:layout_marginLeft="20dp"
-                        android:layout_marginRight="20dp"/>
+                                <Spinner
+                                    android:id="@+id/input_duracion"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:textColor="@color/principal_font"
+                                    android:layout_weight="1"/>
 
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/tst_afloramiento"
-                        android:textColor="@android:color/holo_red_dark"
-                        android:layout_marginLeft="20dp"
-                        android:layout_marginRight="20dp"
-                        android:id="@+id/label_afloramiento"/>
+                            </LinearLayout>
 
-                    <Spinner
-                        android:id="@+id/input_afloramiento"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textColor="@android:color/white"
-                        android:layout_marginLeft="20dp"
-                        android:layout_marginRight="20dp"/>
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="@string/tst_pedegrosidad"
+                                android:textColor="@color/colorPrimary"
+                                android:layout_marginLeft="20dp"
+                                android:layout_marginRight="20dp"
+                                android:layout_marginTop="20dp"
+                                android:id="@+id/label_pedegrosidad"/>
+
+                            <Spinner
+                                android:id="@+id/input_pedegrosidad"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/principal_font"
+                                android:layout_marginLeft="20dp"
+                                android:layout_marginRight="20dp"/>
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="@string/tst_afloramiento"
+                                android:textColor="@color/colorPrimary"
+                                android:layout_marginLeft="20dp"
+                                android:layout_marginRight="20dp"
+                                android:layout_marginTop="20dp"
+                                android:id="@+id/label_afloramiento"/>
+
+                            <Spinner
+                                android:id="@+id/input_afloramiento"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/principal_font"
+                                android:layout_marginLeft="20dp"
+                                android:layout_marginRight="20dp"/>
+                        </LinearLayout>
+                    </android.support.v4.widget.NestedScrollView>
 
                 </LinearLayout>
 
@@ -500,7 +567,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/fnd_vegetacion"
-                        android:textColor="@android:color/holo_red_dark"
+                        android:textColor="@color/colorPrimary"
                         android:layout_marginTop="20dp"
                         android:layout_marginLeft="20dp"
                         android:layout_marginRight="20dp"/>
@@ -509,7 +576,7 @@
                         android:id="@+id/input_vegetacion_natural"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textColor="@android:color/white"
+                        android:textColor="@color/principal_font"
                         android:inputType="textMultiLine"
                         android:layout_marginLeft="20dp"
                         android:layout_marginRight="20dp"
@@ -522,7 +589,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/fnd_grupo"
-                        android:textColor="@android:color/holo_red_dark"
+                        android:textColor="@color/colorPrimary"
                         android:layout_marginTop="20dp"
                         android:layout_marginLeft="20dp"
                         android:layout_marginRight="20dp"/>
@@ -531,7 +598,7 @@
                         android:id="@+id/input_grupo_uso"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textColor="@android:color/white"
+                        android:textColor="@color/principal_font"
                         android:layout_marginLeft="20dp"
                         android:layout_marginRight="20dp"/>
 
@@ -540,7 +607,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/fnd_subgrupo"
-                        android:textColor="@android:color/holo_red_dark"
+                        android:textColor="@color/colorPrimary"
                         android:layout_marginTop="20dp"
                         android:layout_marginLeft="20dp"
                         android:layout_marginRight="20dp"/>
@@ -549,7 +616,7 @@
                         android:id="@+id/input_subgrupo_uso"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textColor="@android:color/white"
+                        android:textColor="@color/principal_font"
                         android:layout_marginLeft="20dp"
                         android:layout_marginRight="20dp"/>
 
@@ -558,7 +625,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/fnd_cultivo"
-                        android:textColor="@android:color/holo_red_dark"
+                        android:textColor="@color/colorPrimary"
                         android:layout_marginTop="20dp"
                         android:layout_marginLeft="20dp"
                         android:layout_marginRight="20dp"/>
@@ -567,7 +634,7 @@
                         android:id="@+id/input_nombre_cultivo"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textColor="@android:color/white"
+                        android:textColor="@color/principal_font"
                         android:inputType="text"
                         android:layout_marginLeft="20dp"
                         android:layout_marginRight="20dp"/>
@@ -576,7 +643,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/msg_obs"
-                        android:textColor="@android:color/holo_red_dark"
+                        android:textColor="@color/colorPrimary"
                         android:layout_marginTop="20dp"
                         android:layout_marginLeft="20dp"
                         android:layout_marginRight="20dp"/>
@@ -585,7 +652,7 @@
                         android:id="@+id/input_observacion"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textColor="@android:color/white"
+                        android:textColor="@color/principal_font"
                         android:inputType="textMultiLine"
                         android:layout_marginLeft="20dp"
                         android:layout_marginRight="20dp"

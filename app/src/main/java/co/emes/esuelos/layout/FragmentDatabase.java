@@ -34,6 +34,31 @@ public class FragmentDatabase extends Fragment {
         txtLoadMap = (TextView)rootView.findViewById(R.id.txt_load_map);
         txtLoadGeo = (TextView)rootView.findViewById(R.id.txt_load_geo);
 
+        refreshInputs();
+
+        Button btnLoadMap = (Button) rootView.findViewById(R.id.btn_load_map);
+        btnLoadMap.setTransformationMethod(null);
+        btnLoadMap.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((MainActivity)getActivity()).loadTPK();
+                refreshInputs();
+            }
+        });
+
+        Button btnLoadGeo = (Button) rootView.findViewById(R.id.btn_load_geo);
+        btnLoadGeo.setTransformationMethod(null);
+        btnLoadGeo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((MainActivity)getActivity()).loadGEO();
+                refreshInputs();
+            }
+        });
+        return rootView;
+    }
+
+    private void refreshInputs() {
         if(Singleton.getInstance().getResearch()!=null) {
             String tpkFilePath = Singleton.getInstance().getResearch().getTpkFilePath();
             if(tpkFilePath!=null && !tpkFilePath.isEmpty()) {
@@ -46,24 +71,5 @@ public class FragmentDatabase extends Fragment {
                 txtLoadGeo.setText(String.format(getResources().getString(R.string.dtb_select_file), Utils.getFileName(file)));
             }
         }
-
-        Button btnLoadMap = (Button) rootView.findViewById(R.id.btn_load_map);
-        btnLoadMap.setTransformationMethod(null);
-        btnLoadMap.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ((MainActivity)getActivity()).loadTPK();
-            }
-        });
-
-        Button btnLoadGeo = (Button) rootView.findViewById(R.id.btn_load_geo);
-        btnLoadGeo.setTransformationMethod(null);
-        btnLoadGeo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ((MainActivity)getActivity()).loadGEO();
-            }
-        });
-        return rootView;
     }
 }

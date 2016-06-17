@@ -15,7 +15,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/tst_horizonte_nro"
-            android:textColor="@android:color/white"
+            android:textColor="@color/principal_font"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
             android:textSize="20sp"
@@ -27,7 +27,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/tst_color"
-        android:textColor="@android:color/holo_red_dark"
+        android:textColor="@color/colorPrimary"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"/>
 
@@ -42,21 +42,21 @@
             android:id="@+id/input_color_hue"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="@android:color/white"
+            android:textColor="@color/principal_font"
             android:layout_weight="1"/>
 
         <Spinner
             android:id="@+id/input_color_value"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="@android:color/white"
+            android:textColor="@color/principal_font"
             android:layout_weight="1"/>
 
         <Spinner
             android:id="@+id/input_color_chroma"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="@android:color/white"
+            android:textColor="@color/principal_font"
             android:layout_weight="1"/>
     </LinearLayout>
 
@@ -64,7 +64,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/tst_color_percent"
-        android:textColor="@android:color/holo_red_dark"
+        android:textColor="@color/colorPrimary"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"/>
 
@@ -72,7 +72,7 @@
         android:id="@+id/input_color_percent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColor="@android:color/white"
+        android:textColor="@color/principal_font"
         android:inputType="number"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"/>

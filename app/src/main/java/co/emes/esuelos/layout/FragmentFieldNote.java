@@ -13,6 +13,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,6 +24,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TabHost;
@@ -51,7 +53,9 @@ public class FragmentFieldNote extends DialogFragment implements View.OnClickLis
 
     LayoutInflater inflater;
     TabHost tabHost;
+    LinearLayout lyrButtons;
     EditText inputNroObservacion;
+    EditText inputCoords;
     EditText inputFecha;
     Spinner inputReconocedor;
     EditText inputNombreSitio;
@@ -67,6 +71,8 @@ public class FragmentFieldNote extends DialogFragment implements View.OnClickLis
     Spinner inputTiposMovimiento;
     Spinner inputFrecuenciasMovimiento;
     Spinner inputAnegamiento;
+    LinearLayout lyrAnegamientoLabel;
+    LinearLayout lyrAnegamientoInput;
     TextView labelFrecuencia;
     Spinner inputFrecuencia;
     TextView labelDuracion;
@@ -184,6 +190,7 @@ public class FragmentFieldNote extends DialogFragment implements View.OnClickLis
         return f;
     }
 
+    @NonNull
     @Override
     public Dialog onCreateDialog(final Bundle savedInstanceState) {
         // the content
@@ -227,11 +234,14 @@ public class FragmentFieldNote extends DialogFragment implements View.OnClickLis
         spec.setIndicator(getResources().getString(R.string.fnd_other));
         tabHost.addTab(spec);
 
+        lyrButtons = (LinearLayout) rootView.findViewById(R.id.lyr_buttons);
+
         imgViewPic  = (ImageView) rootView.findViewById(R.id.imgView_pic);
         labelPaisaje = (TextView) rootView.findViewById(R.id.label_paisaje);
         labelSimbolo = (TextView) rootView.findViewById(R.id.label_simbolo);
 
         inputNroObservacion = (EditText) rootView.findViewById(R.id.input_nro_observacion);
+        inputCoords = (EditText) rootView.findViewById(R.id.input_coords);
         inputFecha = (EditText) rootView.findViewById(R.id.input_fecha);
         inputReconocedor = (Spinner) rootView.findViewById(R.id.input_reconocedor);
         inputNombreSitio = (EditText) rootView.findViewById(R.id.input_nombre_sitio);
@@ -247,6 +257,8 @@ public class FragmentFieldNote extends DialogFragment implements View.OnClickLis
         inputTiposMovimiento = (Spinner) rootView.findViewById(R.id.input_tipos_movimiento);
         inputFrecuenciasMovimiento = (Spinner) rootView.findViewById(R.id.input_grados_movimiento);
         inputAnegamiento = (Spinner) rootView.findViewById(R.id.input_anegamiento);
+        lyrAnegamientoLabel = (LinearLayout) rootView.findViewById(R.id.lyr_anegamiento_label);
+        lyrAnegamientoInput = (LinearLayout) rootView.findViewById(R.id.lyr_anegamiento_input);
         labelFrecuencia = (TextView) rootView.findViewById(R.id.label_frecuencia);
         inputFrecuencia = (Spinner) rootView.findViewById(R.id.input_frecuencia);
         labelDuracion = (TextView) rootView.findViewById(R.id.label_duracion);
@@ -263,10 +275,12 @@ public class FragmentFieldNote extends DialogFragment implements View.OnClickLis
         inputObservaciones = (EditText) rootView.findViewById(R.id.input_observacion);
 
         Button btnSave = (Button) rootView.findViewById(R.id.btn_save);
+        Button btnClose = (Button) rootView.findViewById(R.id.btn_close);
         Button btnTakePhoto = (Button) rootView.findViewById(R.id.btn_take_photo);
         Button btnSelectPhoto = (Button) rootView.findViewById(R.id.btn_select_photo);
 
         btnSave.setTransformationMethod(null);
+        btnClose.setTransformationMethod(null);
         btnTakePhoto.setTransformationMethod(null);
         btnSelectPhoto.setTransformationMethod(null);
 
@@ -313,14 +327,19 @@ public class FragmentFieldNote extends DialogFragment implements View.OnClickLis
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                saveAction();
+                saveAction(false);
             }
         });
 
-        labelFrecuencia.setVisibility(View.GONE);
-        labelDuracion.setVisibility(View.GONE);
-        inputFrecuencia.setVisibility(View.GONE);
-        inputDuracion.setVisibility(View.GONE);
+        btnClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                saveAction(true);
+            }
+        });
+
+        lyrAnegamientoLabel.setVisibility(View.GONE);
+        lyrAnegamientoInput.setVisibility(View.GONE);
         inputTipoErosion.setVisibility(View.GONE);
         inputGradoErosion.setVisibility(View.GONE);
         inputTiposMovimiento.setVisibility(View.GONE);
@@ -351,24 +370,7 @@ public class FragmentFieldNote extends DialogFragment implements View.OnClickLis
                         inputTipoErosion.setVisibility(View.VISIBLE);
                         inputGradoErosion.setVisibility(View.VISIBLE);
 
-                        List<Domain> listDomainTemp = new LinkedList<>();
-                        for(Domain row:listTipoErosion){
-                            if(row.getValor()==null) {
-                                listDomainTemp.add(row);
-                            } else if(domain.getCodigo().equals("10")
-                                    && Integer.valueOf(row.getCodigo()) >= 11 && Integer.valueOf(row.getCodigo()) <= 19) {
-                                listDomainTemp.add(row);
-                            } else if(domain.getCodigo().equals("20")
-                                    && Integer.valueOf(row.getCodigo()) >= 21 && Integer.valueOf(row.getCodigo()) <= 22) {
-                                listDomainTemp.add(row);
-                            } else if(domain.getCodigo().equals("30")
-                                    && Integer.valueOf(row.getCodigo()) >= 31 && Integer.valueOf(row.getCodigo()) <= 32) {
-                                listDomainTemp.add(row);
-                            } else if(domain.getCodigo().equals("40")
-                                    && Integer.valueOf(row.getCodigo()) >= 41 && Integer.valueOf(row.getCodigo()) <= 42) {
-                                listDomainTemp.add(row);
-                            }
-                        }
+                        List<Domain> listDomainTemp = getListTipoErosion(domain);
                         tipoErosionAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, listDomainTemp);
                         inputTipoErosion.setAdapter(tipoErosionAdapter);
                         inputTipoErosion.setSelection(positionTipoErosion);
@@ -459,39 +461,7 @@ public class FragmentFieldNote extends DialogFragment implements View.OnClickLis
                         labelSubgrupoUso.setVisibility(View.GONE);
                         inputSubgrupoUso.setVisibility(View.GONE);
                     } else {
-                        List<Domain> listDomainTemp = new LinkedList<>();
-                        for (Domain row : listSubgrupoUso) {
-                            if (row.getValor() == null) {
-                                listDomainTemp.add(row);
-                            } else if (domain.getCodigo().equals("10")
-                                    && Integer.valueOf(row.getCodigo()) >= 11 && Integer.valueOf(row.getCodigo()) <= 13) {
-                                listDomainTemp.add(row);
-                            } else if (domain.getCodigo().equals("20")
-                                    && Integer.valueOf(row.getCodigo()) >= 21 && Integer.valueOf(row.getCodigo()) <= 23) {
-                                listDomainTemp.add(row);
-                            } else if (domain.getCodigo().equals("30")
-                                    && Integer.valueOf(row.getCodigo()) >= 31 && Integer.valueOf(row.getCodigo()) <= 32) {
-                                listDomainTemp.add(row);
-                            } else if (domain.getCodigo().equals("40")
-                                    && Integer.valueOf(row.getCodigo()) >= 41 && Integer.valueOf(row.getCodigo()) <= 43) {
-                                listDomainTemp.add(row);
-                            } else if (domain.getCodigo().equals("50")
-                                    && Integer.valueOf(row.getCodigo()) >= 51 && Integer.valueOf(row.getCodigo()) <= 52) {
-                                listDomainTemp.add(row);
-                            } else if (domain.getCodigo().equals("60")
-                                    && Integer.valueOf(row.getCodigo()) >= 61 && Integer.valueOf(row.getCodigo()) <= 67) {
-                                listDomainTemp.add(row);
-                            } else if (domain.getCodigo().equals("70")
-                                    && Integer.valueOf(row.getCodigo()) >= 71 && Integer.valueOf(row.getCodigo()) <= 73) {
-                                listDomainTemp.add(row);
-                            } else if (domain.getCodigo().equals("80")
-                                    && Integer.valueOf(row.getCodigo()) >= 81 && Integer.valueOf(row.getCodigo()) <= 85) {
-                                listDomainTemp.add(row);
-                            } else if (domain.getCodigo().equals("90")
-                                    && Integer.valueOf(row.getCodigo()) >= 91 && Integer.valueOf(row.getCodigo()) <= 98) {
-                                listDomainTemp.add(row);
-                            }
-                        }
+                        List<Domain> listDomainTemp = getListSubGrupoUso(domain);
                         subgrupoUsoAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, listDomainTemp);
                         inputSubgrupoUso.setAdapter(subgrupoUsoAdapter);
                         inputSubgrupoUso.setSelection(positionSubgrupo);
@@ -567,21 +537,15 @@ public class FragmentFieldNote extends DialogFragment implements View.OnClickLis
                 Domain domain = (Domain) inputAnegamiento.getSelectedItem();
                 if(domain!=null && domain.getId()!=null) {
                     if (domain.getCodigo().equals("3")) {
-                        labelFrecuencia.setVisibility(View.GONE);
-                        labelDuracion.setVisibility(View.GONE);
-                        inputFrecuencia.setVisibility(View.GONE);
-                        inputDuracion.setVisibility(View.GONE);
+                        lyrAnegamientoLabel.setVisibility(View.GONE);
+                        lyrAnegamientoInput.setVisibility(View.GONE);
                     } else {
-                        labelFrecuencia.setVisibility(View.VISIBLE);
-                        labelDuracion.setVisibility(View.VISIBLE);
-                        inputFrecuencia.setVisibility(View.VISIBLE);
-                        inputDuracion.setVisibility(View.VISIBLE);
+                        lyrAnegamientoLabel.setVisibility(View.VISIBLE);
+                        lyrAnegamientoInput.setVisibility(View.VISIBLE);
                     }
                 } else {
-                    labelFrecuencia.setVisibility(View.GONE);
-                    labelDuracion.setVisibility(View.GONE);
-                    inputFrecuencia.setVisibility(View.GONE);
-                    inputDuracion.setVisibility(View.GONE);
+                    lyrAnegamientoLabel.setVisibility(View.GONE);
+                    lyrAnegamientoInput.setVisibility(View.GONE);
                 }
 
                 nextFlag = true;
@@ -601,6 +565,7 @@ public class FragmentFieldNote extends DialogFragment implements View.OnClickLis
             inputNroObservacion.setText(dataBaseHelper.getNroObservacion("N"));
             inputFecha.setText(Utils.dateToString(new Date(), "yyyy-MM-dd HH:mm:ss"));
             mode = Modes.NEW;
+            inputCoords.setText(Singleton.getInstance().getX() + "  " + Singleton.getInstance().getY());
         } else {
             editForm();
         }
@@ -691,7 +656,7 @@ public class FragmentFieldNote extends DialogFragment implements View.OnClickLis
         inputSubgrupoUso.setAdapter(subgrupoUsoAdapter);
     }
 
-    public void saveAction(){
+    public void saveAction(boolean validate){
         nroObservacion = inputNroObservacion.getText().toString();
         reconocedor = ((Domain)inputReconocedor.getSelectedItem()).getId();
         nombreSitio = inputNombreSitio.getText().toString();
@@ -724,12 +689,14 @@ public class FragmentFieldNote extends DialogFragment implements View.OnClickLis
         vegetacionNatural = inputVegetacionNatural.getText().toString();
         observaciones = inputObservaciones.getText().toString();
 
-        if(reconocedor == null || nombreSitio.isEmpty() ||
-                gradiente == null || claseErosion == null || tipoErosion == null || gradoErosion == null) {
+        if(validate && (reconocedor == null || nombreSitio.isEmpty() ||
+                gradiente == null || claseErosion == null || tipoErosion == null || gradoErosion == null)) {
             Toast.makeText(getActivity(), "Los campos marcados con * son obligatorios!", Toast.LENGTH_SHORT).show();
         } else {
-            foto = ((BitmapDrawable)imgViewPic.getDrawable()).getBitmap();
-            SaveFormTask task = new SaveFormTask(getActivity());
+            if (imgViewPic.getDrawable()!=null) {
+                foto = ((BitmapDrawable) imgViewPic.getDrawable()).getBitmap();
+            }
+            SaveFormTask task = new SaveFormTask(getActivity(), validate?2:1);
             task.execute();
         }
     }
@@ -790,47 +757,54 @@ public class FragmentFieldNote extends DialogFragment implements View.OnClickLis
 
     public void editForm(){
         inputNroObservacion.setText(formNotaCampo.getNroObservacion());
+        inputCoords.setText(formNotaCampo.getLongitud() + "  " + formNotaCampo.getLatitud());
         inputFecha.setText(formNotaCampo.getFechaHora());
         int spinnerPosition = reconocedorAdapter.getPosition(Utils.getDomain(listReconocedor, formNotaCampo.getReconocedor()));
-        inputReconocedor.setSelection(spinnerPosition);
+        inputReconocedor.setSelection(spinnerPosition == -1?0:spinnerPosition);
         spinnerPosition = epocaAdapter.getPosition(Utils.getDomain(listEpoca, formNotaCampo.getEpocaClimatica()));
         inputNombreSitio.setText(formNotaCampo.getNombreSitio());
-        inputEpoca.setSelection(spinnerPosition);
+        inputEpoca.setSelection(spinnerPosition == -1?0:spinnerPosition);
         inputEpocaDias.setText(formNotaCampo.getDiasLluvia());
         spinnerPosition = gradienteAdapter.getPosition(Utils.getDomain(listGradiente, formNotaCampo.getGradiente()));
-        inputGradiente.setSelection(spinnerPosition);
+        inputGradiente.setSelection(spinnerPosition == -1?0:spinnerPosition);
         spinnerPosition = pendienteLongitudAdapter.getPosition(Utils.getDomain(listPendienteLongitud, formNotaCampo.getPendienteLongitud()));
-        inputPendienteLongitud.setSelection(spinnerPosition);
+        inputPendienteLongitud.setSelection(spinnerPosition == -1?0:spinnerPosition);
         spinnerPosition = pendienteFormaAdapter.getPosition(Utils.getDomain(listPendienteForma, formNotaCampo.getPendienteForma()));
-        inputPendienteForma.setSelection(spinnerPosition);
-        spinnerPosition = claseErosionAdapter.getPosition(Utils.getDomain(listClaseErosion, formNotaCampo.getClaseErosion()));
-        inputClaseErosion.setSelection(spinnerPosition);
-        spinnerPosition = tipoErosionAdapter.getPosition(Utils.getDomain(listTipoErosion, formNotaCampo.getTipoErosion()));
-        inputTipoErosion.setSelection(spinnerPosition);
+        inputPendienteForma.setSelection(spinnerPosition == -1?0:spinnerPosition);
+        Domain claseErosionDomain = Utils.getDomain(listClaseErosion, formNotaCampo.getClaseErosion());
+        spinnerPosition = claseErosionAdapter.getPosition(claseErosionDomain);
+        inputClaseErosion.setSelection(spinnerPosition == -1?0:spinnerPosition);
+        List<Domain> listTipoErosionTemp = getListTipoErosion(claseErosionDomain);
+        tipoErosionAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, listTipoErosionTemp);
+        spinnerPosition = tipoErosionAdapter.getPosition(Utils.getDomain(listTipoErosionTemp, formNotaCampo.getTipoErosion()));
+        inputTipoErosion.setSelection(spinnerPosition == -1?0:spinnerPosition);
         spinnerPosition = gradoErosionAdapter.getPosition(Utils.getDomain(listGradoErosion, formNotaCampo.getGradoErosion()));
-        inputGradoErosion.setSelection(spinnerPosition);
+        inputGradoErosion.setSelection(spinnerPosition == -1?0:spinnerPosition);
 
         spinnerPosition = clasesMovimientoAdapter.getPosition(Utils.getDomain(listClasesMovimiento, formNotaCampo.getClaseMovimiento()));
-        inputClasesMovimiento.setSelection(spinnerPosition);
+        inputClasesMovimiento.setSelection(spinnerPosition == -1?0:spinnerPosition);
         spinnerPosition = tiposMovimientoAdapter.getPosition(Utils.getDomain(listTiposMovimiento, formNotaCampo.getTipoMovimiento()));
-        inputTiposMovimiento.setSelection(spinnerPosition);
+        inputTiposMovimiento.setSelection(spinnerPosition == -1?0:spinnerPosition);
         spinnerPosition = frecuenciasMovimientoAdapter.getPosition(Utils.getDomain(listFrecuenciasMovimiento, formNotaCampo.getFrecuenciaMovimiento()));
-        inputFrecuenciasMovimiento.setSelection(spinnerPosition);
+        inputFrecuenciasMovimiento.setSelection(spinnerPosition == -1?0:spinnerPosition);
 
         spinnerPosition = anegamientoAdapter.getPosition(Utils.getDomain(listAnegamiento, formNotaCampo.getAnegamiento()));
-        inputAnegamiento.setSelection(spinnerPosition);
+        inputAnegamiento.setSelection(spinnerPosition == -1?0:spinnerPosition);
         spinnerPosition = frecuenciaAdapter.getPosition(Utils.getDomain(listFrecuencia, formNotaCampo.getFrecuencia()));
-        inputFrecuencia.setSelection(spinnerPosition);
+        inputFrecuencia.setSelection(spinnerPosition == -1?0:spinnerPosition);
         spinnerPosition = duracionAdapter.getPosition(Utils.getDomain(listDuracion, formNotaCampo.getDuracion()));
-        inputDuracion.setSelection(spinnerPosition);
+        inputDuracion.setSelection(spinnerPosition == -1?0:spinnerPosition);
         spinnerPosition = pedegrosidadAdapter.getPosition(Utils.getDomain(listPedegrosidad, formNotaCampo.getPedregosidad()));
-        inputPedegrosidad.setSelection(spinnerPosition);
+        inputPedegrosidad.setSelection(spinnerPosition == -1?0:spinnerPosition);
         spinnerPosition = afloramientoAdapter.getPosition(Utils.getDomain(listAfloramiento, formNotaCampo.getAfloramiento()));
-        inputAfloramiento.setSelection(spinnerPosition);
-        spinnerPosition = grupoUsoAdapter.getPosition(Utils.getDomain(listGrupoUso, formNotaCampo.getGrupoUso()));
-        inputGrupoUso.setSelection(spinnerPosition);
-        spinnerPosition = subgrupoUsoAdapter.getPosition(Utils.getDomain(listSubgrupoUso, formNotaCampo.getSubgrupoUso()));
-        inputSubgrupoUso.setSelection(spinnerPosition);
+        inputAfloramiento.setSelection(spinnerPosition == -1?0:spinnerPosition);
+        Domain grupoUsoDomain = Utils.getDomain(listGrupoUso, formNotaCampo.getGrupoUso());
+        spinnerPosition = grupoUsoAdapter.getPosition(grupoUsoDomain);
+        inputGrupoUso.setSelection(spinnerPosition == -1?0:spinnerPosition);
+        List<Domain> listSubGrupoUsoTemp = getListSubGrupoUso(grupoUsoDomain);
+        subgrupoUsoAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, listSubGrupoUsoTemp);
+        spinnerPosition = subgrupoUsoAdapter.getPosition(Utils.getDomain(listSubGrupoUsoTemp, formNotaCampo.getSubgrupoUso()));
+        inputSubgrupoUso.setSelection(spinnerPosition == -1?0:spinnerPosition);
         inputNombreCultivo.setText(formNotaCampo.getNombreCultivo());
         inputVegetacionNatural.setText(formNotaCampo.getVegetacionNatural());
         inputObservaciones.setText(formNotaCampo.getObservaciones());
@@ -844,14 +818,20 @@ public class FragmentFieldNote extends DialogFragment implements View.OnClickLis
         nextFlagClaseMovimiento = false;
         nextFlagGrupoUso = false;
         nextFlagSubgrupoUso = false;
+
+        if(formNotaCampo.getEstado() == 2) {
+            lyrButtons.setVisibility(View.GONE);
+        }
     }
 
     class SaveFormTask extends AsyncTask<Void, Void, Void> {
 
         ProgressDialog progressDialog;
+        Integer estado;
 
-        public SaveFormTask(Context context) {
+        public SaveFormTask(Context context, int estado) {
             progressDialog = new ProgressDialog(context);
+            this.estado = estado;
         }
 
         public void onPreExecute() {
@@ -865,6 +845,9 @@ public class FragmentFieldNote extends DialogFragment implements View.OnClickLis
 
         public void onPostExecute(Void unused) {
             progressDialog.dismiss();
+            if(estado == 2) {
+                lyrButtons.setVisibility(View.GONE);
+            }
             Toast.makeText(getActivity(), "Formulario " + formNotaCampo.getNroObservacion()
                     + " actualizado correctamente!", Toast.LENGTH_SHORT).show();
         }
@@ -903,7 +886,7 @@ public class FragmentFieldNote extends DialogFragment implements View.OnClickLis
             formNotaCampo.setSubgrupoUso(subgrupoUso);
             formNotaCampo.setNombreCultivo(nombreCultivo);
             formNotaCampo.setObservaciones(observaciones);
-            formNotaCampo.setEstado(1);
+            formNotaCampo.setEstado(estado);
 
             DataBaseHelper dataBaseHelper = new DataBaseHelper(getActivity());
             Long result = dataBaseHelper.insertFormNotaCampo(formNotaCampo);
@@ -917,6 +900,73 @@ public class FragmentFieldNote extends DialogFragment implements View.OnClickLis
             }
 
             return null;
+        }
+    }
+
+    private List<Domain> getListTipoErosion(Domain domain){
+        List<Domain> listDomainTemp = new LinkedList<>();
+        if (domain == null || domain.getCodigo()==null) {
+            return listTipoErosion;
+        } else {
+            for (Domain row : listTipoErosion) {
+                if (row.getValor() == null) {
+                    listDomainTemp.add(row);
+                } else if (domain.getCodigo().equals("10")
+                        && Integer.valueOf(row.getCodigo()) >= 11 && Integer.valueOf(row.getCodigo()) <= 19) {
+                    listDomainTemp.add(row);
+                } else if (domain.getCodigo().equals("20")
+                        && Integer.valueOf(row.getCodigo()) >= 21 && Integer.valueOf(row.getCodigo()) <= 22) {
+                    listDomainTemp.add(row);
+                } else if (domain.getCodigo().equals("30")
+                        && Integer.valueOf(row.getCodigo()) >= 31 && Integer.valueOf(row.getCodigo()) <= 32) {
+                    listDomainTemp.add(row);
+                } else if (domain.getCodigo().equals("40")
+                        && Integer.valueOf(row.getCodigo()) >= 41 && Integer.valueOf(row.getCodigo()) <= 42) {
+                    listDomainTemp.add(row);
+                }
+            }
+            return listDomainTemp;
+        }
+    }
+
+    private List<Domain> getListSubGrupoUso(Domain domain) {
+        if (domain == null || domain.getCodigo()==null) {
+            return listSubgrupoUso;
+        } else {
+            List<Domain> listDomainTemp = new LinkedList<>();
+            for (Domain row : listSubgrupoUso) {
+                if (row.getValor() == null) {
+                    listDomainTemp.add(row);
+                } else if (domain.getCodigo().equals("10")
+                        && Integer.valueOf(row.getCodigo()) >= 11 && Integer.valueOf(row.getCodigo()) <= 13) {
+                    listDomainTemp.add(row);
+                } else if (domain.getCodigo().equals("20")
+                        && Integer.valueOf(row.getCodigo()) >= 21 && Integer.valueOf(row.getCodigo()) <= 23) {
+                    listDomainTemp.add(row);
+                } else if (domain.getCodigo().equals("30")
+                        && Integer.valueOf(row.getCodigo()) >= 31 && Integer.valueOf(row.getCodigo()) <= 32) {
+                    listDomainTemp.add(row);
+                } else if (domain.getCodigo().equals("40")
+                        && Integer.valueOf(row.getCodigo()) >= 41 && Integer.valueOf(row.getCodigo()) <= 43) {
+                    listDomainTemp.add(row);
+                } else if (domain.getCodigo().equals("50")
+                        && Integer.valueOf(row.getCodigo()) >= 51 && Integer.valueOf(row.getCodigo()) <= 52) {
+                    listDomainTemp.add(row);
+                } else if (domain.getCodigo().equals("60")
+                        && Integer.valueOf(row.getCodigo()) >= 61 && Integer.valueOf(row.getCodigo()) <= 67) {
+                    listDomainTemp.add(row);
+                } else if (domain.getCodigo().equals("70")
+                        && Integer.valueOf(row.getCodigo()) >= 71 && Integer.valueOf(row.getCodigo()) <= 73) {
+                    listDomainTemp.add(row);
+                } else if (domain.getCodigo().equals("80")
+                        && Integer.valueOf(row.getCodigo()) >= 81 && Integer.valueOf(row.getCodigo()) <= 85) {
+                    listDomainTemp.add(row);
+                } else if (domain.getCodigo().equals("90")
+                        && Integer.valueOf(row.getCodigo()) >= 91 && Integer.valueOf(row.getCodigo()) <= 98) {
+                    listDomainTemp.add(row);
+                }
+            }
+            return listDomainTemp;
         }
     }
 

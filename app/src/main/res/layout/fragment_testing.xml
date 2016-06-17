@@ -12,7 +12,7 @@
         android:gravity="center_horizontal"
         android:textSize="25sp"
         android:text="@string/tst_title"
-        android:textColor="@android:color/white"
+        android:textColor="@color/colorAccent"
         android:textStyle="bold"/>
 
     <TabHost
@@ -27,12 +27,26 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <Button
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:id="@+id/lyr_buttons"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/btn_save"
-                android:id="@+id/btn_save"
-                android:layout_gravity="right" />
+                android:orientation="horizontal">
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/btn_save"
+                    android:id="@+id/btn_save"
+                    android:layout_gravity="right"
+                    android:textSize="16sp"/>
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/btn_close"
+                    android:id="@+id/btn_close"
+                    android:layout_gravity="right"
+                    android:textSize="16sp"/>
+            </LinearLayout>
 
             <TabWidget
                 android:id="@android:id/tabs"
@@ -50,99 +64,129 @@
                     android:layout_height="match_parent"
                     android:orientation="vertical">
 
-                    <LinearLayout android:id="@+id/linearLayout1"
-                        android:layout_height="wrap_content"
-                        android:layout_width="fill_parent">
-                        <Button android:id="@+id/btn_take_photo"
-                            android:text="@string/take_photo"
-                            android:layout_height="50sp"
-                            android:layout_weight="1"
-                            android:layout_width="0sp">
-                        </Button>
-                        <Button android:id="@+id/btn_select_photo"
-                            android:text="@string/select_photo"
-                            android:layout_height="50sp"
-                            android:layout_weight="1"
-                            android:layout_width="0sp">
-                        </Button>
-                    </LinearLayout>
-
-                    <ImageView
-                        android:layout_width="fill_parent"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/imgView_pic"
-                        android:layout_gravity="center_horizontal"
-                        android:layout_weight="1"/>
-
-                    <TextView
+                    <android.support.v4.widget.NestedScrollView
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/tst_no_observacion"
-                        android:textColor="@android:color/holo_red_dark"
-                        android:layout_marginTop="20dp"
-                        android:layout_marginLeft="20dp"
-                        android:layout_marginRight="20dp"/>
+                        android:layout_height="match_parent"
+                        android:id="@+id/scrollview_tab1">
 
-                    <EditText
-                        android:id="@+id/input_nro_observacion"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textColor="@android:color/white"
-                        android:enabled="false"
-                        android:inputType="text"
-                        android:layout_marginLeft="20dp"
-                        android:layout_marginRight="20dp"/>
+                        <LinearLayout android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
 
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/tst_reconocedor"
-                        android:textColor="@android:color/holo_red_dark"
-                        android:layout_marginLeft="20dp"
-                        android:layout_marginRight="20dp"/>
+                            <LinearLayout android:id="@+id/linearLayout1"
+                                android:layout_height="wrap_content"
+                                android:layout_width="fill_parent">
+                                <Button android:id="@+id/btn_take_photo"
+                                    android:text="@string/take_photo"
+                                    android:layout_height="50sp"
+                                    android:layout_weight="1"
+                                    android:layout_width="0sp">
+                                </Button>
+                                <Button android:id="@+id/btn_select_photo"
+                                    android:text="@string/select_photo"
+                                    android:layout_height="50sp"
+                                    android:layout_weight="1"
+                                    android:layout_width="0sp">
+                                </Button>
+                            </LinearLayout>
 
-                    <Spinner
-                        android:id="@+id/input_reconocedor"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textColor="@android:color/white"
-                        android:layout_marginLeft="20dp"
-                        android:layout_marginRight="20dp"/>
+                            <ImageView
+                                android:id="@+id/imgView_pic"
+                                android:layout_width="200dp"
+                                android:layout_height="200dp"
+                                android:layout_gravity="center"
+                                android:scaleType="fitXY"/>
 
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/tst_fecha"
-                        android:textColor="@android:color/holo_red_dark"
-                        android:layout_marginLeft="20dp"
-                        android:layout_marginRight="20dp"/>
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="@string/tst_no_observacion"
+                                android:textColor="@color/colorPrimary"
+                                android:layout_marginTop="20dp"
+                                android:layout_marginLeft="20dp"
+                                android:layout_marginRight="20dp"/>
 
-                    <EditText
-                        android:id="@+id/input_fecha"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:enabled="false"
-                        android:textColor="@android:color/white"
-                        android:inputType="text"
-                        android:layout_marginLeft="20dp"
-                        android:layout_marginRight="20dp"/>
+                            <EditText
+                                android:id="@+id/input_nro_observacion"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/principal_font"
+                                android:enabled="false"
+                                android:inputType="text"
+                                android:layout_marginLeft="20dp"
+                                android:layout_marginRight="20dp"/>
 
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/tst_nombre_sitio"
-                        android:textColor="@android:color/holo_red_dark"
-                        android:layout_marginLeft="20dp"
-                        android:layout_marginRight="20dp"/>
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="@string/tst_coords"
+                                android:textColor="@color/colorPrimary"
+                                android:layout_marginTop="20dp"
+                                android:layout_marginLeft="20dp"
+                                android:layout_marginRight="20dp"/>
 
-                    <EditText
-                        android:id="@+id/input_nombre_sitio"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textColor="@android:color/white"
-                        android:inputType="text"
-                        android:layout_marginLeft="20dp"
-                        android:layout_marginRight="20dp"/>
+                            <EditText
+                                android:id="@+id/input_coords"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/principal_font"
+                                android:enabled="false"
+                                android:inputType="text"
+                                android:layout_marginLeft="20dp"
+                                android:layout_marginRight="20dp"/>
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="@string/tst_reconocedor"
+                                android:textColor="@color/colorPrimary"
+                                android:layout_marginLeft="20dp"
+                                android:layout_marginRight="20dp"/>
+
+                            <Spinner
+                                android:id="@+id/input_reconocedor"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/principal_font"
+                                android:layout_marginLeft="20dp"
+                                android:layout_marginRight="20dp"/>
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="@string/tst_fecha"
+                                android:textColor="@color/colorPrimary"
+                                android:layout_marginLeft="20dp"
+                                android:layout_marginRight="20dp"/>
+
+                            <EditText
+                                android:id="@+id/input_fecha"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:enabled="false"
+                                android:textColor="@color/principal_font"
+                                android:inputType="text"
+                                android:layout_marginLeft="20dp"
+                                android:layout_marginRight="20dp"/>
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="@string/tst_nombre_sitio"
+                                android:textColor="@color/colorPrimary"
+                                android:layout_marginLeft="20dp"
+                                android:layout_marginRight="20dp"/>
+
+                            <EditText
+                                android:id="@+id/input_nombre_sitio"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/principal_font"
+                                android:inputType="text"
+                                android:layout_marginLeft="20dp"
+                                android:layout_marginRight="20dp"/>
+                        </LinearLayout>
+                    </android.support.v4.widget.NestedScrollView>
 
                 </LinearLayout>
 
@@ -163,7 +207,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="@string/tst_epoca"
-                            android:textColor="@android:color/holo_red_dark"
+                            android:textColor="@color/colorPrimary"
                             android:layout_marginTop="5dp"
                             android:layout_weight="1"/>
 
@@ -171,7 +215,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="@string/tst_epoca_dias"
-                            android:textColor="@android:color/holo_red_dark"
+                            android:textColor="@color/colorPrimary"
                             android:layout_weight="1"/>
 
                     </LinearLayout>
@@ -187,14 +231,14 @@
                             android:id="@+id/input_epoca"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:textColor="@android:color/white"
+                            android:textColor="@color/principal_font"
                             android:layout_weight="1"/>
 
                         <EditText
                             android:id="@+id/input_epoca_dias"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:textColor="@android:color/white"
+                            android:textColor="@color/principal_font"
                             android:inputType="number"
                             android:layout_weight="1"/>
                      </LinearLayout>
@@ -203,7 +247,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/tst_gm"
-                        android:textColor="@android:color/holo_red_dark"
+                        android:textColor="@color/colorPrimary"
                         android:layout_marginTop="5dp"
                         android:layout_marginBottom="5dp"
                         android:layout_marginLeft="20dp"
@@ -221,14 +265,14 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="@string/tst_label_paisaje"
-                            android:textColor="@android:color/holo_red_dark"
+                            android:textColor="@color/colorPrimary"
                             android:layout_weight="1"/>
 
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="@string/tst_label_simbolo"
-                            android:textColor="@android:color/holo_red_dark"
+                            android:textColor="@color/colorPrimary"
                             android:layout_weight="1"/>
 
                     </LinearLayout>
@@ -244,14 +288,14 @@
                             android:id="@+id/label_paisaje"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:textColor="@android:color/white"
+                            android:textColor="@color/principal_font"
                             android:layout_weight="1"/>
 
                         <TextView
                             android:id="@+id/label_simbolo"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:textColor="@android:color/white"
+                            android:textColor="@color/principal_font"
                             android:layout_weight="1"/>
 
                     </LinearLayout>
@@ -267,14 +311,14 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="@string/tst_longitud"
-                            android:textColor="@android:color/holo_red_dark"
+                            android:textColor="@color/colorPrimary"
                             android:layout_weight="1"/>
 
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="@string/tst_erosion"
-                            android:textColor="@android:color/holo_red_dark"
+                            android:textColor="@color/colorPrimary"
                             android:layout_weight="1"/>
 
                     </LinearLayout>
@@ -290,14 +334,14 @@
                             android:id="@+id/input_longitud"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:textColor="@android:color/white"
+                            android:textColor="@color/principal_font"
                             android:layout_weight="1"/>
 
                         <Spinner
                             android:id="@+id/input_erosion"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:textColor="@android:color/white"
+                            android:textColor="@color/principal_font"
                             android:layout_weight="1"/>
                     </LinearLayout>
 
@@ -305,7 +349,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/tst_movimiento"
-                        android:textColor="@android:color/holo_red_dark"
+                        android:textColor="@color/colorPrimary"
                         android:layout_marginLeft="20dp"
                         android:layout_marginRight="20dp"/>
 
@@ -313,7 +357,7 @@
                         android:id="@+id/input_movimiento"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textColor="@android:color/white"
+                        android:textColor="@color/principal_font"
                         android:layout_marginLeft="20dp"
                         android:layout_marginRight="20dp"/>
 
@@ -321,7 +365,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/tst_anegamiento"
-                        android:textColor="@android:color/holo_red_dark"
+                        android:textColor="@color/colorPrimary"
                         android:layout_marginLeft="20dp"
                         android:layout_marginRight="20dp"/>
 
@@ -329,7 +373,7 @@
                         android:id="@+id/input_anegamiento"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textColor="@android:color/white"
+                        android:textColor="@color/principal_font"
                         android:layout_marginLeft="20dp"
                         android:layout_marginRight="20dp"/>
 
@@ -344,7 +388,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="@string/tst_frecuencia"
-                            android:textColor="@android:color/holo_red_dark"
+                            android:textColor="@color/colorPrimary"
                             android:id="@+id/label_frecuencia"
                             android:layout_weight="1"/>
 
@@ -352,7 +396,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="@string/tst_duracion"
-                            android:textColor="@android:color/holo_red_dark"
+                            android:textColor="@color/colorPrimary"
                             android:id="@+id/label_duracion"
                             android:layout_weight="1"/>
 
@@ -369,14 +413,14 @@
                             android:id="@+id/input_frecuencia"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:textColor="@android:color/white"
+                            android:textColor="@color/principal_font"
                             android:layout_weight="1"/>
 
                         <Spinner
                             android:id="@+id/input_duracion"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:textColor="@android:color/white"
+                            android:textColor="@color/principal_font"
                             android:layout_weight="1"/>
 
                     </LinearLayout>
@@ -385,7 +429,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/tst_pedegrosidad"
-                        android:textColor="@android:color/holo_red_dark"
+                        android:textColor="@color/colorPrimary"
                         android:layout_marginLeft="20dp"
                         android:layout_marginRight="20dp"
                         android:id="@+id/label_pedegrosidad"/>
@@ -394,7 +438,7 @@
                         android:id="@+id/input_pedegrosidad"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textColor="@android:color/white"
+                        android:textColor="@color/principal_font"
                         android:layout_marginLeft="20dp"
                         android:layout_marginRight="20dp"/>
 
@@ -402,7 +446,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/tst_afloramiento"
-                        android:textColor="@android:color/holo_red_dark"
+                        android:textColor="@color/colorPrimary"
                         android:layout_marginLeft="20dp"
                         android:layout_marginRight="20dp"
                         android:id="@+id/label_afloramiento"/>
@@ -411,7 +455,7 @@
                         android:id="@+id/input_afloramiento"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textColor="@android:color/white"
+                        android:textColor="@color/principal_font"
                         android:layout_marginLeft="20dp"
                         android:layout_marginRight="20dp"/>
 
@@ -483,7 +527,7 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:text="@string/tst_horizonte_nro"
-                                    android:textColor="@android:color/white"
+                                    android:textColor="@color/principal_font"
                                     android:layout_marginLeft="20dp"
                                     android:layout_marginRight="20dp"
                                     android:textSize="20sp"
@@ -495,7 +539,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:text="@string/tst_profundidad"
-                                android:textColor="@android:color/holo_red_dark"
+                                android:textColor="@color/colorPrimary"
                                 android:layout_marginLeft="20dp"
                                 android:layout_marginRight="20dp"/>
 
@@ -503,7 +547,7 @@
                                 android:id="@+id/input_profundidad"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:textColor="@android:color/white"
+                                android:textColor="@color/principal_font"
                                 android:inputType="number"
                                 android:layout_marginLeft="20dp"
                                 android:layout_marginRight="20dp"/>
@@ -512,7 +556,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:text="@string/tst_color"
-                                android:textColor="@android:color/holo_red_dark"
+                                android:textColor="@color/colorPrimary"
                                 android:layout_marginLeft="20dp"
                                 android:layout_marginRight="20dp"/>
 
@@ -526,7 +570,7 @@
                                     android:id="@+id/input_color_hue"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:textColor="@android:color/white"
+                                    android:textColor="@color/principal_font"
                                     android:layout_weight="1"
                                     android:layout_marginTop="10dp"
                                     android:layout_marginBottom="10dp"/>
@@ -535,7 +579,7 @@
                                     android:id="@+id/input_color_value"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:textColor="@android:color/white"
+                                    android:textColor="@color/principal_font"
                                     android:layout_weight="1"
                                     android:layout_marginTop="10dp"
                                     android:layout_marginBottom="10dp"/>
@@ -544,7 +588,7 @@
                                     android:id="@+id/input_color_chroma"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:textColor="@android:color/white"
+                                    android:textColor="@color/principal_font"
                                     android:layout_weight="1"
                                     android:layout_marginTop="10dp"
                                     android:layout_marginBottom="10dp"/>
@@ -554,7 +598,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:text="@string/tst_color_percent"
-                                android:textColor="@android:color/holo_red_dark"
+                                android:textColor="@color/colorPrimary"
                                 android:layout_marginLeft="20dp"
                                 android:layout_marginRight="20dp"/>
 
@@ -562,7 +606,7 @@
                                 android:id="@+id/input_color_percent"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:textColor="@android:color/white"
+                                android:textColor="@color/principal_font"
                                 android:inputType="number"
                                 android:layout_marginLeft="20dp"
                                 android:layout_marginRight="20dp"/>
@@ -571,7 +615,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:text="@string/tst_material_type"
-                                android:textColor="@android:color/holo_red_dark"
+                                android:textColor="@color/colorPrimary"
                                 android:layout_marginLeft="20dp"
                                 android:layout_marginRight="20dp"/>
 
@@ -579,7 +623,7 @@
                                 android:id="@+id/input_material_type"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:textColor="@android:color/white"
+                                android:textColor="@color/principal_font"
                                 android:layout_marginLeft="20dp"
                                 android:layout_marginRight="20dp"/>
 
@@ -587,7 +631,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:text="@string/tst_texture_percent"
-                                android:textColor="@android:color/holo_red_dark"
+                                android:textColor="@color/colorPrimary"
                                 android:layout_marginLeft="20dp"
                                 android:layout_marginRight="20dp"/>
 
@@ -595,7 +639,7 @@
                                 android:id="@+id/input_texture_percent"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:textColor="@android:color/white"
+                                android:textColor="@color/principal_font"
                                 android:inputType="number"
                                 android:layout_marginLeft="20dp"
                                 android:layout_marginRight="20dp"/>
@@ -605,7 +649,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:text="@string/tst_texture"
-                                android:textColor="@android:color/holo_red_dark"
+                                android:textColor="@color/colorPrimary"
                                 android:layout_marginLeft="20dp"
                                 android:layout_marginRight="20dp"/>
 
@@ -620,7 +664,7 @@
                                     android:id="@+id/input_texture"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:textColor="@android:color/white"
+                                    android:textColor="@color/principal_font"
                                     android:layout_weight="1"
                                     android:layout_marginTop="10dp"
                                     android:layout_marginBottom="10dp"/>
@@ -629,7 +673,7 @@
                                     android:id="@+id/input_texture_modifiers"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:textColor="@android:color/white"
+                                    android:textColor="@color/principal_font"
                                     android:layout_weight="1"
                                     android:layout_marginTop="10dp"
                                     android:layout_marginBottom="10dp"/>
@@ -640,7 +684,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:text="@string/tst_organic_type"
-                                android:textColor="@android:color/holo_red_dark"
+                                android:textColor="@color/colorPrimary"
                                 android:layout_marginLeft="20dp"
                                 android:layout_marginRight="20dp"/>
 
@@ -655,7 +699,7 @@
                                     android:id="@+id/input_organic_type"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:textColor="@android:color/white"
+                                    android:textColor="@color/principal_font"
                                     android:layout_weight="1"
                                     android:layout_marginTop="10dp"
                                     android:layout_marginBottom="10dp"/>
@@ -664,7 +708,7 @@
                                     android:id="@+id/input_organic_type2"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:textColor="@android:color/white"
+                                    android:textColor="@color/principal_font"
                                     android:layout_weight="1"
                                     android:layout_marginTop="10dp"
                                     android:layout_marginBottom="10dp"/>
@@ -675,7 +719,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:text="@string/tst_texture_other"
-                                android:textColor="@android:color/holo_red_dark"
+                                android:textColor="@color/colorPrimary"
                                 android:layout_marginLeft="20dp"
                                 android:layout_marginRight="20dp"/>
 
@@ -683,7 +727,7 @@
                                 android:id="@+id/input_texture_other"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:textColor="@android:color/white"
+                                android:textColor="@color/principal_font"
                                 android:inputType="text"
                                 android:layout_marginLeft="20dp"
                                 android:layout_marginRight="20dp"/>
@@ -693,7 +737,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:text="@string/tst_structure"
-                                android:textColor="@android:color/holo_red_dark"
+                                android:textColor="@color/colorPrimary"
                                 android:layout_marginLeft="20dp"
                                 android:layout_marginRight="20dp"/>
 
@@ -707,7 +751,7 @@
                                     android:id="@+id/input_structure"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:textColor="@android:color/white"
+                                    android:textColor="@color/principal_font"
                                     android:layout_weight="1"
                                     android:layout_marginTop="10dp"
                                     android:layout_marginBottom="10dp"/>
@@ -715,7 +759,7 @@
                                     android:id="@+id/input_structure_type"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:textColor="@android:color/white"
+                                    android:textColor="@color/principal_font"
                                     android:layout_weight="1"
                                     android:layout_marginTop="10dp"
                                     android:layout_marginBottom="10dp"/>
@@ -723,7 +767,7 @@
                                     android:id="@+id/input_structure_type2"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:textColor="@android:color/white"
+                                    android:textColor="@color/principal_font"
                                     android:layout_weight="1"
                                     android:layout_marginTop="10dp"
                                     android:layout_marginBottom="10dp"/>
@@ -734,7 +778,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:text="@string/tst_texture_other"
-                                android:textColor="@android:color/holo_red_dark"
+                                android:textColor="@color/colorPrimary"
                                 android:layout_marginLeft="20dp"
                                 android:layout_marginRight="20dp"/>
 
@@ -742,7 +786,7 @@
                                 android:id="@+id/input_structure_type_other"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:textColor="@android:color/white"
+                                android:textColor="@color/principal_font"
                                 android:inputType="text"
                                 android:layout_marginLeft="20dp"
                                 android:layout_marginRight="20dp"/>
@@ -752,7 +796,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:text="@string/tst_structure_form"
-                                android:textColor="@android:color/holo_red_dark"
+                                android:textColor="@color/colorPrimary"
                                 android:layout_marginLeft="20dp"
                                 android:layout_marginRight="20dp"
                                 android:layout_marginTop="10dp"
@@ -762,7 +806,7 @@
                                 android:id="@+id/input_structure_form"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:textColor="@android:color/white"
+                                android:textColor="@color/principal_font"
                                 android:layout_marginLeft="20dp"
                                 android:layout_marginRight="20dp"
                                 android:layout_marginTop="10dp"
@@ -773,7 +817,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:text="@string/tst_structure_reasons"
-                                android:textColor="@android:color/holo_red_dark"
+                                android:textColor="@color/colorPrimary"
                                 android:layout_marginLeft="20dp"
                                 android:layout_marginRight="20dp"
                                 android:layout_marginTop="10dp"
@@ -783,7 +827,7 @@
                                 android:id="@+id/input_structure_reasons"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:textColor="@android:color/white"
+                                android:textColor="@color/principal_font"
                                 android:layout_marginLeft="20dp"
                                 android:layout_marginRight="20dp"
                                 android:layout_marginTop="10dp"
@@ -793,7 +837,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:text="@string/tst_skyline_type"
-                                android:textColor="@android:color/holo_red_dark"
+                                android:textColor="@color/colorPrimary"
                                 android:layout_marginLeft="20dp"
                                 android:layout_marginRight="20dp"/>
 
@@ -808,14 +852,14 @@
                                     android:id="@+id/input_horizontes"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:textColor="@android:color/white"
+                                    android:textColor="@color/principal_font"
                                     android:layout_weight="1"/>
 
                                 <Spinner
                                     android:id="@+id/input_horizonte_caracterisitica"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:textColor="@android:color/white"
+                                    android:textColor="@color/principal_font"
                                     android:layout_weight="1"/>
 
                             </LinearLayout>
@@ -896,7 +940,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/tst_soil_fragment"
-                        android:textColor="@android:color/holo_red_dark"
+                        android:textColor="@color/colorPrimary"
                         android:layout_marginTop="20dp"
                         android:layout_marginLeft="20dp"
                         android:layout_marginRight="20dp"/>
@@ -905,7 +949,7 @@
                         android:id="@+id/input_soil_fragment"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textColor="@android:color/white"
+                        android:textColor="@color/principal_font"
                         android:layout_marginLeft="20dp"
                         android:layout_marginRight="20dp"/>
 
@@ -913,7 +957,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/tst_input_natural_drainage"
-                        android:textColor="@android:color/holo_red_dark"
+                        android:textColor="@color/colorPrimary"
                         android:layout_marginTop="20dp"
                         android:layout_marginLeft="20dp"
                         android:layout_marginRight="20dp"/>
@@ -922,7 +966,7 @@
                         android:id="@+id/input_natural_drainage"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textColor="@android:color/white"
+                        android:textColor="@color/principal_font"
                         android:layout_marginLeft="20dp"
                         android:layout_marginRight="20dp"/>
 
@@ -930,7 +974,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/tst_input_effective_depth"
-                        android:textColor="@android:color/holo_red_dark"
+                        android:textColor="@color/colorPrimary"
                         android:layout_marginTop="20dp"
                         android:layout_marginLeft="20dp"
                         android:layout_marginRight="20dp"/>
@@ -939,7 +983,7 @@
                         android:id="@+id/input_effective_depth"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textColor="@android:color/white"
+                        android:textColor="@color/principal_font"
                         android:layout_marginLeft="20dp"
                         android:layout_marginRight="20dp"/>
 
@@ -947,7 +991,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/tst_epidedones"
-                        android:textColor="@android:color/holo_red_dark"
+                        android:textColor="@color/colorPrimary"
                         android:layout_marginTop="20dp"
                         android:layout_marginLeft="20dp"
                         android:layout_marginRight="20dp"/>
@@ -956,7 +1000,7 @@
                         android:id="@+id/input_epidedones"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textColor="@android:color/white"
+                        android:textColor="@color/principal_font"
                         android:layout_marginLeft="20dp"
                         android:layout_marginRight="20dp"/>
 
@@ -965,7 +1009,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/tst_endopedones"
-                        android:textColor="@android:color/holo_red_dark"
+                        android:textColor="@color/colorPrimary"
                         android:layout_marginTop="20dp"
                         android:layout_marginLeft="20dp"
                         android:layout_marginRight="20dp"
@@ -975,7 +1019,7 @@
                         android:id="@+id/input_endopedones"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textColor="@android:color/white"
+                        android:textColor="@color/principal_font"
                         android:layout_marginLeft="20dp"
                         android:layout_marginRight="20dp"
                         android:visibility="gone"/>

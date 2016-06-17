@@ -6,6 +6,8 @@ import android.os.Environment;
 import android.provider.Settings;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -32,11 +34,11 @@ import co.emes.esuelos.fileselector.FileOperation;
 import co.emes.esuelos.fileselector.FileSelector;
 import co.emes.esuelos.fileselector.OnHandleFileListener;
 import co.emes.esuelos.layout.FragmentDatabase;
-import co.emes.esuelos.layout.HomeFragment;
-import co.emes.esuelos.layout.MapFragment;
+import co.emes.esuelos.layout.FragmentHome;
+import co.emes.esuelos.layout.FragmentMap;
 import co.emes.esuelos.layout.DataModel;
 import co.emes.esuelos.layout.DrawerItemCustomAdapter;
-import co.emes.esuelos.layout.TableFragment;
+import co.emes.esuelos.layout.FragmentSummary;
 import co.emes.esuelos.model.Research;
 import co.emes.esuelos.util.DataBaseHelper;
 import co.emes.esuelos.util.Singleton;
@@ -60,22 +62,17 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
         String androidId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
         Singleton.getInstance().setAndroidId(androidId);
 
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
         mTitle = getTitle();
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
 
-        setupToolbar();
-        setupAlertBuilder();
-
         listDataModel =  new LinkedList<>();
-        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-        getSupportActionBar().setHomeButtonEnabled(true);
-
         try {
             dataBaseHelper = new DataBaseHelper(getApplicationContext());
             dataBaseHelper.createDataBase();
@@ -90,28 +87,55 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        listDataModel.add(new DataModel(R.drawable.ic_home, getResources().getString(R.string.ndi_home)));
-        listDataModel.add(new DataModel(R.drawable.ic_layers, getResources().getString(R.string.ndi_map)));
-        listDataModel.add(new DataModel(R.drawable.ic_list, getResources().getString(R.string.ndi_summary)));
-        listDataModel.add(new DataModel(R.drawable.folder, getResources().getString(R.string.ndi_tpk)));
-        listDataModel.add(new DataModel(R.drawable.download, getResources().getString(R.string.ndi_database)));
-        DataModel[] drawerItem = new DataModel[listDataModel.size()];
-        listDataModel.toArray(drawerItem);
-
-        DrawerItemCustomAdapter adapter = new DrawerItemCustomAdapter(this, R.layout.list_view_item_row, drawerItem);
-        mDrawerList.setAdapter(adapter);
-        mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        mDrawerLayout.setDrawerListener(mDrawerToggle);
+        setupToolbar();
+        setupAlertBuilder();
         setupDrawerToggle();
 
-        Fragment fragment = new HomeFragment();
+        Fragment fragment = new FragmentHome();
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
         mDrawerList.setItemChecked(0, true);
         mDrawerList.setSelection(0);
         setTitle(getResources().getString(R.string.ndi_home));
         mDrawerLayout.closeDrawer(mDrawerList);
+    }
+
+    @Override
+    public void onBackPressed() {
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            FragmentManager fm = getSupportFragmentManager();
+            for (Fragment frag : fm.getFragments()) {
+                if (frag!=null && frag.isVisible()) {
+                    if (frag instanceof FragmentMap) {
+                        showFragment(new FragmentHome(), R.string.ndi_home);
+                        mDrawerList.setItemChecked(0, true);
+                        mDrawerList.setSelection(0);
+                        return;
+                    } else if (frag instanceof FragmentSummary) {
+                        showFragment(new FragmentHome(), R.string.ndi_home);
+                        mDrawerList.setItemChecked(0, true);
+                        mDrawerList.setSelection(0);
+                        return;
+                    } else if (frag instanceof FragmentDatabase) {
+                        showFragment(new FragmentHome(), R.string.ndi_home);
+                        mDrawerList.setItemChecked(0, true);
+                        mDrawerList.setSelection(0);
+                        return;
+                    }
+                }
+            }
+            super.onBackPressed();
+        }
+    }
+
+    public void showFragment(Fragment fragment, int title) {
+        getSupportActionBar().setTitle(title);
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.content_frame, fragment);
+        ft.commit();
     }
 
     private class DrawerItemClickListener implements ListView.OnItemClickListener {
@@ -127,15 +151,15 @@ public class MainActivity extends AppCompatActivity {
         switch (position) {
             case 0:
                 title = getResources().getString(R.string.ndi_home);
-                fragment = new HomeFragment();
+                fragment = new FragmentHome();
                 break;
             case 1:
                 title = getResources().getString(R.string.ndi_map);
-                fragment = new MapFragment();
+                fragment = new FragmentMap();
                 break;
             case 2:
                 title = getResources().getString(R.string.ndi_summary);
-                fragment = new TableFragment();
+                fragment = new FragmentSummary();
                 break;
             case 3:
                 title = getResources().getString(R.string.ndi_tpk);
@@ -181,14 +205,27 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void setupToolbar(){
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
     }
 
     void setupDrawerToggle(){
+        listDataModel.add(new DataModel(R.drawable.ic_home, getResources().getString(R.string.ndi_home)));
+        listDataModel.add(new DataModel(R.drawable.ic_layers, getResources().getString(R.string.ndi_map)));
+        listDataModel.add(new DataModel(R.drawable.ic_list, getResources().getString(R.string.ndi_summary)));
+        listDataModel.add(new DataModel(R.drawable.folder, getResources().getString(R.string.ndi_tpk)));
+        listDataModel.add(new DataModel(R.drawable.download, getResources().getString(R.string.ndi_database)));
+        DataModel[] drawerItem = new DataModel[listDataModel.size()];
+        listDataModel.toArray(drawerItem);
+
+        DrawerItemCustomAdapter adapter = new DrawerItemCustomAdapter(this, R.layout.list_view_item_row, drawerItem);
+        mDrawerList.setAdapter(adapter);
+        mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawerLayout.setDrawerListener(mDrawerToggle);
         mDrawerToggle = new android.support.v7.app.ActionBarDrawerToggle(this,mDrawerLayout,toolbar,R.string.app_name, R.string.app_name);
-        //This is necessary to change the icon of the Drawer Toggle upon state change.
         mDrawerToggle.syncState();
     }
 

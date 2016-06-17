@@ -10,7 +10,6 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -60,8 +59,10 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
 
     LayoutInflater inflater;
     TabHost tabHost;
+    LinearLayout lyrButtons;
     EditText inputNroObservacion;
     EditText inputFecha;
+    EditText inputCoords;
     Spinner inputReconocedor;
     EditText inputNombreSitio;
     Spinner inputEpoca;
@@ -313,12 +314,15 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
         spec.setIndicator(getResources().getString(R.string.tst_integral));
         tabHost.addTab(spec);
 
+        lyrButtons = (LinearLayout) rootView.findViewById(R.id.lyr_buttons);
+
         imgViewPic  = (ImageView) rootView.findViewById(R.id.imgView_pic);
         labelPaisaje = (TextView) rootView.findViewById(R.id.label_paisaje);
         labelSimbolo = (TextView) rootView.findViewById(R.id.label_simbolo);
 
         inputNroObservacion = (EditText) rootView.findViewById(R.id.input_nro_observacion);
         inputFecha = (EditText) rootView.findViewById(R.id.input_fecha);
+        inputCoords = (EditText) rootView.findViewById(R.id.input_coords);
         inputReconocedor = (Spinner) rootView.findViewById(R.id.input_reconocedor);
         inputNombreSitio = (EditText) rootView.findViewById(R.id.input_nombre_sitio);
         inputEpoca = (Spinner) rootView.findViewById(R.id.input_epoca);
@@ -374,10 +378,12 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
         listViewSkyline = (ListView) rootView.findViewById(R.id.list_skyline);
 
         Button btnSave = (Button) rootView.findViewById(R.id.btn_save);
+        Button btnClose = (Button) rootView.findViewById(R.id.btn_close);
         Button btnTakePhoto = (Button) rootView.findViewById(R.id.btn_take_photo);
         Button btnSelectPhoto = (Button) rootView.findViewById(R.id.btn_select_photo);
 
         btnSave.setTransformationMethod(null);
+        btnClose.setTransformationMethod(null);
         btnTakePhoto.setTransformationMethod(null);
         btnSelectPhoto.setTransformationMethod(null);
 
@@ -446,7 +452,14 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                saveAction();
+                saveAction(false);
+            }
+        });
+
+        btnClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                saveAction(true);
             }
         });
 
@@ -793,6 +806,7 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
             inputFecha.setText(Utils.dateToString(new Date(), "yyyy-MM-dd HH:mm:ss"));
             labelHorizonteNro.setText(String.format(getResources().getString(R.string.tst_horizonte_nro), (index + 1)));
             mode = Modes.NEW;
+            inputCoords.setText(Singleton.getInstance().getX() + "  " + Singleton.getInstance().getY());
         } else {
             editForm();
         }
@@ -1174,7 +1188,7 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
         }
     }
 
-    public void saveAction(){
+    public void saveAction(boolean validate){
         nroObservacion = inputNroObservacion.getText().toString();
         reconocedor = ((Domain)inputReconocedor.getSelectedItem()).getId();
         nombreSitio = inputNombreSitio.getText().toString();
@@ -1204,15 +1218,16 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
         }
         endopedones = ((Domain)inputEndopedones.getSelectedItem()).getId();
 
-        if(reconocedor == null || nombreSitio.isEmpty() || epocaClimatica == null ||
+        if(validate && (reconocedor == null || nombreSitio.isEmpty() || epocaClimatica == null ||
                 pendienteLongitud == null || gradoErosion == null || tipoMovimiento == null || anegamiento == null ||
                 pedregosidad == null  || afloramiento == null || fragmentoSuelo == null ||
                 drenajeNatural == null || profundidadEfectiva == null || epidedones == null ||
-                (inputEndopedones.getVisibility() == View.VISIBLE && endopedones == null) || formComprobacionHorizonteList.isEmpty() || imgViewPic.getDrawable()==null) {
+                (inputEndopedones.getVisibility() == View.VISIBLE && endopedones == null) ||
+                formComprobacionHorizonteList.isEmpty() || imgViewPic.getDrawable()==null)) {
             Toast.makeText(getActivity(), "Los campos marcados con * son obligatorios!", Toast.LENGTH_SHORT).show();
         } else {
             foto = ((BitmapDrawable)imgViewPic.getDrawable()).getBitmap();
-            SaveFormTask task = new SaveFormTask(getActivity());
+            SaveFormTask task = new SaveFormTask(getActivity(), validate?2:1);
             task.execute();
         }
     }
@@ -1539,37 +1554,38 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
             mode = Modes.NEW;
         } else {
             inputNroObservacion.setText(formComprobacion.getNroObservacion());
+            inputCoords.setText(formComprobacion.getLongitud() + "  " + formComprobacion.getLatitud());
             inputFecha.setText(formComprobacion.getFechaHora());
             int spinnerPosition = reconocedorAdapter.getPosition(Utils.getDomain(listReconocedor, formComprobacion.getReconocedor()));
-            inputReconocedor.setSelection(spinnerPosition);
+            inputReconocedor.setSelection(spinnerPosition == -1?0:spinnerPosition);
             spinnerPosition = epocaAdapter.getPosition(Utils.getDomain(listEpoca, formComprobacion.getEpocaClimatica()));
             inputNombreSitio.setText(formComprobacion.getNombreSitio());
-            inputEpoca.setSelection(spinnerPosition);
+            inputEpoca.setSelection(spinnerPosition == -1?0:spinnerPosition);
             inputEpocaDias.setText(formComprobacion.getDiasLluvia());
             spinnerPosition = longitudAdapter.getPosition(Utils.getDomain(listLongitud, formComprobacion.getPendienteLongitud()));
-            inputLongitud.setSelection(spinnerPosition);
+            inputLongitud.setSelection(spinnerPosition == -1?0:spinnerPosition);
             spinnerPosition = erosionAdapter.getPosition(Utils.getDomain(listErosion, formComprobacion.getGradoErosion()));
-            inputErosion.setSelection(spinnerPosition);
+            inputErosion.setSelection(spinnerPosition == -1?0:spinnerPosition);
             spinnerPosition = movimientoAdapter.getPosition(Utils.getDomain(listMovimiento, formComprobacion.getTipoMovimiento()));
-            inputMovimiento.setSelection(spinnerPosition);
+            inputMovimiento.setSelection(spinnerPosition == -1?0:spinnerPosition);
             spinnerPosition = anegamientoAdapter.getPosition(Utils.getDomain(listAnegamiento, formComprobacion.getAnegamiento()));
-            inputAnegamiento.setSelection(spinnerPosition);
+            inputAnegamiento.setSelection(spinnerPosition == -1?0:spinnerPosition);
             spinnerPosition = frecuenciaAdapter.getPosition(Utils.getDomain(listFrecuencia, formComprobacion.getFrecuencia()));
-            inputFrecuencia.setSelection(spinnerPosition);
+            inputFrecuencia.setSelection(spinnerPosition == -1?0:spinnerPosition);
             spinnerPosition = duracionAdapter.getPosition(Utils.getDomain(listDuracion, formComprobacion.getDuracion()));
-            inputDuracion.setSelection(spinnerPosition);
+            inputDuracion.setSelection(spinnerPosition == -1?0:spinnerPosition);
             spinnerPosition = pedegrosidadAdapter.getPosition(Utils.getDomain(listPedegrosidad, formComprobacion.getPedregosidad()));
-            inputPedegrosidad.setSelection(spinnerPosition);
+            inputPedegrosidad.setSelection(spinnerPosition == -1?0:spinnerPosition);
             spinnerPosition = afloramientoAdapter.getPosition(Utils.getDomain(listAfloramiento, formComprobacion.getAfloramiento()));
-            inputAfloramiento.setSelection(spinnerPosition);
+            inputAfloramiento.setSelection(spinnerPosition == -1?0:spinnerPosition);
             spinnerPosition = soilFragmentAdapter.getPosition(Utils.getDomain(listSoilFragment, formComprobacion.getFragmentoSuelo()));
-            inputFragmentoSuelo.setSelection(spinnerPosition);
+            inputFragmentoSuelo.setSelection(spinnerPosition == -1?0:spinnerPosition);
             spinnerPosition = naturalDrainageAdapter.getPosition(Utils.getDomain(listNaturalDrainage, formComprobacion.getDrenajeNatural()));
-            inputDrenajeNatural.setSelection(spinnerPosition);
+            inputDrenajeNatural.setSelection(spinnerPosition == -1?0:spinnerPosition);
             spinnerPosition = effectiveDepthAdapter.getPosition(Utils.getDomain(listEffectiveDepth, formComprobacion.getProfundidadEfectiva()));
-            inputProfundidadEfectiva.setSelection(spinnerPosition);
+            inputProfundidadEfectiva.setSelection(spinnerPosition == -1?0:spinnerPosition);
             spinnerPosition = epidedonesAdapter.getPosition(Utils.getDomain(listEpidedones, formComprobacion.getEpidedones()));
-            inputEpidedones.setSelection(spinnerPosition);
+            inputEpidedones.setSelection(spinnerPosition == -1?0:spinnerPosition);
 
             formComprobacionFoto = dataBaseHelper.getFormComprobacionFoto(formComprobacion.getId());
             Bitmap bitmap = DBBitmapUtility.loadImageBitmap(getActivity(), formComprobacionFoto.getFoto());
@@ -1623,22 +1639,28 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
                     inputEndopedones.setVisibility(View.VISIBLE);
 
                     spinnerPosition = endopedonesAdapter.getPosition(Utils.getDomain(listEndopedones, formComprobacion.getEndopedones()));
-                    inputEndopedones.setSelection(spinnerPosition);
+                    inputEndopedones.setSelection(spinnerPosition == -1?0:spinnerPosition);
                 }
             }
 
             nextFlag = false;
             nextFlagMaterialType = false;
             nextFlagEstructuraTipo = false;
+
+            if(formComprobacion.getEstado() == 2) {
+                lyrButtons.setVisibility(View.GONE);
+            }
         }
     }
 
     class SaveFormTask extends AsyncTask<Void, Void, Void> {
 
         ProgressDialog progressDialog;
+        Integer estado;
 
-        public SaveFormTask(Context context) {
+        public SaveFormTask(Context context, Integer estado) {
             progressDialog = new ProgressDialog(context);
+            this.estado = estado;
         }
 
         public void onPreExecute() {
@@ -1652,6 +1674,9 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
 
         public void onPostExecute(Void unused) {
             progressDialog.dismiss();
+            if(estado == 2) {
+                lyrButtons.setVisibility(View.GONE);
+            }
             Toast.makeText(getActivity(), "Formulario " + formComprobacion.getNroObservacion()
                     + " actualizado correctamente!", Toast.LENGTH_SHORT).show();
         }
@@ -1684,7 +1709,7 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
             formComprobacion.setProfundidadEfectiva(profundidadEfectiva);
             formComprobacion.setEpidedones(epidedones);
             formComprobacion.setEndopedones(endopedones);
-            formComprobacion.setEstado(1);
+            formComprobacion.setEstado(estado);
 
             DataBaseHelper dataBaseHelper = new DataBaseHelper(getActivity());
             Long result = dataBaseHelper.insertFormComprobacion(formComprobacion);

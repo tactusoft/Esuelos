@@ -16,8 +16,7 @@
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:id="@+id/txt_load_map"
             android:text="@string/dtb_msg_map"
-            android:layout_gravity="left"
-            android:textColor="@color/colorLetter"/>
+            android:layout_gravity="left"/>
 
         <Button
             android:layout_width="wrap_content"
@@ -34,8 +33,7 @@
             android:id="@+id/txt_load_geo"
             android:text="@string/dtb_msg_geo"
             android:layout_gravity="left"
-            android:layout_marginTop="20dp"
-            android:textColor="@color/colorLetter"/>
+            android:layout_marginTop="20dp"/>
 
         <Button
             android:layout_width="wrap_content"
