@@ -31,6 +31,7 @@ import com.esri.android.map.LocationDisplayManager;
 import com.esri.android.map.MapView;
 import com.esri.android.map.ags.ArcGISLocalTiledLayer;
 import com.esri.android.map.event.OnLongPressListener;
+import com.esri.android.map.event.OnSingleTapListener;
 import com.esri.android.runtime.ArcGISRuntime;
 import com.esri.core.geometry.GeometryEngine;
 import com.esri.core.geometry.Point;
@@ -43,14 +44,21 @@ import com.esri.core.symbol.SimpleMarkerSymbol;
 import com.esri.core.tasks.SpatialRelationship;
 import com.esri.core.tasks.query.QueryParameters;
 
+import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 import co.emes.esuelos.main.MainActivity;
+import co.emes.esuelos.model.FormComprobacion;
+import co.emes.esuelos.model.FormNotaCampo;
+import co.emes.esuelos.model.FormTodos;
 import co.emes.esuelos.util.BasemapComponent;
 import co.emes.esuelos.util.DataBaseHelper;
 import co.emes.esuelos.util.Singleton;
+import co.emes.esuelos.util.Utils;
 
 /**
  * Created by csarmiento on 11/14/16
@@ -64,12 +72,9 @@ public class FragmentMap extends Fragment {
     MenuItem gpsMenuItem;
     MenuItem identifyMenuItem;
 
-    ImageView imgAddMap;
-    ImageView imgAddForm;
-    ImageView imgClearMap;
-
     LocationDisplayManager lDisplayManager;
     BasemapComponent basemapComponent;
+    GraphicsLayer graphicsLayerAll;
     GraphicsLayer graphicsLayer;
 
     List<FeatureLayer> featureLayerList;
@@ -117,6 +122,9 @@ public class FragmentMap extends Fragment {
         graphicsLayer = new GraphicsLayer();
         mMapView.addLayer(graphicsLayer);
 
+        graphicsLayerAll = new GraphicsLayer();
+        mMapView.addLayer(graphicsLayerAll);
+
         manager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE );
         if ( !manager.isProviderEnabled( LocationManager.GPS_PROVIDER ) ) {
             buildAlertMessageNoGps();
@@ -153,7 +161,7 @@ public class FragmentMap extends Fragment {
                 }
                 graphicsLayer.removeAll();
                 graphicsLayer.addGraphic(new Graphic(loc,new  SimpleMarkerSymbol(Color.GREEN, 25, SimpleMarkerSymbol.STYLE.CROSS)));
-                showListView();
+                showListView(loc);
                 if(featureLayerList!=null && !featureLayerList.isEmpty()) {
                     searchSuelos(featureLayerList, loc);
                 }
@@ -161,29 +169,22 @@ public class FragmentMap extends Fragment {
             }
         });
 
-        imgAddMap = (ImageView) rootView.findViewById(R.id.imgAddMap);
-        imgAddMap.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                addMapAction();
-            }
-        });
+        mMapView.setOnSingleTapListener(new OnSingleTapListener() {
+            @Override
+            public void onSingleTap(float x, float y) {
+                int[] graphicIDs = graphicsLayerAll.getGraphicIDs(x, y, 15, 1);
+                graphicsLayerAll.clearSelection();
+                graphicsLayerAll.setSelectedGraphics(graphicIDs, true);
+                if(graphicIDs.length > 0) {
 
-        imgAddForm = (ImageView) rootView.findViewById(R.id.imgAddForm);
-        imgAddForm.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                addFormAction();
-            }
-        });
-
-        imgClearMap = (ImageView) rootView.findViewById(R.id.imgClearMap);
-        imgClearMap.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                clearMapAction();
+                }
             }
         });
 
         lDisplayManager = mMapView.getLocationDisplayManager();
         lDisplayManager.setAutoPanMode(LocationDisplayManager.AutoPanMode.OFF);
+
+        drawPoints();
 
         return rootView;
     }
@@ -237,29 +238,16 @@ public class FragmentMap extends Fragment {
             @Override
             public void onShow(final DialogInterface dialog) {
                 Button positiveButton = ((AlertDialog)dialog).getButton(DialogInterface.BUTTON_POSITIVE);
-                //positiveButton.setTextColor(getActivity().getResources().getColor(R.color.second_font));
                 positiveButton.setTransformationMethod(null);
                 positiveButton.invalidate();
 
                 Button negativeButton = ((AlertDialog)dialog).getButton(DialogInterface.BUTTON_NEGATIVE);
-                //negativeButton.setTextColor(getActivity().getResources().getColor(R.color.second_font));
                 negativeButton.setTransformationMethod(null);
                 negativeButton.invalidate();
             }
         });
 
         dialog.show();
-    }
-
-    private void addMapAction() {
-        try{
-            Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-            intent.setType("file/");
-            startActivityForResult(intent,PICKFILE_RESULT_CODE);
-        }
-        catch(ActivityNotFoundException exp){
-            Toast.makeText(getActivity(), "No File (Manager / Explorer)etc Found In Your Device", Toast.LENGTH_SHORT).show();
-        }
     }
 
     private void gpsAction() {
@@ -284,14 +272,14 @@ public class FragmentMap extends Fragment {
     }
 
     private void addFormAction() {
-        showListView();
+        showListView(null);
     }
 
     private void clearMapAction() {
         graphicsLayer.removeAll();
     }
 
-    private void showListView() {
+    private void showListView(final Point point) {
         AlertDialog.Builder builderSingle = new AlertDialog.Builder(getActivity());
         builderSingle.setIcon(R.drawable.logo);
         builderSingle.setTitle("Formularios Disponibles");
@@ -315,7 +303,7 @@ public class FragmentMap extends Fragment {
                 });
 
         builderSingle.setPositiveButton(
-                getResources().getString(R.string.btn_ok),
+                getResources().getString(R.string.btn_save_form),
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -335,25 +323,78 @@ public class FragmentMap extends Fragment {
                     }
                 });
 
+        if(point!=null) {
+            builderSingle.setNeutralButton(
+                    getResources().getString(R.string.btn_save_geomtry),
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Singleton.getInstance().setX(tempPoint.getX());
+                            Singleton.getInstance().setY(tempPoint.getY());
+                            int selectedPosition = ((AlertDialog) dialog).getListView().getCheckedItemPosition();
+                            DataBaseHelper dataBaseHelper = new DataBaseHelper(getActivity());
+                            String fechaHora = Utils.dateToString(new Date(), "yyyy-MM-dd HH:mm:ss");
+                            String nroObservacion;
+                            Map<String, Object> attributes;
+                            Graphic graphic;
+                            switch (selectedPosition) {
+                                case 0:
+                                    nroObservacion = dataBaseHelper.getNroObservacion("N");
+                                    FormNotaCampo formNotaCampo = new FormNotaCampo();
+                                    formNotaCampo.setLongitud(Singleton.getInstance().getX());
+                                    formNotaCampo.setLatitud(Singleton.getInstance().getY());
+                                    formNotaCampo.setFechaHora(fechaHora);
+                                    formNotaCampo.setAltitud(null);
+                                    formNotaCampo.setNroObservacion(nroObservacion);
+                                    formNotaCampo.setEstado(1);
+                                    Long formNotaCampoId = dataBaseHelper.insertFormNotaCampo(formNotaCampo);
+                                    attributes = new HashMap<>();
+                                    attributes.put("id",formNotaCampoId);
+                                    attributes.put("type","N");
+                                    graphic = new Graphic(point, new SimpleMarkerSymbol(Color.RED,25, SimpleMarkerSymbol.STYLE.CIRCLE), attributes);
+                                    graphicsLayerAll.addGraphic(graphic);
+                                    break;
+                                case 1:
+                                    break;
+                                case 2:
+                                    nroObservacion = dataBaseHelper.getNroObservacion("C");
+                                    FormComprobacion formNotaComprobacion = new FormComprobacion();
+                                    formNotaComprobacion.setLongitud(Singleton.getInstance().getX());
+                                    formNotaComprobacion.setLatitud(Singleton.getInstance().getY());
+                                    formNotaComprobacion.setFechaHora(fechaHora);
+                                    formNotaComprobacion.setAltitud(null);
+                                    formNotaComprobacion.setNroObservacion(nroObservacion);
+                                    formNotaComprobacion.setEstado(1);
+                                    Long formNotaComprobacionId = dataBaseHelper.insertFormComprobacion(formNotaComprobacion);
+                                    attributes = new HashMap<>();
+                                    attributes.put("id",formNotaComprobacionId);
+                                    attributes.put("type","C");
+                                    graphic = new Graphic(point, new SimpleMarkerSymbol(Color.RED,25, SimpleMarkerSymbol.STYLE.CIRCLE), attributes);
+                                    graphicsLayerAll.addGraphic(graphic);
+                                    break;
+                            }
+                        }
+                    });
+        }
         builderSingle.setSingleChoiceItems(arrayAdapter, 0, null);
 
         AlertDialog dialog = builderSingle.create();
         dialog.setOnShowListener(new DialogInterface.OnShowListener() {
             @Override
             public void onShow(final DialogInterface dialog) {
-                Window view = ((AlertDialog)dialog).getWindow();
-                //view.setBackgroundDrawableResource(R.color.principal_background);
-                //view.setTitleColor(getActivity().getResources().getColor(R.color.principal_font));
-
                 Button positiveButton = ((AlertDialog)dialog).getButton(DialogInterface.BUTTON_POSITIVE);
-                //positiveButton.setTextColor(getActivity().getResources().getColor(R.color.second_font));
                 positiveButton.setTransformationMethod(null);
                 positiveButton.invalidate();
 
                 Button negativeButton = ((AlertDialog)dialog).getButton(DialogInterface.BUTTON_NEGATIVE);
-                //negativeButton.setTextColor(getActivity().getResources().getColor(R.color.second_font));
                 negativeButton.setTransformationMethod(null);
                 negativeButton.invalidate();
+
+                if(point!=null) {
+                    Button neutralButton = ((AlertDialog) dialog).getButton(DialogInterface.BUTTON_NEUTRAL);
+                    neutralButton.setTransformationMethod(null);
+                    neutralButton.invalidate();
+                }
             }
         });
 
@@ -444,5 +485,44 @@ public class FragmentMap extends Fragment {
 
         }
     };
+
+    private void drawPoints() {
+        List<FormTodos> formTodosList =  new LinkedList<>();
+
+        DataBaseHelper dataBaseHelper = new DataBaseHelper(getActivity());
+        List<FormComprobacion> testingList = dataBaseHelper.getListFormComprobacion();
+        for(FormComprobacion form:testingList){
+            FormTodos formTodos =  new FormTodos();
+            formTodos.setNroObservacion(form.getNroObservacion());
+            formTodos.setFechaHora(form.getFechaHora());
+            formTodos.setTipo("Comprobación");
+            formTodos.setEstado(form.getEstado());
+            formTodos.setFormulario(form);
+            formTodos.setLongitud(form.getLongitud());
+            formTodos.setLatitud(form.getLatitud());
+            formTodosList.add(formTodos);
+        }
+
+        List<FormNotaCampo> fieldNoteList = dataBaseHelper.getListFormNotaCampo();
+        for(FormNotaCampo form:fieldNoteList){
+            FormTodos formTodos =  new FormTodos();
+            formTodos.setNroObservacion(form.getNroObservacion());
+            formTodos.setFechaHora(form.getFechaHora());
+            formTodos.setTipo("Nota de Campo");
+            formTodos.setEstado(form.getEstado());
+            formTodos.setFormulario(form);
+            formTodos.setLongitud(form.getLongitud());
+            formTodos.setLatitud(form.getLatitud());
+            formTodosList.add(formTodos);
+        }
+
+        graphicsLayerAll.removeAll();
+        for(FormTodos form:formTodosList) {
+            Point loc = new Point(form.getLongitud().floatValue(), form.getLatitud().floatValue());
+            Point newPoint = (Point) GeometryEngine.project(loc, egs, wm);
+            graphicsLayerAll.addGraphic(new Graphic(newPoint, new SimpleMarkerSymbol(Color.RED,25,
+                    SimpleMarkerSymbol.STYLE.CIRCLE)));
+        }
+    }
 
 }

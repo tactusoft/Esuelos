@@ -17,6 +17,8 @@
     <string name="btn_add_form">Agregar formulario</string>
     <string name="btn_clear_map">Limpiar Mapa</string>
     <string name="btn_ok">Aceptar</string>
+    <string name="btn_save_geomtry">Guardar Geometría</string>
+    <string name="btn_save_form">Crear Formulario</string>
     <string name="btn_save">Guardar</string>
     <string name="btn_close">Terminar</string>
     <string name="btn_cancel">Cancelar</string>
@@ -25,6 +27,7 @@
     <string name="btn_next">Siguiente</string>
     <string name="btn_delete">Eliminar</string>
     <string name="btn_edit">Editar</string>
+    <string name="btn_select">Seleccionar</string>
     <string name="btn_yes">Sí</string>
     <string name="btn_no">No</string>
     <string name="take_photo">Capturar Foto</string>
@@ -45,6 +48,7 @@
     <string name="ndi_summary">Resúmen</string>
     <string name="ndi_database">Bases de Datos</string>
     <string name="ndi_tpk">Cargar Cartografía</string>
+    <string name="ndi_summary_par">Resúmen del día %s</string>
 
     <string name="tst_title">Formulario de Comprobación</string>
     <string name="fdn_title">Formulario de Nota de Campo</string>

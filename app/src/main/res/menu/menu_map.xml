@@ -10,7 +10,7 @@
         android:title="Agregar"/>
     <item
         android:id="@+id/item_add_form"
-        android:icon="@drawable/ic_add"
+        android:icon="@drawable/ic_info"
         app:showAsAction="always"
         android:title="Descargar"/>
     <item

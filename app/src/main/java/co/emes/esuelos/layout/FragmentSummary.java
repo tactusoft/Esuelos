@@ -11,6 +11,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import co.emes.esuelos.R;
+import co.emes.esuelos.forms.ArrayAdapterSummary;
 import co.emes.esuelos.forms.FormTodosArrayAdapter;
 import co.emes.esuelos.model.FormComprobacion;
 import co.emes.esuelos.model.FormNotaCampo;
@@ -32,33 +33,11 @@ public class FragmentSummary extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_table, container, false);
         listViewTesting = (ListView) rootView.findViewById(R.id.list_forms);
 
-        List<FormTodos> formTodosList =  new LinkedList<>();
-
         DataBaseHelper dataBaseHelper = new DataBaseHelper(getActivity());
-        List<FormComprobacion> testingList = dataBaseHelper.getListFormComprobacion();
-        for(FormComprobacion form:testingList){
-            FormTodos formTodos =  new FormTodos();
-            formTodos.setNroObservacion(form.getNroObservacion());
-            formTodos.setFechaHora(form.getFechaHora());
-            formTodos.setTipo("Comprobación");
-            formTodos.setEstado(form.getEstado());
-            formTodos.setFormulario(form);
-            formTodosList.add(formTodos);
-        }
+        List<String> list = dataBaseHelper.getListFormsFechas();
 
-        List<FormNotaCampo> fieldNoteList = dataBaseHelper.getListFormNotaCampo();
-        for(FormNotaCampo form:fieldNoteList){
-            FormTodos formTodos =  new FormTodos();
-            formTodos.setNroObservacion(form.getNroObservacion());
-            formTodos.setFechaHora(form.getFechaHora());
-            formTodos.setTipo("Nota de Campo");
-            formTodos.setEstado(form.getEstado());
-            formTodos.setFormulario(form);
-            formTodosList.add(formTodos);
-        }
-
-        FormTodosArrayAdapter testingAdapter = new FormTodosArrayAdapter(getActivity(), getFragmentManager(),
-                R.layout.list_skyline_item, formTodosList);
+        ArrayAdapterSummary testingAdapter = new ArrayAdapterSummary(getActivity(), getFragmentManager(),
+                R.layout.item_summary, list);
         listViewTesting.setAdapter(testingAdapter);
 
         return rootView;

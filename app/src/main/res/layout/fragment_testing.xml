@@ -141,7 +141,8 @@
                                 android:text="@string/tst_reconocedor"
                                 android:textColor="@color/colorPrimary"
                                 android:layout_marginLeft="20dp"
-                                android:layout_marginRight="20dp"/>
+                                android:layout_marginRight="20dp"
+                                android:layout_marginTop="20dp"/>
 
                             <Spinner
                                 android:id="@+id/input_reconocedor"
@@ -157,7 +158,8 @@
                                 android:text="@string/tst_fecha"
                                 android:textColor="@color/colorPrimary"
                                 android:layout_marginLeft="20dp"
-                                android:layout_marginRight="20dp"/>
+                                android:layout_marginRight="20dp"
+                                android:layout_marginTop="20dp"/>
 
                             <EditText
                                 android:id="@+id/input_fecha"
@@ -175,7 +177,8 @@
                                 android:text="@string/tst_nombre_sitio"
                                 android:textColor="@color/colorPrimary"
                                 android:layout_marginLeft="20dp"
-                                android:layout_marginRight="20dp"/>
+                                android:layout_marginRight="20dp"
+                                android:layout_marginTop="20dp"/>
 
                             <EditText
                                 android:id="@+id/input_nombre_sitio"
@@ -282,7 +285,8 @@
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
                         android:layout_marginLeft="20dp"
-                        android:layout_marginRight="20dp">
+                        android:layout_marginRight="20dp"
+                        android:layout_marginTop="20dp">
 
                         <TextView
                             android:id="@+id/label_paisaje"
@@ -305,7 +309,8 @@
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
                         android:layout_marginLeft="20dp"
-                        android:layout_marginRight="20dp">
+                        android:layout_marginRight="20dp"
+                        android:layout_marginTop="20dp">
 
                         <TextView
                             android:layout_width="match_parent"
@@ -351,7 +356,8 @@
                         android:text="@string/tst_movimiento"
                         android:textColor="@color/colorPrimary"
                         android:layout_marginLeft="20dp"
-                        android:layout_marginRight="20dp"/>
+                        android:layout_marginRight="20dp"
+                        android:layout_marginTop="20dp"/>
 
                     <Spinner
                         android:id="@+id/input_movimiento"
@@ -367,7 +373,8 @@
                         android:text="@string/tst_anegamiento"
                         android:textColor="@color/colorPrimary"
                         android:layout_marginLeft="20dp"
-                        android:layout_marginRight="20dp"/>
+                        android:layout_marginRight="20dp"
+                        android:layout_marginTop="20dp"/>
 
                     <Spinner
                         android:id="@+id/input_anegamiento"
@@ -382,7 +389,8 @@
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
                         android:layout_marginLeft="20dp"
-                        android:layout_marginRight="20dp">
+                        android:layout_marginRight="20dp"
+                        android:layout_marginTop="20dp">
 
                         <TextView
                             android:layout_width="match_parent"
@@ -432,7 +440,8 @@
                         android:textColor="@color/colorPrimary"
                         android:layout_marginLeft="20dp"
                         android:layout_marginRight="20dp"
-                        android:id="@+id/label_pedegrosidad"/>
+                        android:id="@+id/label_pedegrosidad"
+                        android:layout_marginTop="20dp"/>
 
                     <Spinner
                         android:id="@+id/input_pedegrosidad"
@@ -449,7 +458,8 @@
                         android:textColor="@color/colorPrimary"
                         android:layout_marginLeft="20dp"
                         android:layout_marginRight="20dp"
-                        android:id="@+id/label_afloramiento"/>
+                        android:id="@+id/label_afloramiento"
+                        android:layout_marginTop="20dp"/>
 
                     <Spinner
                         android:id="@+id/input_afloramiento"
@@ -489,14 +499,14 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="@string/btn_optional"
-                                    android:textSize="20sp"/>
+                                    android:textSize="16sp"/>
 
                                 <Button
                                     android:id="@+id/btn_add_flecked_top"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="@string/btn_flecked"
-                                    android:textSize="20sp"
+                                    android:textSize="16sp"
                                     android:layout_toRightOf="@id/btn_optional_top"/>
 
                                 <Button
@@ -504,7 +514,7 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="@string/btn_prev"
-                                    android:textSize="20sp"
+                                    android:textSize="16sp"
                                     android:layout_toRightOf="@id/btn_add_flecked_top"/>
 
                                 <Button
@@ -512,7 +522,7 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="@string/btn_next"
-                                    android:textSize="20sp"
+                                    android:textSize="16sp"
                                     android:layout_toRightOf="@id/btn_preview_top"/>
 
                             </RelativeLayout>
@@ -528,9 +538,10 @@
                                     android:layout_height="wrap_content"
                                     android:text="@string/tst_horizonte_nro"
                                     android:textColor="@color/principal_font"
+                                    android:textStyle="bold"
                                     android:layout_marginLeft="20dp"
                                     android:layout_marginRight="20dp"
-                                    android:textSize="20sp"
+                                    android:textSize="16sp"
                                     android:id="@+id/label_horizonte_nro"/>
 
                             </RelativeLayout>
@@ -558,7 +569,8 @@
                                 android:text="@string/tst_color"
                                 android:textColor="@color/colorPrimary"
                                 android:layout_marginLeft="20dp"
-                                android:layout_marginRight="20dp"/>
+                                android:layout_marginRight="20dp"
+                                android:layout_marginTop="20dp"/>
 
                             <LinearLayout
                                 android:layout_width="match_parent"
@@ -571,27 +583,21 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:textColor="@color/principal_font"
-                                    android:layout_weight="1"
-                                    android:layout_marginTop="10dp"
-                                    android:layout_marginBottom="10dp"/>
+                                    android:layout_weight="1"/>
 
                                 <Spinner
                                     android:id="@+id/input_color_value"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:textColor="@color/principal_font"
-                                    android:layout_weight="1"
-                                    android:layout_marginTop="10dp"
-                                    android:layout_marginBottom="10dp"/>
+                                    android:layout_weight="1"/>
 
                                 <Spinner
                                     android:id="@+id/input_color_chroma"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:textColor="@color/principal_font"
-                                    android:layout_weight="1"
-                                    android:layout_marginTop="10dp"
-                                    android:layout_marginBottom="10dp"/>
+                                    android:layout_weight="1"/>
                             </LinearLayout>
 
                             <TextView
@@ -600,7 +606,8 @@
                                 android:text="@string/tst_color_percent"
                                 android:textColor="@color/colorPrimary"
                                 android:layout_marginLeft="20dp"
-                                android:layout_marginRight="20dp"/>
+                                android:layout_marginRight="20dp"
+                                android:layout_marginTop="20dp"/>
 
                             <EditText
                                 android:id="@+id/input_color_percent"
@@ -617,7 +624,8 @@
                                 android:text="@string/tst_material_type"
                                 android:textColor="@color/colorPrimary"
                                 android:layout_marginLeft="20dp"
-                                android:layout_marginRight="20dp"/>
+                                android:layout_marginRight="20dp"
+                                android:layout_marginTop="20dp"/>
 
                             <Spinner
                                 android:id="@+id/input_material_type"
@@ -633,7 +641,8 @@
                                 android:text="@string/tst_texture_percent"
                                 android:textColor="@color/colorPrimary"
                                 android:layout_marginLeft="20dp"
-                                android:layout_marginRight="20dp"/>
+                                android:layout_marginRight="20dp"
+                                android:layout_marginTop="20dp"/>
 
                             <EditText
                                 android:id="@+id/input_texture_percent"
@@ -651,7 +660,8 @@
                                 android:text="@string/tst_texture"
                                 android:textColor="@color/colorPrimary"
                                 android:layout_marginLeft="20dp"
-                                android:layout_marginRight="20dp"/>
+                                android:layout_marginRight="20dp"
+                                android:layout_marginTop="20dp"/>
 
                             <LinearLayout
                                 android:layout_width="match_parent"
@@ -686,7 +696,8 @@
                                 android:text="@string/tst_organic_type"
                                 android:textColor="@color/colorPrimary"
                                 android:layout_marginLeft="20dp"
-                                android:layout_marginRight="20dp"/>
+                                android:layout_marginRight="20dp"
+                                android:layout_marginTop="20dp"/>
 
                             <LinearLayout
                                 android:layout_width="match_parent"
@@ -721,7 +732,8 @@
                                 android:text="@string/tst_texture_other"
                                 android:textColor="@color/colorPrimary"
                                 android:layout_marginLeft="20dp"
-                                android:layout_marginRight="20dp"/>
+                                android:layout_marginRight="20dp"
+                                android:layout_marginTop="20dp"/>
 
                             <EditText
                                 android:id="@+id/input_texture_other"
@@ -739,7 +751,8 @@
                                 android:text="@string/tst_structure"
                                 android:textColor="@color/colorPrimary"
                                 android:layout_marginLeft="20dp"
-                                android:layout_marginRight="20dp"/>
+                                android:layout_marginRight="20dp"
+                                android:layout_marginTop="20dp"/>
 
                             <LinearLayout
                                 android:layout_width="match_parent"
@@ -780,7 +793,8 @@
                                 android:text="@string/tst_texture_other"
                                 android:textColor="@color/colorPrimary"
                                 android:layout_marginLeft="20dp"
-                                android:layout_marginRight="20dp"/>
+                                android:layout_marginRight="20dp"
+                                android:layout_marginTop="20dp"/>
 
                             <EditText
                                 android:id="@+id/input_structure_type_other"
@@ -799,7 +813,7 @@
                                 android:textColor="@color/colorPrimary"
                                 android:layout_marginLeft="20dp"
                                 android:layout_marginRight="20dp"
-                                android:layout_marginTop="10dp"
+                                android:layout_marginTop="20dp"
                                 android:layout_marginBottom="10dp"/>
 
                             <Spinner
@@ -820,7 +834,7 @@
                                 android:textColor="@color/colorPrimary"
                                 android:layout_marginLeft="20dp"
                                 android:layout_marginRight="20dp"
-                                android:layout_marginTop="10dp"
+                                android:layout_marginTop="20dp"
                                 android:layout_marginBottom="10dp"/>
 
                             <Spinner
@@ -839,7 +853,8 @@
                                 android:text="@string/tst_skyline_type"
                                 android:textColor="@color/colorPrimary"
                                 android:layout_marginLeft="20dp"
-                                android:layout_marginRight="20dp"/>
+                                android:layout_marginRight="20dp"
+                                android:layout_marginTop="20dp"/>
 
                             <LinearLayout
                                 android:layout_width="match_parent"
@@ -883,14 +898,14 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="@string/btn_optional"
-                                    android:textSize="20sp"/>
+                                    android:textSize="16sp"/>
 
                                 <Button
                                     android:id="@+id/btn_add_flecked"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="@string/btn_flecked"
-                                    android:textSize="20sp"
+                                    android:textSize="16sp"
                                     android:layout_toRightOf="@id/btn_optional"/>
 
                                 <Button
@@ -898,7 +913,7 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="@string/btn_prev"
-                                    android:textSize="20sp"
+                                    android:textSize="16sp"
                                     android:layout_toRightOf="@id/btn_add_flecked"/>
 
                                 <Button
@@ -906,7 +921,7 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="@string/btn_next"
-                                    android:textSize="20sp"
+                                    android:textSize="16sp"
                                     android:layout_toRightOf="@id/btn_preview"/>
 
                             </RelativeLayout>

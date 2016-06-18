@@ -1,44 +1,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
-
-    <LinearLayout
-        android:id="@+id/linearLayout1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:background="@color/colorPrimary"
-        android:baselineAligned="false"
-        android:visibility="gone">
-
-        <ImageView
-            android:id="@+id/imgAddMap"
-            android:layout_width="wrap_content"
-            android:layout_height="60dp"
-            android:contentDescription="@string/btn_add_form"
-            android:src="@android:drawable/ic_dialog_map"
-            android:layout_marginRight="25dp"/>
-
-        <ImageView
-            android:id="@+id/imgAddForm"
-            android:layout_width="wrap_content"
-            android:layout_height="60dp"
-            android:contentDescription="@string/btn_add_form"
-            android:src="@android:drawable/ic_input_add"
-            android:layout_marginRight="25dp"/>
-
-        <ImageView
-            android:id="@+id/imgClearMap"
-            android:layout_width="wrap_content"
-            android:layout_height="60dp"
-            android:contentDescription="@string/btn_clear_map"
-            android:src="@android:drawable/ic_input_delete"
-            android:layout_marginRight="25dp"/>
-
-    </LinearLayout>
 
     <com.esri.android.map.MapView
         android:id="@+id/map"

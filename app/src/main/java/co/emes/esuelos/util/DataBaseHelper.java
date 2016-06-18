@@ -528,6 +528,54 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         return id;
     }
 
+    public List<FormComprobacion> getListFormComprobacion(String fecha) {
+        List<FormComprobacion> list = new LinkedList<>();
+        try {
+            openDataBase();
+            Cursor cur = myDataBase.rawQuery("SELECT id, nro_observacion, reconocedor, fecha_hora, longitud, latitud, altitud,\n" +
+                    "nombre_sitio, epoca_climatica, dias_lluvia, pendiente_longitud, grado_erosion, tipo_movimiento, anegamiento,\n" +
+                    "frecuencia, duracion, pedregosidad, afloramiento, fragmento_suelo, drenaje_natural, profundidad_efectiva,\n" +
+                    "epidedones, endopedones, estado\n" +
+                    "FROM form_comprobacion\n" +
+                    "WHERE Date(fecha_hora) = ?\n" +
+                    "ORDER BY id", new String[] {fecha});
+            while (cur.moveToNext()) {
+                FormComprobacion row = new FormComprobacion();
+                row.setId(cur.getInt(0));
+                row.setNroObservacion(cur.getString(1));
+                row.setReconocedor(cur.getInt(2));
+                row.setFechaHora(cur.getString(3));
+                row.setLongitud(cur.getDouble(4));
+                row.setLatitud(cur.getDouble(5));
+                row.setAltitud(cur.getDouble(6));
+                row.setNombreSitio(cur.getString(7));
+                row.setEpocaClimatica(cur.getInt(8));
+                row.setDiasLluvia(cur.getString(9));
+                row.setPendienteLongitud(cur.getInt(10));
+                row.setGradoErosion(cur.getInt(11));
+                row.setTipoMovimiento(cur.getInt(12));
+                row.setAnegamiento(cur.getInt(13));
+                row.setFrecuencia(cur.getInt(14));
+                row.setDuracion(cur.getInt(15));
+                row.setPedregosidad(cur.getInt(16));
+                row.setAfloramiento(cur.getInt(17));
+                row.setFragmentoSuelo(cur.getInt(18));
+                row.setDrenajeNatural(cur.getInt(19));
+                row.setProfundidadEfectiva(cur.getInt(20));
+                row.setEpidedones(cur.getInt(21));
+                row.setEndopedones(cur.getInt(22));
+                row.setEstado(cur.getInt(23));
+                list.add(row);
+            }
+            cur.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            close();
+        }
+        return list;
+    }
+
     public List<FormComprobacion> getListFormComprobacion() {
         List<FormComprobacion> list = new LinkedList<>();
         try {
@@ -564,6 +612,61 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                 row.setEpidedones(cur.getInt(21));
                 row.setEndopedones(cur.getInt(22));
                 row.setEstado(cur.getInt(23));
+                list.add(row);
+            }
+            cur.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            close();
+        }
+        return list;
+    }
+
+    public List<FormNotaCampo> getListFormNotaCampo(String fecha) {
+        List<FormNotaCampo> list = new LinkedList<>();
+        try {
+            openDataBase();
+            Cursor cur = myDataBase.rawQuery("SELECT id, nro_observacion, reconocedor, fecha_hora, longitud, latitud, altitud,\n" +
+                    "nombre_sitio, epoca_climatica, dias_lluvia, gradiente, pendiente_longitud, pendiente_forma,\n" +
+                    "clase_erosion, tipo_erosion, grado_erosion, clase_movimiento, tipo_movimiento, frecuencia_movimiento, anegamiento,\n" +
+                    "frecuencia, duracion, pedregosidad, afloramiento, vegetacion_natural, grupo_uso, subgrupo_uso,\n" +
+                    "nombre_cultivo, observaciones, estado\n" +
+                    "FROM form_nota_campo\n" +
+                    "WHERE Date(fecha_hora) = ?\n" +
+                    "ORDER BY id", new String[] {fecha});
+            while (cur.moveToNext()) {
+                FormNotaCampo row = new FormNotaCampo();
+                row.setId(cur.getInt(0));
+                row.setNroObservacion(cur.getString(1));
+                row.setReconocedor(cur.getInt(2));
+                row.setFechaHora(cur.getString(3));
+                row.setLongitud(cur.getDouble(4));
+                row.setLatitud(cur.getDouble(5));
+                row.setAltitud(cur.getDouble(6));
+                row.setNombreSitio(cur.getString(7));
+                row.setEpocaClimatica(cur.getInt(8));
+                row.setDiasLluvia(cur.getString(9));
+                row.setGradiente(cur.getInt(10));
+                row.setPendienteLongitud(cur.getInt(11));
+                row.setPendienteForma(cur.getInt(12));
+                row.setClaseErosion(cur.getInt(13));
+                row.setTipoErosion(cur.getInt(14));
+                row.setGradoErosion(cur.getInt(15));
+                row.setClaseMovimiento(cur.getInt(16));
+                row.setTipoMovimiento(cur.getInt(17));
+                row.setFrecuenciaMovimiento(cur.getInt(18));
+                row.setAnegamiento(cur.getInt(19));
+                row.setFrecuencia(cur.getInt(20));
+                row.setDuracion(cur.getInt(21));
+                row.setPedregosidad(cur.getInt(22));
+                row.setAfloramiento(cur.getInt(23));
+                row.setVegetacionNatural(cur.getString(24));
+                row.setGrupoUso(cur.getInt(25));
+                row.setSubgrupoUso(cur.getInt(26));
+                row.setNombreCultivo(cur.getString(27));
+                row.setObservaciones(cur.getString(28));
+                row.setEstado(cur.getInt(29));
                 list.add(row);
             }
             cur.close();
@@ -813,6 +916,25 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             close();
         }
         return result;
+    }
+
+    public List<String> getListFormsFechas() {
+        List<String> list = new LinkedList<>();
+        try {
+            openDataBase();
+            Cursor cur = myDataBase.rawQuery("SELECT Date(fecha_hora) FROM form_comprobacion " +
+                    "UNION SELECT Date(fecha_hora) FROM form_nota_campo ORDER BY 1",
+                    new String[] {});
+            while (cur.moveToNext()) {
+                list.add(cur.getString(0));
+            }
+            cur.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            close();
+        }
+        return list;
     }
 
 }

@@ -12,6 +12,8 @@ public class FormTodos implements Serializable {
     Integer estado;
     String tipo;
     Object formulario;
+    Double longitud;
+    Double latitud;
 
     public FormTodos() {
     }
@@ -54,5 +56,21 @@ public class FormTodos implements Serializable {
 
     public void setFormulario(Object formulario) {
         this.formulario = formulario;
+    }
+
+    public Double getLongitud() {
+        return longitud;
+    }
+
+    public void setLongitud(Double longitud) {
+        this.longitud = longitud;
+    }
+
+    public Double getLatitud() {
+        return latitud;
+    }
+
+    public void setLatitud(Double latitud) {
+        this.latitud = latitud;
     }
 }

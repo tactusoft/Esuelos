@@ -1546,110 +1546,104 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
     }
 
     public void editForm(){
-        if(formComprobacion == null){
-            formComprobacion = new FormComprobacion();
-            inputNroObservacion.setText(dataBaseHelper.getNroObservacion("C"));
-            inputFecha.setText(Utils.dateToString(new Date(), "yyyy-MM-dd HH:mm:ss"));
-            labelHorizonteNro.setText(String.format(getResources().getString(R.string.tst_horizonte_nro), (index + 1)));
-            mode = Modes.NEW;
+        inputNroObservacion.setText(formComprobacion.getNroObservacion());
+        inputCoords.setText(formComprobacion.getLongitud() + "  " + formComprobacion.getLatitud());
+        inputFecha.setText(formComprobacion.getFechaHora());
+        int spinnerPosition = reconocedorAdapter.getPosition(Utils.getDomain(listReconocedor, formComprobacion.getReconocedor()));
+        inputReconocedor.setSelection(spinnerPosition == -1?0:spinnerPosition);
+        spinnerPosition = epocaAdapter.getPosition(Utils.getDomain(listEpoca, formComprobacion.getEpocaClimatica()));
+        inputNombreSitio.setText(formComprobacion.getNombreSitio());
+        inputEpoca.setSelection(spinnerPosition == -1?0:spinnerPosition);
+        inputEpocaDias.setText(formComprobacion.getDiasLluvia());
+        spinnerPosition = longitudAdapter.getPosition(Utils.getDomain(listLongitud, formComprobacion.getPendienteLongitud()));
+        inputLongitud.setSelection(spinnerPosition == -1?0:spinnerPosition);
+        spinnerPosition = erosionAdapter.getPosition(Utils.getDomain(listErosion, formComprobacion.getGradoErosion()));
+        inputErosion.setSelection(spinnerPosition == -1?0:spinnerPosition);
+        spinnerPosition = movimientoAdapter.getPosition(Utils.getDomain(listMovimiento, formComprobacion.getTipoMovimiento()));
+        inputMovimiento.setSelection(spinnerPosition == -1?0:spinnerPosition);
+        spinnerPosition = anegamientoAdapter.getPosition(Utils.getDomain(listAnegamiento, formComprobacion.getAnegamiento()));
+        inputAnegamiento.setSelection(spinnerPosition == -1?0:spinnerPosition);
+        spinnerPosition = frecuenciaAdapter.getPosition(Utils.getDomain(listFrecuencia, formComprobacion.getFrecuencia()));
+        inputFrecuencia.setSelection(spinnerPosition == -1?0:spinnerPosition);
+        spinnerPosition = duracionAdapter.getPosition(Utils.getDomain(listDuracion, formComprobacion.getDuracion()));
+        inputDuracion.setSelection(spinnerPosition == -1?0:spinnerPosition);
+        spinnerPosition = pedegrosidadAdapter.getPosition(Utils.getDomain(listPedegrosidad, formComprobacion.getPedregosidad()));
+        inputPedegrosidad.setSelection(spinnerPosition == -1?0:spinnerPosition);
+        spinnerPosition = afloramientoAdapter.getPosition(Utils.getDomain(listAfloramiento, formComprobacion.getAfloramiento()));
+        inputAfloramiento.setSelection(spinnerPosition == -1?0:spinnerPosition);
+        spinnerPosition = soilFragmentAdapter.getPosition(Utils.getDomain(listSoilFragment, formComprobacion.getFragmentoSuelo()));
+        inputFragmentoSuelo.setSelection(spinnerPosition == -1?0:spinnerPosition);
+        spinnerPosition = naturalDrainageAdapter.getPosition(Utils.getDomain(listNaturalDrainage, formComprobacion.getDrenajeNatural()));
+        inputDrenajeNatural.setSelection(spinnerPosition == -1?0:spinnerPosition);
+        spinnerPosition = effectiveDepthAdapter.getPosition(Utils.getDomain(listEffectiveDepth, formComprobacion.getProfundidadEfectiva()));
+        inputProfundidadEfectiva.setSelection(spinnerPosition == -1?0:spinnerPosition);
+        spinnerPosition = epidedonesAdapter.getPosition(Utils.getDomain(listEpidedones, formComprobacion.getEpidedones()));
+        inputEpidedones.setSelection(spinnerPosition == -1?0:spinnerPosition);
+
+        formComprobacionFoto = dataBaseHelper.getFormComprobacionFoto(formComprobacion.getId());
+        Bitmap bitmap = DBBitmapUtility.loadImageBitmap(getActivity(), formComprobacionFoto.getFoto());
+        imgViewPic.setImageBitmap(bitmap);
+
+        formComprobacionHorizonteList = dataBaseHelper.getListFormComprobacionHorizonte(formComprobacion.getId());
+        index = 0;
+        if (formComprobacionHorizonteList != null && !formComprobacionHorizonteList.isEmpty()) {
+            FormComprobacionHorizonteAdapter skylineAdapter = new FormComprobacionHorizonteAdapter(getActivity(),
+                    getFragmentManager(), R.layout.list_skyline_item, formComprobacionHorizonteList);
+            listViewSkyline.setItemsCanFocus(false);
+            listViewSkyline.setAdapter(skylineAdapter);
+
+            int i = 0;
+            for (FormComprobacionHorizonte row : formComprobacionHorizonteList != null ? formComprobacionHorizonteList : null) {
+                List<View> viewListOptionalTemp = new LinkedList<>();
+                List<View> viewListFleckedTemp = new LinkedList<>();
+
+                List<FormComprobacionHorizonteOpt> listFormComprobacionHorizonteOptional =
+                        dataBaseHelper.getListFormComprobacionHorizonteOptional(row.getId());
+                indexOptional = 0;
+                for(FormComprobacionHorizonteOpt opt:listFormComprobacionHorizonteOptional) {
+                    View view = addOptionalView(SkylineType.OPTIONAL, opt.getColorHue(),
+                            opt.getColorValue(), opt.getColorChroma(), String.valueOf(opt.getColorPorcentaje()));
+                    viewListOptionalTemp.add(view);
+                }
+
+                List<FormComprobacionHorizonteOpt> listFormComprobacionHorizonteFlecked =
+                        dataBaseHelper.getListFormComprobacionHorizonteFlecked(row.getId());
+                indexFlecked = 0;
+                for(FormComprobacionHorizonteOpt opt:listFormComprobacionHorizonteFlecked){
+                    View view = addOptionalView(SkylineType.FLECKED, opt.getColorHue(),
+                            opt.getColorValue(), opt.getColorChroma(), String.valueOf(opt.getColorPorcentaje()));
+                    viewListFleckedTemp.add(view);
+                }
+
+                if(viewListOptionalTemp.size() > 0 || viewListFleckedTemp.size() > 0) {
+                    OptionalEntity optionalEntity = new OptionalEntity();
+                    optionalEntity.setIndex(i);
+                    optionalEntity.setViewListOptional(viewListOptionalTemp);
+                    optionalEntity.setViewListFlecked(viewListFleckedTemp);
+                    listOptionalEntity.add(optionalEntity);
+                }
+                i++;
+            }
+
+            getValues();
+
+            if(formComprobacionHorizonteList.size() > 1) {
+                labelEndopedones.setVisibility(View.VISIBLE);
+                inputEndopedones.setVisibility(View.VISIBLE);
+
+                spinnerPosition = endopedonesAdapter.getPosition(Utils.getDomain(listEndopedones, formComprobacion.getEndopedones()));
+                inputEndopedones.setSelection(spinnerPosition == -1?0:spinnerPosition);
+            }
         } else {
-            inputNroObservacion.setText(formComprobacion.getNroObservacion());
-            inputCoords.setText(formComprobacion.getLongitud() + "  " + formComprobacion.getLatitud());
-            inputFecha.setText(formComprobacion.getFechaHora());
-            int spinnerPosition = reconocedorAdapter.getPosition(Utils.getDomain(listReconocedor, formComprobacion.getReconocedor()));
-            inputReconocedor.setSelection(spinnerPosition == -1?0:spinnerPosition);
-            spinnerPosition = epocaAdapter.getPosition(Utils.getDomain(listEpoca, formComprobacion.getEpocaClimatica()));
-            inputNombreSitio.setText(formComprobacion.getNombreSitio());
-            inputEpoca.setSelection(spinnerPosition == -1?0:spinnerPosition);
-            inputEpocaDias.setText(formComprobacion.getDiasLluvia());
-            spinnerPosition = longitudAdapter.getPosition(Utils.getDomain(listLongitud, formComprobacion.getPendienteLongitud()));
-            inputLongitud.setSelection(spinnerPosition == -1?0:spinnerPosition);
-            spinnerPosition = erosionAdapter.getPosition(Utils.getDomain(listErosion, formComprobacion.getGradoErosion()));
-            inputErosion.setSelection(spinnerPosition == -1?0:spinnerPosition);
-            spinnerPosition = movimientoAdapter.getPosition(Utils.getDomain(listMovimiento, formComprobacion.getTipoMovimiento()));
-            inputMovimiento.setSelection(spinnerPosition == -1?0:spinnerPosition);
-            spinnerPosition = anegamientoAdapter.getPosition(Utils.getDomain(listAnegamiento, formComprobacion.getAnegamiento()));
-            inputAnegamiento.setSelection(spinnerPosition == -1?0:spinnerPosition);
-            spinnerPosition = frecuenciaAdapter.getPosition(Utils.getDomain(listFrecuencia, formComprobacion.getFrecuencia()));
-            inputFrecuencia.setSelection(spinnerPosition == -1?0:spinnerPosition);
-            spinnerPosition = duracionAdapter.getPosition(Utils.getDomain(listDuracion, formComprobacion.getDuracion()));
-            inputDuracion.setSelection(spinnerPosition == -1?0:spinnerPosition);
-            spinnerPosition = pedegrosidadAdapter.getPosition(Utils.getDomain(listPedegrosidad, formComprobacion.getPedregosidad()));
-            inputPedegrosidad.setSelection(spinnerPosition == -1?0:spinnerPosition);
-            spinnerPosition = afloramientoAdapter.getPosition(Utils.getDomain(listAfloramiento, formComprobacion.getAfloramiento()));
-            inputAfloramiento.setSelection(spinnerPosition == -1?0:spinnerPosition);
-            spinnerPosition = soilFragmentAdapter.getPosition(Utils.getDomain(listSoilFragment, formComprobacion.getFragmentoSuelo()));
-            inputFragmentoSuelo.setSelection(spinnerPosition == -1?0:spinnerPosition);
-            spinnerPosition = naturalDrainageAdapter.getPosition(Utils.getDomain(listNaturalDrainage, formComprobacion.getDrenajeNatural()));
-            inputDrenajeNatural.setSelection(spinnerPosition == -1?0:spinnerPosition);
-            spinnerPosition = effectiveDepthAdapter.getPosition(Utils.getDomain(listEffectiveDepth, formComprobacion.getProfundidadEfectiva()));
-            inputProfundidadEfectiva.setSelection(spinnerPosition == -1?0:spinnerPosition);
-            spinnerPosition = epidedonesAdapter.getPosition(Utils.getDomain(listEpidedones, formComprobacion.getEpidedones()));
-            inputEpidedones.setSelection(spinnerPosition == -1?0:spinnerPosition);
+            labelHorizonteNro.setText(String.format(getResources().getString(R.string.tst_horizonte_nro), (index + 1)));
+        }
 
-            formComprobacionFoto = dataBaseHelper.getFormComprobacionFoto(formComprobacion.getId());
-            Bitmap bitmap = DBBitmapUtility.loadImageBitmap(getActivity(), formComprobacionFoto.getFoto());
-            imgViewPic.setImageBitmap(bitmap);
+        nextFlag = false;
+        nextFlagMaterialType = false;
+        nextFlagEstructuraTipo = false;
 
-            formComprobacionHorizonteList = dataBaseHelper.getListFormComprobacionHorizonte(formComprobacion.getId());
-            if (formComprobacionHorizonteList != null && !formComprobacionHorizonteList.isEmpty()) {
-                FormComprobacionHorizonteAdapter skylineAdapter = new FormComprobacionHorizonteAdapter(getActivity(),
-                        getFragmentManager(), R.layout.list_skyline_item, formComprobacionHorizonteList);
-                listViewSkyline.setItemsCanFocus(false);
-                listViewSkyline.setAdapter(skylineAdapter);
-                index = 0;
-
-                int i = 0;
-                for (FormComprobacionHorizonte row : formComprobacionHorizonteList != null ? formComprobacionHorizonteList : null) {
-                    List<View> viewListOptionalTemp = new LinkedList<>();
-                    List<View> viewListFleckedTemp = new LinkedList<>();
-
-                    List<FormComprobacionHorizonteOpt> listFormComprobacionHorizonteOptional =
-                            dataBaseHelper.getListFormComprobacionHorizonteOptional(row.getId());
-                    indexOptional = 0;
-                    for(FormComprobacionHorizonteOpt opt:listFormComprobacionHorizonteOptional) {
-                        View view = addOptionalView(SkylineType.OPTIONAL, opt.getColorHue(),
-                                opt.getColorValue(), opt.getColorChroma(), String.valueOf(opt.getColorPorcentaje()));
-                        viewListOptionalTemp.add(view);
-                    }
-
-                    List<FormComprobacionHorizonteOpt> listFormComprobacionHorizonteFlecked =
-                            dataBaseHelper.getListFormComprobacionHorizonteFlecked(row.getId());
-                    indexFlecked = 0;
-                    for(FormComprobacionHorizonteOpt opt:listFormComprobacionHorizonteFlecked){
-                        View view = addOptionalView(SkylineType.FLECKED, opt.getColorHue(),
-                                opt.getColorValue(), opt.getColorChroma(), String.valueOf(opt.getColorPorcentaje()));
-                        viewListFleckedTemp.add(view);
-                    }
-
-                    if(viewListOptionalTemp.size() > 0 || viewListFleckedTemp.size() > 0) {
-                        OptionalEntity optionalEntity = new OptionalEntity();
-                        optionalEntity.setIndex(i);
-                        optionalEntity.setViewListOptional(viewListOptionalTemp);
-                        optionalEntity.setViewListFlecked(viewListFleckedTemp);
-                        listOptionalEntity.add(optionalEntity);
-                    }
-                    i++;
-                }
-
-                getValues();
-
-                if(formComprobacionHorizonteList.size() > 1) {
-                    labelEndopedones.setVisibility(View.VISIBLE);
-                    inputEndopedones.setVisibility(View.VISIBLE);
-
-                    spinnerPosition = endopedonesAdapter.getPosition(Utils.getDomain(listEndopedones, formComprobacion.getEndopedones()));
-                    inputEndopedones.setSelection(spinnerPosition == -1?0:spinnerPosition);
-                }
-            }
-
-            nextFlag = false;
-            nextFlagMaterialType = false;
-            nextFlagEstructuraTipo = false;
-
-            if(formComprobacion.getEstado() == 2) {
-                lyrButtons.setVisibility(View.GONE);
-            }
+        if(formComprobacion.getEstado() == 2) {
+            lyrButtons.setVisibility(View.GONE);
         }
     }
 

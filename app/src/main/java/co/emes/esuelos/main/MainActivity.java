@@ -39,6 +39,7 @@ import co.emes.esuelos.layout.FragmentMap;
 import co.emes.esuelos.layout.DataModel;
 import co.emes.esuelos.layout.DrawerItemCustomAdapter;
 import co.emes.esuelos.layout.FragmentSummary;
+import co.emes.esuelos.layout.FragmentSummaryDetail;
 import co.emes.esuelos.model.Research;
 import co.emes.esuelos.util.DataBaseHelper;
 import co.emes.esuelos.util.Singleton;
@@ -123,6 +124,11 @@ public class MainActivity extends AppCompatActivity {
                         showFragment(new FragmentHome(), R.string.ndi_home);
                         mDrawerList.setItemChecked(0, true);
                         mDrawerList.setSelection(0);
+                        return;
+                    }  else if (frag instanceof FragmentSummaryDetail) {
+                        showFragment(new FragmentSummary(), R.string.ndi_summary);
+                        mDrawerList.setItemChecked(2, true);
+                        mDrawerList.setSelection(2);
                         return;
                     }
                 }
