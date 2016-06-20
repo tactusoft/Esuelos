@@ -862,6 +862,7 @@ public class FragmentFieldNote extends DialogFragment implements View.OnClickLis
                 formNotaCampo.setFechaHora(fechaHora);
                 formNotaCampo.setAltitud(null);
                 formNotaCampo.setNroObservacion(nroObservacion);
+                formNotaCampoFoto = new FormNotaCampoFoto();
             }
 
             formNotaCampo.setReconocedor(reconocedor);
