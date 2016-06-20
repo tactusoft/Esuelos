@@ -1621,6 +1621,8 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
     public void editForm(){
         inputNroObservacion.setText(formComprobacion.getNroObservacion());
         inputCoords.setText(formComprobacion.getLongitud() + "  " + formComprobacion.getLatitud());
+        labelSimbolo.setText(formComprobacion.getSimbolo());
+        labelPaisaje.setText(formComprobacion.getPaisaje());
         inputFecha.setText(formComprobacion.getFechaHora());
         int spinnerPosition = reconocedorAdapter.getPosition(Utils.getDomain(listReconocedor, formComprobacion.getReconocedor()));
         inputReconocedor.setSelection(spinnerPosition == -1?0:spinnerPosition);

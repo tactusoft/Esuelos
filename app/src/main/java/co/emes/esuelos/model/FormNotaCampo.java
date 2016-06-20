@@ -37,6 +37,8 @@ public class FormNotaCampo implements Serializable {
     String nombreCultivo;
     String observaciones;
     Integer estado;
+    String paisaje;
+    String simbolo;
 
     public FormNotaCampo() {
     }
@@ -279,5 +281,21 @@ public class FormNotaCampo implements Serializable {
 
     public void setEstado(Integer estado) {
         this.estado = estado;
+    }
+
+    public String getPaisaje() {
+        return paisaje;
+    }
+
+    public void setPaisaje(String paisaje) {
+        this.paisaje = paisaje;
+    }
+
+    public String getSimbolo() {
+        return simbolo;
+    }
+
+    public void setSimbolo(String simbolo) {
+        this.simbolo = simbolo;
     }
 }

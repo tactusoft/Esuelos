@@ -31,6 +31,8 @@ public class FormComprobacion implements Serializable {
     Integer epidedones;
     Integer endopedones;
     Integer estado;
+    String paisaje;
+    String simbolo;
 
     public FormComprobacion() {
     }
@@ -225,5 +227,21 @@ public class FormComprobacion implements Serializable {
 
     public void setEstado(Integer estado) {
         this.estado = estado;
+    }
+
+    public String getPaisaje() {
+        return paisaje;
+    }
+
+    public void setPaisaje(String paisaje) {
+        this.paisaje = paisaje;
+    }
+
+    public String getSimbolo() {
+        return simbolo;
+    }
+
+    public void setSimbolo(String simbolo) {
+        this.simbolo = simbolo;
     }
 }

@@ -19,7 +19,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -399,6 +398,8 @@ public class FragmentMap extends Fragment {
                                     formNotaCampo.setAltitud(null);
                                     formNotaCampo.setNroObservacion(nroObservacion);
                                     formNotaCampo.setEstado(1);
+                                    formNotaCampo.setPaisaje(Singleton.getInstance().getPaisaje());
+                                    formNotaCampo.setSimbolo(Singleton.getInstance().getSimbolo());
                                     Long formNotaCampoId = dataBaseHelper.insertFormNotaCampo(formNotaCampo);
                                     attributes = new HashMap<>();
                                     attributes.put("id",formNotaCampoId);
@@ -417,6 +418,8 @@ public class FragmentMap extends Fragment {
                                     formNotaComprobacion.setAltitud(null);
                                     formNotaComprobacion.setNroObservacion(nroObservacion);
                                     formNotaComprobacion.setEstado(1);
+                                    formNotaComprobacion.setPaisaje(Singleton.getInstance().getPaisaje());
+                                    formNotaComprobacion.setSimbolo(Singleton.getInstance().getSimbolo());
                                     Long formNotaComprobacionId = dataBaseHelper.insertFormComprobacion(formNotaComprobacion);
                                     attributes = new HashMap<>();
                                     attributes.put("id",formNotaComprobacionId);

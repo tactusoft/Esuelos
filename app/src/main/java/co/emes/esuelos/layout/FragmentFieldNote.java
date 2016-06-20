@@ -758,6 +758,8 @@ public class FragmentFieldNote extends DialogFragment implements View.OnClickLis
     public void editForm(){
         inputNroObservacion.setText(formNotaCampo.getNroObservacion());
         inputCoords.setText(formNotaCampo.getLongitud() + "  " + formNotaCampo.getLatitud());
+        labelSimbolo.setText(formNotaCampo.getSimbolo());
+        labelPaisaje.setText(formNotaCampo.getPaisaje());
         inputFecha.setText(formNotaCampo.getFechaHora());
         int spinnerPosition = reconocedorAdapter.getPosition(Utils.getDomain(listReconocedor, formNotaCampo.getReconocedor()));
         inputReconocedor.setSelection(spinnerPosition == -1?0:spinnerPosition);

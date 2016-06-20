@@ -299,6 +299,8 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             row.put("epidedones", entity.getEpidedones());
             row.put("endopedones", entity.getEndopedones());
             row.put("estado", entity.getEstado());
+            row.put("paisaje", entity.getPaisaje());
+            row.put("simbolo", entity.getSimbolo());
             id = myDataBase.insert("form_comprobacion", null, row);
             if(id == -1) {
                 myDataBase.update("form_comprobacion", row,
@@ -350,6 +352,8 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             row.put("nombre_cultivo", entity.getNombreCultivo());
             row.put("observaciones", entity.getObservaciones());
             row.put("estado", entity.getEstado());
+            row.put("paisaje", entity.getPaisaje());
+            row.put("simbolo", entity.getSimbolo());
             id = myDataBase.insert("form_nota_campo", null, row);
             if(id == -1) {
                 myDataBase.update("form_nota_campo", row,
@@ -549,7 +553,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             Cursor cur = myDataBase.rawQuery("SELECT id, nro_observacion, reconocedor, fecha_hora, longitud, latitud, altitud,\n" +
                     "nombre_sitio, epoca_climatica, dias_lluvia, pendiente_longitud, grado_erosion, tipo_movimiento, anegamiento,\n" +
                     "frecuencia, duracion, pedregosidad, afloramiento, fragmento_suelo, drenaje_natural, profundidad_efectiva,\n" +
-                    "epidedones, endopedones, estado\n" +
+                    "epidedones, endopedones, estado, paisaje, simbolo\n" +
                     "FROM form_comprobacion\n" +
                     "WHERE Date(fecha_hora) = ?\n" +
                     "ORDER BY id", new String[] {fecha});
@@ -579,6 +583,8 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                 row.setEpidedones(cur.getInt(21));
                 row.setEndopedones(cur.getInt(22));
                 row.setEstado(cur.getInt(23));
+                row.setPaisaje(cur.getString(24));
+                row.setSimbolo(cur.getString(25));
                 list.add(row);
             }
             cur.close();
@@ -597,7 +603,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             Cursor cur = myDataBase.rawQuery("SELECT id, nro_observacion, reconocedor, fecha_hora, longitud, latitud, altitud,\n" +
                     "nombre_sitio, epoca_climatica, dias_lluvia, pendiente_longitud, grado_erosion, tipo_movimiento, anegamiento,\n" +
                     "frecuencia, duracion, pedregosidad, afloramiento, fragmento_suelo, drenaje_natural, profundidad_efectiva,\n" +
-                    "epidedones, endopedones, estado\n" +
+                    "epidedones, endopedones, estado, paisaje, simbolo\n" +
                     "FROM form_comprobacion\n" +
                     "ORDER BY id", new String[] {});
             while (cur.moveToNext()) {
@@ -626,6 +632,8 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                 row.setEpidedones(cur.getInt(21));
                 row.setEndopedones(cur.getInt(22));
                 row.setEstado(cur.getInt(23));
+                row.setPaisaje(cur.getString(24));
+                row.setSimbolo(cur.getString(25));
                 list.add(row);
             }
             cur.close();
@@ -644,7 +652,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             Cursor cur = myDataBase.rawQuery("SELECT id, nro_observacion, reconocedor, fecha_hora, longitud, latitud, altitud,\n" +
                     "nombre_sitio, epoca_climatica, dias_lluvia, pendiente_longitud, grado_erosion, tipo_movimiento, anegamiento,\n" +
                     "frecuencia, duracion, pedregosidad, afloramiento, fragmento_suelo, drenaje_natural, profundidad_efectiva,\n" +
-                    "epidedones, endopedones, estado\n" +
+                    "epidedones, endopedones, estado, paisaje, simbolo\n" +
                     "FROM form_comprobacion\n" +
                     "WHERE id = ?", new String[] {String.valueOf(id)});
             if (cur.moveToLast()) {
@@ -672,6 +680,8 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                 object.setEpidedones(cur.getInt(21));
                 object.setEndopedones(cur.getInt(22));
                 object.setEstado(cur.getInt(23));
+                object.setPaisaje(cur.getString(24));
+                object.setSimbolo(cur.getString(25));
             }
             cur.close();
         } catch (SQLException e) {
@@ -690,7 +700,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                     "nombre_sitio, epoca_climatica, dias_lluvia, gradiente, pendiente_longitud, pendiente_forma,\n" +
                     "clase_erosion, tipo_erosion, grado_erosion, clase_movimiento, tipo_movimiento, frecuencia_movimiento, anegamiento,\n" +
                     "frecuencia, duracion, pedregosidad, afloramiento, vegetacion_natural, grupo_uso, subgrupo_uso,\n" +
-                    "nombre_cultivo, observaciones, estado\n" +
+                    "nombre_cultivo, observaciones, estado, paisaje, simbolo\n" +
                     "FROM form_nota_campo\n" +
                     "WHERE Date(fecha_hora) = ?\n" +
                     "ORDER BY id", new String[] {fecha});
@@ -726,6 +736,8 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                 row.setNombreCultivo(cur.getString(27));
                 row.setObservaciones(cur.getString(28));
                 row.setEstado(cur.getInt(29));
+                row.setPaisaje(cur.getString(24));
+                row.setSimbolo(cur.getString(25));
                 list.add(row);
             }
             cur.close();
@@ -745,7 +757,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                     "nombre_sitio, epoca_climatica, dias_lluvia, gradiente, pendiente_longitud, pendiente_forma,\n" +
                     "clase_erosion, tipo_erosion, grado_erosion, clase_movimiento, tipo_movimiento, frecuencia_movimiento, anegamiento,\n" +
                     "frecuencia, duracion, pedregosidad, afloramiento, vegetacion_natural, grupo_uso, subgrupo_uso,\n" +
-                    "nombre_cultivo, observaciones, estado\n" +
+                    "nombre_cultivo, observaciones, estado, paisaje, simbolo\n" +
                     "FROM form_nota_campo\n" +
                     "ORDER BY id", new String[] {});
             while (cur.moveToNext()) {
@@ -780,6 +792,8 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                 row.setNombreCultivo(cur.getString(27));
                 row.setObservaciones(cur.getString(28));
                 row.setEstado(cur.getInt(29));
+                row.setPaisaje(cur.getString(30));
+                row.setSimbolo(cur.getString(31));
                 list.add(row);
             }
             cur.close();
@@ -799,7 +813,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                     "nombre_sitio, epoca_climatica, dias_lluvia, gradiente, pendiente_longitud, pendiente_forma,\n" +
                     "clase_erosion, tipo_erosion, grado_erosion, clase_movimiento, tipo_movimiento, frecuencia_movimiento, anegamiento,\n" +
                     "frecuencia, duracion, pedregosidad, afloramiento, vegetacion_natural, grupo_uso, subgrupo_uso,\n" +
-                    "nombre_cultivo, observaciones, estado\n" +
+                    "nombre_cultivo, observaciones, estado, paisaje, simbolo\n" +
                     "FROM form_nota_campo\n" +
                     "WHERE id = ?", new String[] {String.valueOf(id)});
             if (cur.moveToLast()) {
@@ -833,6 +847,8 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                 object.setNombreCultivo(cur.getString(27));
                 object.setObservaciones(cur.getString(28));
                 object.setEstado(cur.getInt(29));
+                object.setPaisaje(cur.getString(30));
+                object.setSimbolo(cur.getString(31));
             }
             cur.close();
         } catch (SQLException e) {
