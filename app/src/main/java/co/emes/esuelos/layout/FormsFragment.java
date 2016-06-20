@@ -14,7 +14,7 @@ import co.emes.esuelos.R;
 
 import co.emes.esuelos.forms.CustomDataSource;
 import co.emes.esuelos.forms.CustomForm;
-import co.emes.esuelos.forms.CustomFormArrayAdapter;
+import co.emes.esuelos.adapter.CustomFormArrayAdapter;
 
 /**
  * Created by anupamchugh on 10/12/15.

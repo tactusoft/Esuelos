@@ -507,6 +507,20 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         return id;
     }
 
+    public Integer deleteFormComprobacionHorizonte(Integer idFormComprobacion) {
+        Integer id = null;
+        try {
+            openDataBase();
+            id = myDataBase.delete("form_comprobacion_horizonte",
+                    "id_form_comprobacion = " + idFormComprobacion, null);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            close();
+        }
+        return id;
+    }
+
     public Integer deleteFormComprobacionHorizonteOptizonteOptional(Integer idFormComprHoriz) {
         return deleteFormComprobacionHorizonteOpt("form_comprobacion_opcional", idFormComprHoriz);
     }
@@ -623,6 +637,51 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         return list;
     }
 
+    public FormComprobacion getFormComprobacion(Integer id) {
+        FormComprobacion object = new FormComprobacion();
+        try {
+            openDataBase();
+            Cursor cur = myDataBase.rawQuery("SELECT id, nro_observacion, reconocedor, fecha_hora, longitud, latitud, altitud,\n" +
+                    "nombre_sitio, epoca_climatica, dias_lluvia, pendiente_longitud, grado_erosion, tipo_movimiento, anegamiento,\n" +
+                    "frecuencia, duracion, pedregosidad, afloramiento, fragmento_suelo, drenaje_natural, profundidad_efectiva,\n" +
+                    "epidedones, endopedones, estado\n" +
+                    "FROM form_comprobacion\n" +
+                    "WHERE id = ?", new String[] {String.valueOf(id)});
+            if (cur.moveToLast()) {
+                object.setId(cur.getInt(0));
+                object.setNroObservacion(cur.getString(1));
+                object.setReconocedor(cur.getInt(2));
+                object.setFechaHora(cur.getString(3));
+                object.setLongitud(cur.getDouble(4));
+                object.setLatitud(cur.getDouble(5));
+                object.setAltitud(cur.getDouble(6));
+                object.setNombreSitio(cur.getString(7));
+                object.setEpocaClimatica(cur.getInt(8));
+                object.setDiasLluvia(cur.getString(9));
+                object.setPendienteLongitud(cur.getInt(10));
+                object.setGradoErosion(cur.getInt(11));
+                object.setTipoMovimiento(cur.getInt(12));
+                object.setAnegamiento(cur.getInt(13));
+                object.setFrecuencia(cur.getInt(14));
+                object.setDuracion(cur.getInt(15));
+                object.setPedregosidad(cur.getInt(16));
+                object.setAfloramiento(cur.getInt(17));
+                object.setFragmentoSuelo(cur.getInt(18));
+                object.setDrenajeNatural(cur.getInt(19));
+                object.setProfundidadEfectiva(cur.getInt(20));
+                object.setEpidedones(cur.getInt(21));
+                object.setEndopedones(cur.getInt(22));
+                object.setEstado(cur.getInt(23));
+            }
+            cur.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            close();
+        }
+        return object;
+    }
+
     public List<FormNotaCampo> getListFormNotaCampo(String fecha) {
         List<FormNotaCampo> list = new LinkedList<>();
         try {
@@ -730,6 +789,58 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             close();
         }
         return list;
+    }
+
+    public FormNotaCampo getFormNotaCampo(Integer id) {
+        FormNotaCampo object = new FormNotaCampo();
+        try {
+            openDataBase();
+            Cursor cur = myDataBase.rawQuery("SELECT id, nro_observacion, reconocedor, fecha_hora, longitud, latitud, altitud,\n" +
+                    "nombre_sitio, epoca_climatica, dias_lluvia, gradiente, pendiente_longitud, pendiente_forma,\n" +
+                    "clase_erosion, tipo_erosion, grado_erosion, clase_movimiento, tipo_movimiento, frecuencia_movimiento, anegamiento,\n" +
+                    "frecuencia, duracion, pedregosidad, afloramiento, vegetacion_natural, grupo_uso, subgrupo_uso,\n" +
+                    "nombre_cultivo, observaciones, estado\n" +
+                    "FROM form_nota_campo\n" +
+                    "WHERE id = ?", new String[] {String.valueOf(id)});
+            if (cur.moveToLast()) {
+                object.setId(cur.getInt(0));
+                object.setNroObservacion(cur.getString(1));
+                object.setReconocedor(cur.getInt(2));
+                object.setFechaHora(cur.getString(3));
+                object.setLongitud(cur.getDouble(4));
+                object.setLatitud(cur.getDouble(5));
+                object.setAltitud(cur.getDouble(6));
+                object.setNombreSitio(cur.getString(7));
+                object.setEpocaClimatica(cur.getInt(8));
+                object.setDiasLluvia(cur.getString(9));
+                object.setGradiente(cur.getInt(10));
+                object.setPendienteLongitud(cur.getInt(11));
+                object.setPendienteForma(cur.getInt(12));
+                object.setClaseErosion(cur.getInt(13));
+                object.setTipoErosion(cur.getInt(14));
+                object.setGradoErosion(cur.getInt(15));
+                object.setClaseMovimiento(cur.getInt(16));
+                object.setTipoMovimiento(cur.getInt(17));
+                object.setFrecuenciaMovimiento(cur.getInt(18));
+                object.setAnegamiento(cur.getInt(19));
+                object.setFrecuencia(cur.getInt(20));
+                object.setDuracion(cur.getInt(21));
+                object.setPedregosidad(cur.getInt(22));
+                object.setAfloramiento(cur.getInt(23));
+                object.setVegetacionNatural(cur.getString(24));
+                object.setGrupoUso(cur.getInt(25));
+                object.setSubgrupoUso(cur.getInt(26));
+                object.setNombreCultivo(cur.getString(27));
+                object.setObservaciones(cur.getString(28));
+                object.setEstado(cur.getInt(29));
+            }
+            cur.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            close();
+        }
+        return object;
     }
 
     public FormComprobacionFoto getFormComprobacionFoto(Integer idFormComprobacion) {

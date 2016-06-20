@@ -7,6 +7,7 @@ import java.io.Serializable;
  */
 public class FormTodos implements Serializable {
 
+    Long id;
     String nroObservacion;
     String fechaHora;
     Integer estado;
@@ -16,6 +17,14 @@ public class FormTodos implements Serializable {
     Double latitud;
 
     public FormTodos() {
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getNroObservacion() {

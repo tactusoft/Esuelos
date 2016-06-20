@@ -12,7 +12,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import co.emes.esuelos.R;
-import co.emes.esuelos.forms.FormTodosArrayAdapter;
+import co.emes.esuelos.adapter.ArrayAdapterFormTodos;
 import co.emes.esuelos.main.MainActivity;
 import co.emes.esuelos.model.FormComprobacion;
 import co.emes.esuelos.model.FormNotaCampo;
@@ -76,7 +76,7 @@ public class FragmentSummaryDetail extends Fragment {
             formTodosList.add(formTodos);
         }
 
-        FormTodosArrayAdapter testingAdapter = new FormTodosArrayAdapter(getActivity(), getFragmentManager(),
+        ArrayAdapterFormTodos testingAdapter = new ArrayAdapterFormTodos(getActivity(), getFragmentManager(),
                 R.layout.list_skyline_item, formTodosList);
         listViewTesting.setAdapter(testingAdapter);
 

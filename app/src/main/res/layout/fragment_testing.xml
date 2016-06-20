@@ -616,7 +616,8 @@
                                 android:textColor="@color/principal_font"
                                 android:inputType="number"
                                 android:layout_marginLeft="20dp"
-                                android:layout_marginRight="20dp"/>
+                                android:layout_marginRight="20dp"
+                                android:maxLength="3"/>
 
                             <TextView
                                 android:layout_width="match_parent"
@@ -642,7 +643,7 @@
                                 android:textColor="@color/colorPrimary"
                                 android:layout_marginLeft="20dp"
                                 android:layout_marginRight="20dp"
-                                android:layout_marginTop="20dp"/>
+                                android:layout_marginTop="20dp" />
 
                             <EditText
                                 android:id="@+id/input_texture_percent"
@@ -651,7 +652,8 @@
                                 android:textColor="@color/principal_font"
                                 android:inputType="number"
                                 android:layout_marginLeft="20dp"
-                                android:layout_marginRight="20dp"/>
+                                android:layout_marginRight="20dp"
+                                android:maxLength="3"/>
 
                             <TextView
                                 android:id="@+id/label_texture"

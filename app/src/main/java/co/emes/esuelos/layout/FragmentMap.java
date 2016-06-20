@@ -1,7 +1,6 @@
 package co.emes.esuelos.layout;
 
 import android.app.AlertDialog;
-import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -15,12 +14,13 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ImageView;
+import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import co.emes.esuelos.R;
@@ -28,6 +28,7 @@ import co.emes.esuelos.R;
 import com.esri.android.map.FeatureLayer;
 import com.esri.android.map.GraphicsLayer;
 import com.esri.android.map.LocationDisplayManager;
+import com.esri.android.map.MapOnTouchListener;
 import com.esri.android.map.MapView;
 import com.esri.android.map.ags.ArcGISLocalTiledLayer;
 import com.esri.android.map.event.OnLongPressListener;
@@ -46,7 +47,6 @@ import com.esri.core.tasks.query.QueryParameters;
 
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -82,16 +82,16 @@ public class FragmentMap extends Fragment {
     final SpatialReference wm = SpatialReference.create(102100);
     final SpatialReference egs = SpatialReference.create(4326);
 
-    private static final int PICKFILE_RESULT_CODE = 1;
-
     LocationManager manager;
     Point mLocation = null;
     Point tempPoint;
     Boolean localMap = false;
 
     AlertDialog.Builder alertDialog;
+    DataBaseHelper dataBaseHelper;
 
     public FragmentMap() {
+        dataBaseHelper = new DataBaseHelper(getActivity());
     }
 
     @Override
@@ -150,6 +150,45 @@ public class FragmentMap extends Fragment {
             localMap = true;
         }
 
+        mMapView.setOnSingleTapListener(new OnSingleTapListener() {
+            @Override
+            public void onSingleTap(float x, float y) {
+                int[] graphicIDs = graphicsLayerAll.getGraphicIDs(x, y, 15, 1);
+                graphicsLayerAll.clearSelection();
+                graphicsLayerAll.setSelectedGraphics(graphicIDs, true);
+                if(graphicIDs.length > 0) {
+                    String formType = null;
+                    String noObservacion = null;
+                    String fecha = null;
+                    String coords = null;
+                    Graphic graphic = graphicsLayerAll.getGraphic(graphicIDs[0]);
+                    Map<String, Object> attr = graphic.getAttributes();
+                    Long id = (Long)attr.get("id");
+                    String type = (String)attr.get("type");
+                    switch (type) {
+                        case "N":
+                            FormNotaCampo formNotaCampo = dataBaseHelper.getFormNotaCampo(id.intValue());
+                            formType = "Nota de Campo";
+                            noObservacion = formNotaCampo.getNroObservacion();
+                            fecha = formNotaCampo.getFechaHora();
+                            coords = formNotaCampo.getLongitud() + " " + formNotaCampo.getLatitud();
+                            break;
+                        case "D":
+                            break;
+                        case "C":
+                            FormComprobacion formComprobacion = dataBaseHelper.getFormComprobacion(id.intValue());
+                            formType = "Comprobación";
+                            noObservacion = formComprobacion.getNroObservacion();
+                            fecha = formComprobacion.getFechaHora();
+                            coords = formComprobacion.getLongitud() + " " + formComprobacion.getLatitud();
+                            break;
+                    }
+
+                    showMapFormDialog(formType, noObservacion, fecha, coords);
+                }
+            }
+        });
+
         mMapView.setOnLongPressListener(new OnLongPressListener() {
             private static final long serialVersionUID = 1L;
             public boolean onLongPress(final float x, final float y) {
@@ -169,15 +208,29 @@ public class FragmentMap extends Fragment {
             }
         });
 
-        mMapView.setOnSingleTapListener(new OnSingleTapListener() {
+        mMapView.setOnTouchListener(new MapOnTouchListener(getActivity(), mMapView){
             @Override
-            public void onSingleTap(float x, float y) {
-                int[] graphicIDs = graphicsLayerAll.getGraphicIDs(x, y, 15, 1);
+            public boolean onDoubleTap(MotionEvent point) {
+                int[] graphicIDs = graphicsLayerAll.getGraphicIDs(point.getX(), point.getY(), 15, 1);
                 graphicsLayerAll.clearSelection();
                 graphicsLayerAll.setSelectedGraphics(graphicIDs, true);
                 if(graphicIDs.length > 0) {
-
+                    Graphic graphic = graphicsLayerAll.getGraphic(graphicIDs[0]);
+                    Map<String, Object> attr = graphic.getAttributes();
+                    Long id = (Long)attr.get("id");
+                    String type = (String)attr.get("type");
+                    switch (type) {
+                        case "N":
+                            showFragmentFieldNote(id.intValue());
+                            break;
+                        case "D":
+                            break;
+                        case "C":
+                            showFragmentTesting(id.intValue());
+                            break;
+                    }
                 }
+                return false;
             }
         });
 
@@ -332,7 +385,6 @@ public class FragmentMap extends Fragment {
                             Singleton.getInstance().setX(tempPoint.getX());
                             Singleton.getInstance().setY(tempPoint.getY());
                             int selectedPosition = ((AlertDialog) dialog).getListView().getCheckedItemPosition();
-                            DataBaseHelper dataBaseHelper = new DataBaseHelper(getActivity());
                             String fechaHora = Utils.dateToString(new Date(), "yyyy-MM-dd HH:mm:ss");
                             String nroObservacion;
                             Map<String, Object> attributes;
@@ -424,6 +476,18 @@ public class FragmentMap extends Fragment {
                 FragmentTesting.TAG);
     }
 
+    private void showFragmentTesting(Integer id){
+        final FormComprobacion formComprobacion = dataBaseHelper.getFormComprobacion(id);
+        FragmentTesting fragmentTesting =  FragmentTesting.newInstance(formComprobacion);
+        fragmentTesting.show(getFragmentManager(), FragmentTesting.TAG);
+    }
+
+    private void showFragmentFieldNote(Integer id){
+        final FormNotaCampo formNotaCampo = dataBaseHelper.getFormNotaCampo(id);
+        FragmentFieldNote fragmentFieldNote =  FragmentFieldNote.newInstance(formNotaCampo);
+        fragmentFieldNote.show(getFragmentManager(), FragmentTesting.TAG);
+    }
+
     private class MyLocationListener implements LocationListener {
 
         public MyLocationListener() {
@@ -466,9 +530,7 @@ public class FragmentMap extends Fragment {
 
     CallbackListener<FeatureResult> callback = new CallbackListener<FeatureResult>() {
         public void onCallback(FeatureResult fSet) {
-            Iterator itr = fSet.iterator();
-            while(itr.hasNext()) {
-                Object element = itr.next();
+            for (Object element : fSet) {
                 if (element instanceof Feature) {
                     Feature feature = (Feature) element;
                     Map<String, Object> map = feature.getAttributes();
@@ -492,7 +554,8 @@ public class FragmentMap extends Fragment {
         DataBaseHelper dataBaseHelper = new DataBaseHelper(getActivity());
         List<FormComprobacion> testingList = dataBaseHelper.getListFormComprobacion();
         for(FormComprobacion form:testingList){
-            FormTodos formTodos =  new FormTodos();
+            FormTodos formTodos = new FormTodos();
+            formTodos.setId(Long.valueOf(form.getId()));
             formTodos.setNroObservacion(form.getNroObservacion());
             formTodos.setFechaHora(form.getFechaHora());
             formTodos.setTipo("Comprobación");
@@ -506,6 +569,7 @@ public class FragmentMap extends Fragment {
         List<FormNotaCampo> fieldNoteList = dataBaseHelper.getListFormNotaCampo();
         for(FormNotaCampo form:fieldNoteList){
             FormTodos formTodos =  new FormTodos();
+            formTodos.setId(Long.valueOf(form.getId()));
             formTodos.setNroObservacion(form.getNroObservacion());
             formTodos.setFechaHora(form.getFechaHora());
             formTodos.setTipo("Nota de Campo");
@@ -517,12 +581,52 @@ public class FragmentMap extends Fragment {
         }
 
         graphicsLayerAll.removeAll();
+        Map<String, Object> attributes;
         for(FormTodos form:formTodosList) {
             Point loc = new Point(form.getLongitud().floatValue(), form.getLatitud().floatValue());
             Point newPoint = (Point) GeometryEngine.project(loc, egs, wm);
+            attributes = new HashMap<>();
+            attributes.put("id",form.getId());
+            attributes.put("type",form.getTipo().equals("Comprobación")?"C":"N");
             graphicsLayerAll.addGraphic(new Graphic(newPoint, new SimpleMarkerSymbol(Color.RED,25,
-                    SimpleMarkerSymbol.STYLE.CIRCLE)));
+                    SimpleMarkerSymbol.STYLE.CIRCLE), attributes));
         }
+    }
+
+    public void showMapFormDialog(String type, String noObservacion, String fecha, String coords) {
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+        final View dialogView = inflater.inflate(R.layout.dialog_map_form, null);
+        dialogBuilder.setView(dialogView);
+
+        final TextView inputFormType = (TextView) dialogView.findViewById(R.id.input_form_type);
+        final TextView inputNoObservacion = (TextView) dialogView.findViewById(R.id.input_no_observacion);
+        final TextView inputFecha = (TextView) dialogView.findViewById(R.id.input_fecha);
+        final TextView inputcoords = (TextView) dialogView.findViewById(R.id.input_coords);
+
+        inputFormType.setText(type);
+        inputNoObservacion.setText(noObservacion);
+        inputFecha.setText(fecha);
+        inputcoords.setText(coords);
+
+        dialogBuilder.setTitle(getResources().getString(R.string.app_name));
+        dialogBuilder.setPositiveButton(getResources().getString(R.string.btn_ok), new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                dialog.dismiss();
+            }
+        });
+        AlertDialog dialog = dialogBuilder.create();
+
+        dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(final DialogInterface dialog) {
+                Button positiveButton = ((AlertDialog)dialog).getButton(DialogInterface.BUTTON_POSITIVE);
+                positiveButton.setTransformationMethod(null);
+                positiveButton.invalidate();
+            }
+        });
+
+        dialog.show();
     }
 
 }

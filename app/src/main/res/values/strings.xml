@@ -53,6 +53,8 @@
     <string name="tst_title">Formulario de Comprobación</string>
     <string name="fdn_title">Formulario de Nota de Campo</string>
 
+    <string name="form_type">Tipo de Formulario</string>
+
     <string name="tst_general">General</string>
     <string name="tst_externa">Externa</string>
     <string name="tst_profile">Perfil</string>
@@ -100,6 +102,7 @@
     <string name="tst_input_effective_depth">Profundidad efectiva *</string>
     <string name="tst_epidedones">Epidedones *</string>
     <string name="tst_endopedones">Endopedones *</string>
+    <string name="tst_msg_required">Los campos marcados con * son obligatorios</string>
 
     <string name="fnd_other">Otros</string>
     <string name="fnd_gradiente">Gradiente *</string>

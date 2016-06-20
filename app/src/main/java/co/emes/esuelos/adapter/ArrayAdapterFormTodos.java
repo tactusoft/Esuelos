@@ -1,4 +1,4 @@
-package co.emes.esuelos.forms;
+package co.emes.esuelos.adapter;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -27,13 +27,13 @@ import co.emes.esuelos.util.Utils;
 /**
  * Created by csarmiento on 25/04/16.
  */
-public class FormTodosArrayAdapter extends ArrayAdapter<FormTodos> {
+public class ArrayAdapterFormTodos extends ArrayAdapter<FormTodos> {
     Context context;
     int layoutResourceId;
     List<FormTodos> data = new LinkedList<>();
     FragmentManager fragmentManager;
 
-    public FormTodosArrayAdapter(Context context, FragmentManager fragmentManager,
+    public ArrayAdapterFormTodos(Context context, FragmentManager fragmentManager,
                                  int layoutResourceId, List<FormTodos> data) {
         super(context, layoutResourceId, data);
         this.layoutResourceId = layoutResourceId;

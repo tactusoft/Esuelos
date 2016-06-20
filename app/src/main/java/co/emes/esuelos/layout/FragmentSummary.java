@@ -7,15 +7,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
-import java.util.LinkedList;
 import java.util.List;
 
 import co.emes.esuelos.R;
-import co.emes.esuelos.forms.ArrayAdapterSummary;
-import co.emes.esuelos.forms.FormTodosArrayAdapter;
-import co.emes.esuelos.model.FormComprobacion;
-import co.emes.esuelos.model.FormNotaCampo;
-import co.emes.esuelos.model.FormTodos;
+import co.emes.esuelos.adapter.ArrayAdapterSummary;
 import co.emes.esuelos.util.DataBaseHelper;
 
 /**

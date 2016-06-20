@@ -14,8 +14,11 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.widget.NestedScrollView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -120,6 +123,10 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
 
     Button btnPreviewTop;
     Button btnPreview;
+    Button btnOptionalTop;
+    Button btnFleckedTop;
+    Button btnOptional;
+    Button btnFlecked;
 
     Bitmap foto;
     String nroObservacion;
@@ -259,6 +266,7 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
         return f;
     }
 
+    @NonNull
     @Override
     public Dialog onCreateDialog(final Bundle savedInstanceState) {
         // the content
@@ -387,13 +395,13 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
         btnTakePhoto.setTransformationMethod(null);
         btnSelectPhoto.setTransformationMethod(null);
 
-        Button btnOptionalTop = (Button) rootView.findViewById(R.id.btn_optional_top);
-        Button btnFleckedTop = (Button) rootView.findViewById(R.id.btn_add_flecked_top);
+        btnOptionalTop = (Button) rootView.findViewById(R.id.btn_optional_top);
+        btnFleckedTop = (Button) rootView.findViewById(R.id.btn_add_flecked_top);
         Button btnNextTop = (Button) rootView.findViewById(R.id.btn_next_top);
         btnPreviewTop = (Button) rootView.findViewById(R.id.btn_preview_top);
 
-        Button btnOptional = (Button) rootView.findViewById(R.id.btn_optional);
-        Button btnFlecked = (Button) rootView.findViewById(R.id.btn_add_flecked);
+        btnOptional = (Button) rootView.findViewById(R.id.btn_optional);
+        btnFlecked = (Button) rootView.findViewById(R.id.btn_add_flecked);
         Button btnNext = (Button) rootView.findViewById(R.id.btn_next);
         btnPreview = (Button) rootView.findViewById(R.id.btn_preview);
 
@@ -401,12 +409,16 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
         btnFleckedTop.setTransformationMethod(null);
         btnNextTop.setTransformationMethod(null);
         btnPreviewTop.setTransformationMethod(null);
+        btnOptionalTop.setEnabled(false);
+        btnFleckedTop.setEnabled(false);
         btnPreviewTop.setEnabled(false);
 
         btnOptional.setTransformationMethod(null);
         btnFlecked.setTransformationMethod(null);
         btnNext.setTransformationMethod(null);
         btnPreview.setTransformationMethod(null);
+        btnOptional.setEnabled(false);
+        btnFlecked.setEnabled(false);
         btnPreview.setEnabled(false);
 
         linearLayoutOpt = (LinearLayout) rootView.findViewById(R.id.lyr_optional);
@@ -494,32 +506,114 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
         btnOptionalTop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                addOptionalView(SkylineType.OPTIONAL, null, null, null, null);
-                bottomScrollView();
+                boolean optionalFlag = validateOptional();
+                if (optionalFlag) {
+                    addOptionalView(SkylineType.OPTIONAL, null, null, null, null);
+                    bottomScrollView();
+                } else {
+                    Toast.makeText(getActivity(), R.string.tst_msg_required, Toast.LENGTH_LONG).show();
+                }
             }
         });
 
         btnOptional.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                addOptionalView(SkylineType.OPTIONAL, null, null, null, null);
-                bottomScrollView();
+                boolean optionalFlag = validateOptional();
+                if (optionalFlag) {
+                    addOptionalView(SkylineType.OPTIONAL, null, null, null, null);
+                    bottomScrollView();
+                } else {
+                    Toast.makeText(getActivity(), R.string.tst_msg_required, Toast.LENGTH_LONG).show();
+                }
             }
         });
 
         btnFleckedTop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                addOptionalView(SkylineType.FLECKED, null, null, null, null);
-                bottomScrollView();
+                boolean fleckedFlag = validateFlecked();
+                if (fleckedFlag) {
+                    addOptionalView(SkylineType.FLECKED, null, null, null, null);
+                    bottomScrollView();
+                } else {
+                    Toast.makeText(getActivity(), R.string.tst_msg_required, Toast.LENGTH_LONG).show();
+                }
             }
         });
 
         btnFlecked.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                addOptionalView(SkylineType.FLECKED, null, null, null, null);
-                bottomScrollView();
+                boolean fleckedFlag = validateFlecked();
+                if (fleckedFlag) {
+                    addOptionalView(SkylineType.FLECKED, null, null, null, null);
+                    bottomScrollView();
+                } else {
+                    Toast.makeText(getActivity(), R.string.tst_msg_required, Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+
+        inputTexturePercent.setText("100");
+        inputTexturePercent.addTextChangedListener(new TextWatcher() {
+            public void afterTextChanged(Editable s) {
+                if(s != null && !s.toString().isEmpty()) {
+                    String value = s.toString();
+                    Integer intValue = Integer.valueOf(value);
+                    if (intValue > 100) {
+                        inputTexturePercent.setText(null);
+                        btnOptionalTop.setEnabled(false);
+                        btnOptional.setEnabled(false);
+                        removeAllOptional();
+                    } else if (intValue == 100) {
+                        btnOptionalTop.setEnabled(false);
+                        btnOptional.setEnabled(false);
+                        removeAllOptional();
+                    } else {
+                        btnOptionalTop.setEnabled(true);
+                        btnOptional.setEnabled(true);
+                    }
+                }
+            }
+
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+        });
+
+        inputColorPercent.setText("100");
+        inputColorPercent.addTextChangedListener(new TextWatcher() {
+            public void afterTextChanged(Editable s) {
+                if(s != null && !s.toString().isEmpty()) {
+                    String value = s.toString();
+                    Integer intValue = Integer.valueOf(value);
+                    if (intValue > 100) {
+                        inputColorPercent.setText(null);
+                        btnFleckedTop.setEnabled(false);
+                        btnFlecked.setEnabled(false);
+                        removeAllFlecked();
+                    } else if (intValue == 100) {
+                        btnFleckedTop.setEnabled(false);
+                        btnFlecked.setEnabled(false);
+                        removeAllFlecked();
+                    } else {
+                        btnFleckedTop.setEnabled(true);
+                        btnFlecked.setEnabled(true);
+                    }
+                }
+            }
+
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
             }
         });
 
@@ -1111,29 +1205,8 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
                 return;
             }
 
-            List<FormComprobacionHorizonteOpt> listFormComprobacionHorizonteOpt = validateOptional(SkylineType.OPTIONAL, null);
-            boolean optionalFlag = true;
-            if(listFormComprobacionHorizonteOpt.size() > 0){
-                for(FormComprobacionHorizonteOpt row:listFormComprobacionHorizonteOpt){
-                    if(row.getColorHue() == null || row.getColorChroma() == null
-                            || row.getColorValue() == null || row.getColorPorcentaje() ==null) {
-                        optionalFlag = false;
-                        break;
-                    }
-                }
-            }
-
-            List<FormComprobacionHorizonteOpt> listFormComprobacionHorizonteFlecked = validateOptional(SkylineType.FLECKED, null);
-            boolean fleckedFlag = true;
-            if(listFormComprobacionHorizonteFlecked.size() > 0){
-                for(FormComprobacionHorizonteOpt row:listFormComprobacionHorizonteFlecked){
-                    if(row.getColorHue() == null || row.getColorChroma() == null
-                            || row.getColorValue() == null || row.getColorPorcentaje() ==null) {
-                        fleckedFlag = false;
-                        break;
-                    }
-                }
-            }
+            boolean optionalFlag = validateOptional();
+            boolean fleckedFlag = validateFlecked();
 
             if(optionalFlag && fleckedFlag) {
                 btnPreview.setEnabled(true);
@@ -1248,9 +1321,9 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
         inputColorHue.setSelection(0);
         inputColorValue.setSelection(0);
         inputColorChroma.setSelection(0);
-        inputColorPercent.setText(null);
+        inputColorPercent.setText("100");
         inputMaterialType.setSelection(0);
-        inputTexturePercent.setText(null);
+        inputTexturePercent.setText("100");
         inputSkylineType.setSelection(0);
         inputHorizonteCaracterisitica.setSelection(0);
 
@@ -1439,7 +1512,7 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
         }
 
         labelHorizonteNroOpt.setText(String.format(getResources().getString(type), indexType));
-        final Button btnDeleteOptional = (Button) rootView.findViewById(R.id.btn_delete_optional);
+        Button btnDeleteOptional = (Button) rootView.findViewById(R.id.btn_delete_optional);
         btnDeleteOptional.setTransformationMethod(null);
         btnDeleteOptional.setTag(skylineType+"|"+indexType);
         btnDeleteOptional.setOnClickListener(new View.OnClickListener() {
@@ -1713,6 +1786,7 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
                 DBBitmapUtility.saveImage(getActivity(), foto, nameFile);
                 formComprobacionFoto.setFoto(nameFile);
                 dataBaseHelper.insertFormComprobacionFoto(formComprobacionFoto);
+                dataBaseHelper.deleteFormComprobacionHorizonte(result.intValue());
 
                 int i = 0;
                 for(FormComprobacionHorizonte row:formComprobacionHorizonteList){
@@ -1727,7 +1801,8 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
                         if(optionalEntity.getIndex() == i) {
                             viewListOptional = optionalEntity.getViewListOptional();
                             List<FormComprobacionHorizonteOpt>
-                                    listFormComprobacionHorizonteOptional = validateOptional(SkylineType.OPTIONAL, id.intValue());
+                                    listFormComprobacionHorizonteOptional = validateOptional(SkylineType.OPTIONAL,
+                                    id.intValue());
                             for(FormComprobacionHorizonteOpt row2:listFormComprobacionHorizonteOptional){
                                 Long id2 = dataBaseHelper.insertFormComprobacionHorizonteOptional(row2);
                                 row2.setId(id2.intValue());
@@ -1751,6 +1826,52 @@ public class FragmentTesting extends DialogFragment implements View.OnClickListe
 
             return null;
         }
+    }
+
+    private void removeAllOptional() {
+        for(View row:viewListOptional) {
+            linearLayoutOpt.removeView(row);
+        }
+        viewListOptional = new LinkedList<>();
+        indexOptional=0;
+    }
+
+    private void removeAllFlecked() {
+        for(View row:viewListFlecked) {
+            linearLayoutOpt.removeView(row);
+        }
+        viewListFlecked = new LinkedList<>();
+        indexFlecked=0;
+    }
+
+    public boolean validateOptional() {
+        List<FormComprobacionHorizonteOpt> listFormComprobacionHorizonteOpt = validateOptional(SkylineType.OPTIONAL, null);
+        boolean optionalFlag = true;
+        if (listFormComprobacionHorizonteOpt.size() > 0) {
+            for (FormComprobacionHorizonteOpt row : listFormComprobacionHorizonteOpt) {
+                if (row.getColorHue() == null || row.getColorChroma() == null
+                        || row.getColorValue() == null || row.getColorPorcentaje() == null) {
+                    optionalFlag = false;
+                    break;
+                }
+            }
+        }
+        return optionalFlag;
+    }
+
+    public boolean validateFlecked() {
+        List<FormComprobacionHorizonteOpt> listFormComprobacionHorizonteFlecked = validateOptional(SkylineType.FLECKED, null);
+        boolean fleckedFlag = true;
+        if(listFormComprobacionHorizonteFlecked.size() > 0){
+            for(FormComprobacionHorizonteOpt row:listFormComprobacionHorizonteFlecked){
+                if(row.getColorHue() == null || row.getColorChroma() == null
+                        || row.getColorValue() == null || row.getColorPorcentaje() ==null) {
+                    fleckedFlag = false;
+                    break;
+                }
+            }
+        }
+        return fleckedFlag;
     }
 
 }
