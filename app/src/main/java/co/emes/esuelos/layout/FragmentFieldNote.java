@@ -13,7 +13,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -190,7 +189,6 @@ public class FragmentFieldNote extends DialogFragment implements View.OnClickLis
         return f;
     }
 
-    @NonNull
     @Override
     public Dialog onCreateDialog(final Bundle savedInstanceState) {
         // the content

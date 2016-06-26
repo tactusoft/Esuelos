@@ -270,16 +270,6 @@ public class MainActivity extends AppCompatActivity {
         new FileSelector(MainActivity.this, FileOperation.SAVE, mSaveFileListener, mFileFilter).show();
     }
 
-    public void loadTPK() {
-        final String[] mFileFilter = { ".tpk" };
-        new FileSelector(MainActivity.this, FileOperation.LOAD, mLoadFileListener, mFileFilter).show();
-    }
-
-    public void loadGEO() {
-        final String[] mFileFilter = { ".geodatabase" };
-        new FileSelector(MainActivity.this, FileOperation.LOAD, mLoadFileListener, mFileFilter).show();
-    }
-
     private void setupAlertBuilder(){
         alertDialog = new AlertDialog.Builder(
                 MainActivity.this);
@@ -295,39 +285,6 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
     }
-
-    OnHandleFileListener mLoadFileListener = new OnHandleFileListener() {
-        @Override
-        public void handleFile(final String filePath) {
-            File file = new File(filePath);
-            if (!Utils.isLocalTiledLayer(file) && !Utils.isGeodatabase(file) ) {
-                alertDialog.show();
-            } else {
-                boolean isTPK = false;
-                if (Utils.isLocalTiledLayer(file)) {
-                    isTPK = true;
-                }
-                try {
-                    TPKHelper tpkHelper = new TPKHelper(getApplicationContext(), file);
-                    tpkHelper.createTPK();
-                    research.setStartDate(Utils.dateToString(new Date(), "yyyy-MM-dd HH:mm:ss"));
-                    research.setEndDate(Utils.dateToString(new Date(), "yyyy-MM-dd HH:mm:ss"));
-                    research.setStatus(1);
-                    research.setUser("carlossarmientor@gmail.com");
-                    if(isTPK) {
-                        research.setTpkFilePath(tpkHelper.getFilePath());
-                    } else {
-                        research.setGeoFilePath(tpkHelper.getFilePath());
-                    }
-                    dataBaseHelper.insertResearch(research);
-                    Singleton.getInstance().setResearch(research);
-                    Toast.makeText(getApplicationContext(), "Archivo cargado exitosamente!", Toast.LENGTH_LONG).show();
-                }catch(Exception ex){
-                    ex.printStackTrace();;
-                }
-            }
-        }
-    };
 
     OnHandleFileListener mSaveFileListener = new OnHandleFileListener() {
         @Override

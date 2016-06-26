@@ -33,7 +33,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     //The Android"s default system path of your application database.
     public static String DB_PATH =  "/data/data/co.emes.esuelos/databases/";
     public static String DB_NAME = "esuelosdb.sqlite";
-    public static String TPK_NAME = "Base_Cartografica500k_v2.tpk";
+    public static String TPK_NAME = "Colombia.tpk";
 
     private SQLiteDatabase myDataBase;
     private final Context myContext;
