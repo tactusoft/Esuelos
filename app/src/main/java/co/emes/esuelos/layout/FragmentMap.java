@@ -135,12 +135,9 @@ public class FragmentMap extends Fragment {
 
         basemapComponent = new BasemapComponent(mMapView);
         localTiledLayer = basemapComponent.loadLocalTileLayer(DataBaseHelper.DB_PATH + DataBaseHelper.TPK_NAME);
-        mMapView.setExtent(localTiledLayer.getFullExtent(), 0, false);
 
         if(Singleton.getInstance().getResearch() != null) {
             localTiledLayer = basemapComponent.loadLocalTileLayer(Singleton.getInstance().getResearch().getTpkFilePath());
-            mMapView.setExtent(localTiledLayer.getFullExtent(), 1, false);
-
             featureLayerList = basemapComponent.loadGeodatabaseLayer(Singleton.getInstance().getResearch().getGeoFilePath());
             for (FeatureLayer featureLayer : featureLayerList) {
                 mMapView.addLayer(featureLayer);
