@@ -370,7 +370,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void handleFile(final String filePath) {
             File file = new File(filePath);
-            if (!Utils.isLocalTiledLayer(file) && !Utils.isGeodatabase(file) ) {
+            if (!Utils.isDatabase(file)) {
                 Toast.makeText(getApplicationContext(), "No ha seleccionado ningún archivo!", Toast.LENGTH_LONG).show();
             } else {
                 new LoadFileTask(getApplicationContext(), file).execute();
@@ -384,7 +384,7 @@ public class MainActivity extends AppCompatActivity {
         File file;
 
         public LoadFileTask(Context context, File file) {
-            progressDialog = new ProgressDialog(context);
+            progressDialog = new ProgressDialog(MainActivity.this);
             this.file = file;
         }
 

@@ -21,6 +21,8 @@ public class Utils {
 
     private static final String TPK_EXTENSION = ".tpk";
 
+    private static final String SQLITE_EXTENSION = ".sqlite";
+
     /**
      * Returns true if a file is a local tiled layer.
      *
@@ -46,6 +48,20 @@ public class Utils {
             return false;
 
         return file.getName().endsWith(DATABASE_EXTENSION);
+    }
+
+    /**
+     * Returns true if a file is a sqlite database.
+     *
+     * @param file The file to test.
+     * @return true if the file is a geodatabase.
+     */
+    public static boolean isDatabase(File file) {
+
+        if (file == null || !file.exists() || file.isDirectory())
+            return false;
+
+        return file.getName().endsWith(SQLITE_EXTENSION);
     }
 
     /**
