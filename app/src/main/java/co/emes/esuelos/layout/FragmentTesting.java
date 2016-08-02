@@ -41,7 +41,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import co.emes.esuelos.R;
-import co.emes.esuelos.forms.FormComprobacionHorizonteAdapter;
+import co.emes.esuelos.adapter.FormComprobacionHorizonteAdapter;
 import co.emes.esuelos.model.Domain;
 import co.emes.esuelos.model.FormComprobacion;
 import co.emes.esuelos.model.FormComprobacionFoto;

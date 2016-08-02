@@ -1,4 +1,4 @@
-package co.emes.esuelos.layout;
+package co.emes.esuelos.adapter;
 
 import android.app.Activity;
 import android.content.Context;
@@ -10,17 +10,18 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import co.emes.esuelos.R;
+import co.emes.esuelos.model.DomainExtend;
 
 /**
  * Created by anupamchugh on 10/12/15.
  */
-public class DrawerItemCustomAdapter extends ArrayAdapter<DataModel> {
+public class DrawerItemCustomAdapter extends ArrayAdapter<DomainExtend.DataModel> {
 
     Context mContext;
     int layoutResourceId;
-    DataModel data[] = null;
+    DomainExtend.DataModel data[] = null;
 
-    public DrawerItemCustomAdapter(Context mContext, int layoutResourceId, DataModel[] data) {
+    public DrawerItemCustomAdapter(Context mContext, int layoutResourceId, DomainExtend.DataModel[] data) {
 
         super(mContext, layoutResourceId, data);
         this.layoutResourceId = layoutResourceId;
@@ -39,7 +40,7 @@ public class DrawerItemCustomAdapter extends ArrayAdapter<DataModel> {
         ImageView imageViewIcon = (ImageView) listItem.findViewById(R.id.imageViewIcon);
         TextView textViewName = (TextView) listItem.findViewById(R.id.textViewName);
 
-        DataModel folder = data[position];
+        DomainExtend.DataModel folder = data[position];
 
 
         imageViewIcon.setImageResource(folder.icon);

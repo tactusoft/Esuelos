@@ -1,7 +1,10 @@
 package co.emes.esuelos.main;
 
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Environment;
 import android.provider.Settings;
 import android.support.v4.app.Fragment;
@@ -36,10 +39,10 @@ import co.emes.esuelos.fileselector.OnHandleFileListener;
 import co.emes.esuelos.layout.FragmentDatabase;
 import co.emes.esuelos.layout.FragmentHome;
 import co.emes.esuelos.layout.FragmentMap;
-import co.emes.esuelos.layout.DataModel;
-import co.emes.esuelos.layout.DrawerItemCustomAdapter;
+import co.emes.esuelos.adapter.DrawerItemCustomAdapter;
 import co.emes.esuelos.layout.FragmentSummary;
 import co.emes.esuelos.layout.FragmentSummaryDetail;
+import co.emes.esuelos.model.DomainExtend;
 import co.emes.esuelos.model.Research;
 import co.emes.esuelos.util.DataBaseHelper;
 import co.emes.esuelos.util.Singleton;
@@ -54,8 +57,10 @@ public class MainActivity extends AppCompatActivity {
     CharSequence mTitle;
     android.support.v7.app.ActionBarDrawerToggle mDrawerToggle;
     AlertDialog.Builder alertDialog;
+    AlertDialog.Builder confirmDialog;
     DataBaseHelper dataBaseHelper;
-    List<DataModel> listDataModel;
+    List<DomainExtend.DataModel> listDataModel;
+    int dataBaseType = 1;
 
     Research research;
 
@@ -90,6 +95,7 @@ public class MainActivity extends AppCompatActivity {
 
         setupToolbar();
         setupAlertBuilder();
+        setupConfirmBuilder();
         setupDrawerToggle();
 
         Fragment fragment = new FragmentHome();
@@ -172,7 +178,14 @@ public class MainActivity extends AppCompatActivity {
                 fragment = new FragmentDatabase();
                 break;
             case 4:
-                exportDatabse();
+                dataBaseType = 1;
+                confirmDialog.setTitle(getResources().getString(R.string.ndi_database));
+                confirmDialog.show();
+                break;
+            case 5:
+                dataBaseType = 2;
+                confirmDialog.setTitle(getResources().getString(R.string.ndi_load_database));
+                confirmDialog.show();
                 break;
             default:
                 break;
@@ -218,12 +231,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void setupDrawerToggle(){
-        listDataModel.add(new DataModel(R.drawable.ic_home, getResources().getString(R.string.ndi_home)));
-        listDataModel.add(new DataModel(R.drawable.ic_layers, getResources().getString(R.string.ndi_map)));
-        listDataModel.add(new DataModel(R.drawable.ic_list, getResources().getString(R.string.ndi_summary)));
-        listDataModel.add(new DataModel(R.drawable.folder, getResources().getString(R.string.ndi_tpk)));
-        listDataModel.add(new DataModel(R.drawable.download, getResources().getString(R.string.ndi_database)));
-        DataModel[] drawerItem = new DataModel[listDataModel.size()];
+        listDataModel.add(new DomainExtend.DataModel(R.drawable.ic_home, getResources().getString(R.string.ndi_home)));
+        listDataModel.add(new DomainExtend.DataModel(R.drawable.ic_layers, getResources().getString(R.string.ndi_map)));
+        listDataModel.add(new DomainExtend.DataModel(R.drawable.ic_list, getResources().getString(R.string.ndi_summary)));
+        listDataModel.add(new DomainExtend.DataModel(R.drawable.folder, getResources().getString(R.string.ndi_tpk)));
+        listDataModel.add(new DomainExtend.DataModel(R.drawable.download, getResources().getString(R.string.ndi_database)));
+        listDataModel.add(new DomainExtend.DataModel(R.drawable.ic_open, getResources().getString(R.string.ndi_load_database)));
+        DomainExtend.DataModel[] drawerItem = new DomainExtend.DataModel[listDataModel.size()];
         listDataModel.toArray(drawerItem);
 
         DrawerItemCustomAdapter adapter = new DrawerItemCustomAdapter(this, R.layout.list_view_item_row, drawerItem);
@@ -270,6 +284,11 @@ public class MainActivity extends AppCompatActivity {
         new FileSelector(MainActivity.this, FileOperation.SAVE, mSaveFileListener, mFileFilter).show();
     }
 
+    public void loadDatabse() {
+        final String[] mFileFilter = {".sqlite" };
+        new FileSelector(MainActivity.this, FileOperation.LOAD, mLoadFileListener, mFileFilter).show();
+    }
+
     private void setupAlertBuilder(){
         alertDialog = new AlertDialog.Builder(
                 MainActivity.this);
@@ -286,12 +305,36 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
+    private void setupConfirmBuilder(){
+        confirmDialog = new AlertDialog.Builder(
+                MainActivity.this);
+        confirmDialog.setCancelable(false);
+        confirmDialog.setMessage("Esta Operación eliminará los datos actuales. ¿Está seguro de continuar?");
+        confirmDialog.setIcon(android.R.drawable.ic_dialog_info);
+        confirmDialog.setPositiveButton("Aceptar",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        if(dataBaseType == 1) {
+                            exportDatabse();
+                        } else {
+                            loadDatabse();
+                        }
+                    }
+                });
+        confirmDialog.setNegativeButton("Cancelar",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+    }
+
     OnHandleFileListener mSaveFileListener = new OnHandleFileListener() {
         @Override
         public void handleFile(final String filePath) {
             try {
                 String newFilePath = filePath;
-                File sd = new File(filePath);
+                //File sd = new File(filePath);
                 String ext = Utils.getExtension(filePath);
                 if(ext == null || ext.isEmpty()) {
                     newFilePath = newFilePath + ".sqlite";
@@ -309,6 +352,7 @@ public class MainActivity extends AppCompatActivity {
                         dst.transferFrom(src, 0, src.size());
                         src.close();
                         dst.close();
+                        dataBaseHelper.deleteAll();
                         Toast.makeText(getApplicationContext(), getResources().getString(R.string.fileCreationOk),
                                 Toast.LENGTH_LONG).show();
                     }
@@ -321,5 +365,52 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     };
+
+    OnHandleFileListener mLoadFileListener = new OnHandleFileListener() {
+        @Override
+        public void handleFile(final String filePath) {
+            File file = new File(filePath);
+            if (!Utils.isLocalTiledLayer(file) && !Utils.isGeodatabase(file) ) {
+                Toast.makeText(getApplicationContext(), "No ha seleccionado ningún archivo!", Toast.LENGTH_LONG).show();
+            } else {
+                new LoadFileTask(getApplicationContext(), file).execute();
+            }
+        }
+    };
+
+    class LoadFileTask extends AsyncTask<Void, Void, Void> {
+
+        ProgressDialog progressDialog;
+        File file;
+
+        public LoadFileTask(Context context, File file) {
+            progressDialog = new ProgressDialog(context);
+            this.file = file;
+        }
+
+        public void onPreExecute() {
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progressDialog.setIndeterminate(false);
+            progressDialog.setCancelable(false);
+            progressDialog.setCanceledOnTouchOutside(false);
+            progressDialog.setMessage(getResources().getString(R.string.msg_loading));
+            progressDialog.show();
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            try {
+                dataBaseHelper.createDataBase(this.file);
+            }catch(Exception ex){
+                ex.printStackTrace();
+            }
+            return null;
+        }
+
+        public void onPostExecute(Void unused) {
+            progressDialog.dismiss();
+            Toast.makeText(getApplicationContext(), "Base de Datos cargada exitosamente!", Toast.LENGTH_LONG).show();
+        }
+    }
 
 }

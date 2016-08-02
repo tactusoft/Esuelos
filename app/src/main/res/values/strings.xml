@@ -48,6 +48,7 @@
     <string name="ndi_summary">Resúmen</string>
     <string name="ndi_database">Bases de Datos</string>
     <string name="ndi_tpk">Cargar Cartografía</string>
+    <string name="ndi_load_database">Cargar Bases de Datos</string>
     <string name="ndi_summary_par">Resúmen del día %s</string>
 
     <string name="tst_title">Formulario de Comprobación</string>
